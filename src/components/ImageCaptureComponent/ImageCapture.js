@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesome, AntDesign, Ionicons } from '@expo/vector-icons';
 import { Camera } from "expo-camera";
+import * as FaceDetector from 'expo-face-detector';
 import {useWindowDimensions} from 'react-native';
 
-import { StyleSheet, TouchableOpacity, View, Alert, } from "react-native";
+import { StyleSheet, TouchableOpacity, View, Alert,Text } from "react-native";
 
   
 const ImageCapture = ({setPhotoData, docType}) => {
@@ -13,6 +14,7 @@ const ImageCapture = ({setPhotoData, docType}) => {
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [hasPermission, setHasPermission] = useState(null);
   const {height: screenHeight, width: screenWidth} = useWindowDimensions();  
+  const [faceData, setFaceData] = React.useState([]);
   
   useEffect(() => {
     permission();
@@ -42,10 +44,33 @@ const ImageCapture = ({setPhotoData, docType}) => {
     } 
   };
 
+  const handleFacesDetected = ({ faces }) => {
+    setFaceData(faces);
+    
+  }
+
+
+  
+
+
+  
   const takePhoto = async () => {
-    const {base64} = await camera.current.takePictureAsync(options={base64:true,quality:0});
+    const {base64} = await camera.current.takePictureAsync(options={base64:true,quality:0, isImageMirror: false});
     setPhotoData(base64.replaceAll(" ","+"));
   };
+
+
+
+  let boundingArea = faceData.map((face, index) => {
+    return (
+      <View key={index} style= {[styles.facebox, {left: face.bounds.origin.x, 
+        top: face.bounds.origin.y, 
+        width: face.bounds.size.width,
+        height: face.bounds.size.height}]}/> 
+    );
+  });
+
+
   let camera = useRef(null);
 
   return (
@@ -55,7 +80,17 @@ const ImageCapture = ({setPhotoData, docType}) => {
           <Camera style={styles.cameraContainer} 
               ref={camera} 
               type={type} 
-              flashMode={flashMode === "on" ? "on": "off"}/>
+              flashMode={flashMode === "on" ? "on": "off"}
+              onFacesDetected={handleFacesDetected}
+              faceDetectorSettings={{
+                mode: FaceDetector.FaceDetectorMode.fast,
+                detectLandmarks: FaceDetector.FaceDetectorLandmarks.none,
+                runClassifications: FaceDetector.FaceDetectorClassifications.none,
+                minDetectionInterval: 100,
+                tracking: true
+              }}/>
+              {boundingArea}
+            
         </View>
 
         <View style={styles.bottom}>
@@ -134,4 +169,9 @@ const styles = StyleSheet.create({
       alignItems: "center",
       justifyContent: "center",
     },
+    facebox: {
+      borderColor: 'red',
+      borderWidth: 2,
+      position: 'absolute',
+    }
   });
