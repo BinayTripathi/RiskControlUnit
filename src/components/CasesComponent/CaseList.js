@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Background from "@components/UI/Background";
 import Paragraph from '@components/UI/Paragraph'
 import CaseItem from "@components/CasesComponent/CaseItem";
+import Button from "@components/UI/Button"
 
 
 
@@ -31,6 +32,8 @@ export default function CaseList() {
   const [refreshInterval, setRefreshInterval] = useState(1000*300);
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(true);
+  const [forceRerender, setForceRerender] = useState('')
+
 
   const onChangeSearch = query => setSearchQuery(query);
  
@@ -53,7 +56,7 @@ export default function CaseList() {
         }
     }  
 
-  }, [dispatch, isFocused])
+  }, [dispatch, isFocused, forceRerender])
 
 
   /*useEffect(() => {
@@ -95,6 +98,9 @@ export default function CaseList() {
       <Paragraph>
         NO CASES TO DISPLAY
       </Paragraph>
+      <Button mode="elevated" style={[styles.refreshButton]} 
+                            onPress={() => setForceRerender((Math.random() + 1).toString(36).substring(7))}>
+                              REFRESH </Button>
     </View>
   if(retriveAllCases().length != 0) {
     casesToShow =    <FlatList data={retriveAllCases()} 
@@ -138,7 +144,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10
   },
   searchBoxContainer : {
-    flex: 1
+    flex: 1,
   },
   listsContainer : {   
     flex: 9,
@@ -148,5 +154,10 @@ const styles = StyleSheet.create({
   },
   searchBox: {
     width: 250
-  }
+  },
+  refreshButton : {
+    marginRight: 5,
+    marginBottom: 10,
+    alignSelf: "center"
+  },
 });

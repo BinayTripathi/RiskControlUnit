@@ -45,7 +45,7 @@ const InvestigationDocument = ({doctype, photo, ocrText}) => {
         <Card style={{marginTop: 20, width : parseInt(windowWidth)*0.7}}>
             <View style = {styles.caseItemContainer}>
                 <View style = {styles.profilePhotoContainer} >
-                    <Image style = {{width: 40, height: 40, borderRadius: 20}} source = {{uri:`data:image/jpeg;base64,${loadingPhoto}`}}/>
+                    <Image style = {{width: 40, height: 40, borderRadius: 20}} source = {{uri:`${photo}`}}/>
                 </View>
                 <View ><Text style={[styles.textBase, styles.name]}>{doctype === 'BENIFICIARY-PHOTO'? 'PHOTO' : 'PAN'}</Text></View>
             </View>

@@ -6,6 +6,7 @@ import types from '../types';
 import { deleteCaseFromListAfterSubmission } from './cases-slice'
 import { deleteCaseDetailsAfterSubmission } from './case-details-slice'
 import callGoogleVisionAsync from '../../helpers/OCRHelper'
+import ImageCompressor from '../../helpers/imageCompressor'
 
 
 // ACTIONS
@@ -129,6 +130,20 @@ const initialState = {
     try {              
       //ToDo : Do not fetch if case details available within TTL
       //documentDetails : {PAN : {}}
+      //As soon as the image is clicked - show that image is submited. 
+      const tempLocationImage = action.payload.documentDetails.locationImage !== undefined ? yield call(ImageCompressor,action.payload.documentDetails.locationImage) : {'uri' : ''}
+      const tempOcrImage = action.payload.documentDetails.OcrImage !== undefined ? yield call(ImageCompressor,action.payload.documentDetails.OcrImage) : {'uri' : ''}
+
+      let successPayload = {
+        [action.payload.claimId] : {...action.payload.documentDetails, 
+              locationImage: tempLocationImage.uri,//action.payload.documentDetails.locationImage !== null ? '' : '',//yield call(ImageCompressor,action.payload.documentDetails.locationImage) : '', 
+              OcrImage: tempOcrImage.uri,// action.payload.documentDetails.OcrImage !== null ? action.payload.documentDetails.OcrImage : '',
+              id: action.payload.id }            
+      }
+      yield put(successUpdateCase(successPayload));  
+
+      
+
       let readText = null
       if(action.payload.documentDetails.docType !== 'BENIFICIARY-PHOTO')
         readText = yield call(callGoogleVisionAsync,action.payload.documentDetails.OcrImage)
@@ -139,17 +154,19 @@ const initialState = {
         const response = yield call(updateCase,postUpdatePayload);    
         const responseUserData = response.data        
         console.log("received claim details")
+        //ToDo :  Handle when there is error calling the one of the 2 APIs
         if (responseUserData) {                      
 
-            let successPayload = {
+          //TODO :  Enable this to refresh again
+            /*let successPayload = {
               [action.payload.claimId] : {...action.payload.documentDetails, 
                     locationImage: responseUserData.locationImage, 
                     OcrImage: responseUserData.ocrImage, 
                     id: action.payload.id }
             }
 
-          yield put(successUpdateCase(successPayload));     
-        } else {
+          yield put(successUpdateCase(successPayload));   */  
+        } else {    // TODO  :  retry on error
           yield put(failureUpdateCase());
         }
         return;
