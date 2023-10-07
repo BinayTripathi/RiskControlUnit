@@ -8,7 +8,7 @@ import Background from "@components/UI/Background";
 import Paragraph from '@components/UI/Paragraph'
 import CaseItem from "@components/CasesComponent/CaseItem";
 import LoadingModalWrapper from "@components/UI/LoadingModal"
-import Card from "../../UI/Card"
+import { theme } from '@core/theme';
 import InvestigationDocument from "./InvestigationDocument";
 
 export default function InvestigationDocumentList({selectedClaimId}) { 
@@ -49,9 +49,11 @@ export default function InvestigationDocumentList({selectedClaimId}) {
             duration={Toast.durations.SHORT}
             backgroundColor='red'
         >{err}</Toast>
-        return <FlatList data={caseUpdates} 
+        return <View style = {styles.caseUpdateContainer}>
+            <FlatList data={caseUpdates} 
                         renderItem={renderDocuments} 
                         keyExtractor={(item, index) => item.docType + `-Page ${index+1}`}/>
+            </View>
             
     }
 
@@ -70,3 +72,17 @@ export default function InvestigationDocumentList({selectedClaimId}) {
 
 
 }
+
+const styles = StyleSheet.create({
+    caseUpdateContainer: {
+      padding: 10,
+      alignItems: 'center',
+      justifyContent: "space-between",
+      width: '100%',      
+      backgroundColor: theme.colors.updateDetailsBackground,
+      borderRadius: 10,
+      shadowOffset: {width: 0, height: 1},
+      shadowRadius: 2,
+      elevation: 2,
+      shadowOpacity: 0.4,
+    }})

@@ -130,14 +130,11 @@ const initialState = {
     try {              
       //ToDo : Do not fetch if case details available within TTL
       //documentDetails : {PAN : {}}
-      //As soon as the image is clicked - show that image is submited. 
-      const tempLocationImage = action.payload.documentDetails.locationImage !== undefined ? yield call(ImageCompressor,action.payload.documentDetails.locationImage) : {'uri' : ''}
-      const tempOcrImage = action.payload.documentDetails.OcrImage !== undefined ? yield call(ImageCompressor,action.payload.documentDetails.OcrImage) : {'uri' : ''}
-
+      //As soon as the image is clicked - show that image is submited.       
       let successPayload = {
         [action.payload.claimId] : {...action.payload.documentDetails, 
-              locationImage: tempLocationImage.uri,//action.payload.documentDetails.locationImage !== null ? '' : '',//yield call(ImageCompressor,action.payload.documentDetails.locationImage) : '', 
-              OcrImage: tempOcrImage.uri,// action.payload.documentDetails.OcrImage !== null ? action.payload.documentDetails.OcrImage : '',
+              locationImage: '',
+              OcrImage: '',
               id: action.payload.id }            
       }
       yield put(successUpdateCase(successPayload));  
@@ -156,16 +153,14 @@ const initialState = {
         console.log("received claim details")
         //ToDo :  Handle when there is error calling the one of the 2 APIs
         if (responseUserData) {                      
-
-          //TODO :  Enable this to refresh again
-            /*let successPayload = {
+            let successPayload = {
               [action.payload.claimId] : {...action.payload.documentDetails, 
                     locationImage: responseUserData.locationImage, 
                     OcrImage: responseUserData.ocrImage, 
                     id: action.payload.id }
             }
 
-          yield put(successUpdateCase(successPayload));   */  
+          yield put(successUpdateCase(successPayload)); 
         } else {    // TODO  :  retry on error
           yield put(failureUpdateCase());
         }

@@ -42,10 +42,11 @@ const InvestigationDocument = ({doctype, photo, ocrText}) => {
    ) : null
 
     return (
-        <Card style={{marginTop: 20, width : parseInt(windowWidth)*0.7}}>
+        <Card style={{marginTop: 20, width : parseInt(windowWidth)*0.7, borderWidth: 1,
+            borderColor: 'black'}}>
             <View style = {styles.caseItemContainer}>
                 <View style = {styles.profilePhotoContainer} >
-                    <Image style = {{width: 40, height: 40, borderRadius: 20}} source = {{uri:`${photo}`}}/>
+                    <Image style = {{width: 40, height: 40, borderRadius: 20}} source = {{uri:`data:image/jpeg;base64,${loadingPhoto}`}}/>
                 </View>
                 <View ><Text style={[styles.textBase, styles.name]}>{doctype === 'BENIFICIARY-PHOTO'? 'PHOTO' : 'PAN'}</Text></View>
             </View>
@@ -64,7 +65,8 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: "space-between",
       width: '100%',      
-      backgroundColor: theme.colors.caseItemBackground
+      backgroundColor: theme.colors.caseItemBackground,
+      
     },
     profilePhotoContainer: {
         width: 40,

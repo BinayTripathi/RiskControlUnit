@@ -19,6 +19,7 @@ export default InvestigationDetails = function ({selectedClaimId, userId}) {
     const [items, setItems] = useState([
       {label: 'PAN', value: 'PAN'},
       {label: 'BENIFICIARY PHOTO', value: 'BENIFICIARY-PHOTO'},
+      {label: 'FORM F16/A', value: 'FORM-F16/A'},
     ]);
 
    const navigation = useNavigation();
@@ -57,11 +58,32 @@ export default InvestigationDetails = function ({selectedClaimId, userId}) {
                     }}
                     style={{
                       backgroundColor: 'white',
-                      zIndex: 1000
+                      zIndex: 1000,
+                      width: 180
                     }}
                     textStyle={{
                       fontSize:15
-                    }} />
+                    }} 
+                    labelStyle={{
+                      fontWeight: "bold"
+                    }}
+                    dropDownContainerStyle={{
+                      backgroundColor: "#dfdfdf",
+                      width: 180
+                    }}
+                    itemSeparator={true}
+                    listItemContainer={{
+                      height: 40
+                    }}
+                    selectedItemContainerStyle={{
+                      backgroundColor: "grey"
+                    }}
+                    modalProps={{
+                      animationType: "fade"
+                    }}
+                    listMode="FLATLIST"
+                    
+                    />
 
             
               
@@ -92,9 +114,13 @@ const styles = StyleSheet.create({
   },
   inputContainer : {
     flexDirection: 'row',
-    margin: 30,    
-    paddingHorizontal: 50,
+    marginVertical: 30,    
+    paddingHorizontal: 5,
     alignItems: 'baseline',
+    borderColor: 'white',
+    borderWidth: 2,
+    width: width*0.95,
+    zIndex: 200,
   },
   button: {
     marginRight: 5,

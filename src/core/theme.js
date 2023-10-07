@@ -43,6 +43,7 @@ export const theme = {
     button:  '#011313',
     button_label: 'white',
     submitButton : '#992e1e',
-    disabledSubmitButton : '#ed978a'
+    disabledSubmitButton : '#ed978a',
+    updateDetailsBackground: '#f8fbf8'
   }
 }
