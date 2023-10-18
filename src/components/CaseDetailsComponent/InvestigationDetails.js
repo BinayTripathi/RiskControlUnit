@@ -17,9 +17,8 @@ export default InvestigationDetails = function ({selectedClaimId, userId}) {
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState(null);
     const [items, setItems] = useState([
-      {label: 'PAN', value: 'PAN'},
-      {label: 'BENIFICIARY PHOTO', value: 'BENIFICIARY-PHOTO'},
-      {label: 'FORM F16/A', value: 'FORM-F16/A'},
+      {label: 'ID OCR', value: 'PAN'},
+      {label: 'FACE READER', value: 'BENIFICIARY-PHOTO'}
     ]);
 
    const navigation = useNavigation();
@@ -33,7 +32,7 @@ export default InvestigationDetails = function ({selectedClaimId, userId}) {
         <View style={styles.container}>
           
           <View style = {{marginTop: 100}}>
-            <Text style = {[styles.textBase, styles.description ]}>DOCUMENT SUBMISSION</Text>
+            <Text style = {[styles.textBase, styles.description ]}>AGENT CAPABILITIES</Text>
           </View>
           
 
@@ -116,7 +115,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginVertical: 30,    
     paddingHorizontal: 5,
-    alignItems: 'baseline',
+    alignItems: 'center',
     borderColor: 'white',
     borderWidth: 2,
     width: width*0.95,

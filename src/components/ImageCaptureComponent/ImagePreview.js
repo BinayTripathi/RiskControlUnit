@@ -13,7 +13,7 @@ import useLocationTracker from "@hooks/useLocationTracker";
 
 
 //https://www.farhansayshi.com/post/how-to-save-files-to-a-device-folder-using-expo-and-react-native/
-const ImagePreview = ({photoData, setPhotoData , claimId, docType, email}) => {
+const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimId, docType, email}) => {
   
     const navigation = useNavigation();
     let savedPhoto = useRef(null);
@@ -33,6 +33,7 @@ const ImagePreview = ({photoData, setPhotoData , claimId, docType, email}) => {
       if(docType === 'BENIFICIARY-PHOTO'){
         documentDetailsForSubmission.LocationLongLat = tracker
         documentDetailsForSubmission.locationImage = photoData
+        documentDetailsForSubmission.locationData = `Beneficiary is ${isSmiling ? "": 'NOT'} smiling and has both eyes ${isBothEyeOpen ? 'OPEN' : 'CLOSED'}`
       } else {
         documentDetailsForSubmission.OcrLongLat = tracker
         documentDetailsForSubmission.OcrImage = photoData
@@ -47,7 +48,7 @@ const ImagePreview = ({photoData, setPhotoData , claimId, docType, email}) => {
      
       Alert.alert(  
         'Save document',  
-        `Do you want to save  ${docType} ?`,  
+        `Do you want to save now ?`,  
         [  
             {  
                 text: 'Ok',  

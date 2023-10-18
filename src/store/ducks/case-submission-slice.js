@@ -45,13 +45,17 @@ export const requestUpdatePanCaseAction = createAction(
 
 export const requestSubmitCaseAction = createAction(
   types.REQUEST_SUBMIT_CASE,
-  function prepare({claimId, email, beneficiaryId, Remarks }) {
+  function prepare({claimId, email, beneficiaryId, Remarks, Question1, Question2, Question3, Question4 }) {
     return {
       payload: {
         claimId, 
         email,
         beneficiaryId,
-        Remarks    
+        Remarks ,
+        Question1,
+        Question2,
+        Question3,
+        Question4  
       },
     };
   },
@@ -178,9 +182,9 @@ const initialState = {
         const response = yield call(submitCase,action.payload);    
         const responseUserData = response.data        
         if (responseUserData) {   
+          yield put(deleteCaseFromListAfterSubmission(action.payload.claimId))
           yield put(successDeleteCaseUpdateDetailsAfterSubmission(action.payload.claimId));   
           yield put(deleteCaseDetailsAfterSubmission(action.payload.claimId)) 
-          yield put(deleteCaseFromListAfterSubmission(action.payload.claimId))
         } else {
           yield put(failureSubmitCase());
         }

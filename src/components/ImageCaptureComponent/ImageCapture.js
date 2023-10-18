@@ -3,11 +3,12 @@ import { FontAwesome, AntDesign, Ionicons } from '@expo/vector-icons';
 import { Camera } from "expo-camera";
 import * as FaceDetector from 'expo-face-detector';
 import {useWindowDimensions} from 'react-native';
+import Paragraph from '@components/UI/Paragraph'
 
 import { StyleSheet, TouchableOpacity, View, Alert,Text } from "react-native";
 
   
-const ImageCapture = ({setPhotoData, docType}) => {
+const ImageCapture = ({setPhotoData, docType, setBothEyeOpen, setSmiling}) => {
 
   const [startCamera,setStartCamera] = React.useState(false)
   const [flashMode, setFlashMode] = useState('off');
@@ -15,6 +16,11 @@ const ImageCapture = ({setPhotoData, docType}) => {
   const [hasPermission, setHasPermission] = useState(null);
   const {height: screenHeight, width: screenWidth} = useWindowDimensions();  
   const [faceData, setFaceData] = React.useState([]);
+
+
+  let isSmiling = false;
+  let eyesShut = false
+  
   
   useEffect(() => {
     permission();
@@ -55,20 +61,35 @@ const ImageCapture = ({setPhotoData, docType}) => {
 
   
   const takePhoto = async () => {
+
+    if(faceData.length <  1 && docType === 'BENIFICIARY-PHOTO')
+      return
+
+      if(docType === 'BENIFICIARY-PHOTO') {
+        setBothEyeOpen(!eyesShut)
+        setSmiling(isSmiling)
+      }
+      
     const {base64} = await camera.current.takePictureAsync(options={base64:true,quality:0, isImageMirror: false});
     setPhotoData(base64.replaceAll(" ","+"));
   };
 
 
 
-  let boundingArea = faceData.map((face, index) => {
+  let boundingArea = faceData.length > 0 ? faceData.map((face, index) => {
+    eyesShut = face.rightEyeOpenProbability < 0.4 && face.leftEyeOpenProbability < 0.4;
+    const winking = !eyesShut && (face.rightEyeOpenProbability < 0.4 || face.leftEyeOpenProbability < 0.4);
+    isSmiling = face.smilingProbability > 0.7;
+    console.log(isSmiling)
+    //setIsEyeClosed(!eyesShut)
+    //setIsSmiling(smiling)
     return (
       <View key={index} style= {[styles.facebox, {left: face.bounds.origin.x, 
         top: face.bounds.origin.y, 
         width: face.bounds.size.width,
         height: face.bounds.size.height}]}/> 
     );
-  });
+  }) : docType === 'BENIFICIARY-PHOTO' ? <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/2}]}> NO BENEFICIARY FACE DETECTED</Paragraph> : '';
 
 
   let camera = useRef(null);
@@ -84,8 +105,8 @@ const ImageCapture = ({setPhotoData, docType}) => {
               onFacesDetected={handleFacesDetected}
               faceDetectorSettings={{
                 mode: FaceDetector.FaceDetectorMode.fast,
-                detectLandmarks: FaceDetector.FaceDetectorLandmarks.none,
-                runClassifications: FaceDetector.FaceDetectorClassifications.none,
+                detectLandmarks: FaceDetector.FaceDetectorLandmarks.all,
+                runClassifications: FaceDetector.FaceDetectorClassifications.all,
                 minDetectionInterval: 100,
                 tracking: true
               }}/>
@@ -117,8 +138,9 @@ const ImageCapture = ({setPhotoData, docType}) => {
               </View>                 
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={takePhoto}>
-              <FontAwesome name="camera" style={{ color: "#fff", fontSize: 40}}  />
+            <TouchableOpacity style={styles.button} onPress={takePhoto} disabled={faceData.length <  1 && docType === 'BENIFICIARY-PHOTO'}>
+              <FontAwesome name="camera" style={
+               { color: "white", fontSize: 40}}  />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -170,8 +192,14 @@ const styles = StyleSheet.create({
       justifyContent: "center",
     },
     facebox: {
-      borderColor: 'red',
+      borderColor: 'green',
       borderWidth: 2,
       position: 'absolute',
+    },
+    noFaceWarning : {
+      position: 'absolute',
+      fontWeight: '900',
+      fontSize: 16,
+      color: 'red'
     }
   });

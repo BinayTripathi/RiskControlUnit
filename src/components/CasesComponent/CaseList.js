@@ -145,6 +145,7 @@ const styles = StyleSheet.create({
   },
   searchBoxContainer : {
     flex: 1,
+    width: 320
   },
   listsContainer : {   
     flex: 9,
@@ -153,7 +154,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',    
   },
   searchBox: {
-    width: 250
+    width: 320
   },
   refreshButton : {
     marginRight: 5,

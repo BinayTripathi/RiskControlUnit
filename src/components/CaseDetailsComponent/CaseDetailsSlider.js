@@ -7,10 +7,11 @@ import BeneficiaryDetails from "./CaseDetails/BeneficiaryDetails";
 import InvestigationDetails from './InvestigationDetails'
 import SubmitInvestigation from "./SubmitInvestigation";
 
+const { width, height } = Dimensions.get('window');
 export default function CaseDetailsSlider({selectedClaimId, selectedClaim, userId}) {
 
     const [sliderState, setSliderState] = useState({ currentPage: 0 });
-    const { width, height } = Dimensions.get('window');
+    
   
     const setSliderPage = (event) => {
       const { currentPage } = sliderState;
@@ -78,7 +79,8 @@ const styles = StyleSheet.create({
       
     paginationWrapper: {
       position: 'absolute',
-      bottom: 20,
+      //bottom: 20,
+      top: height - 20,
       left: 0,
       right: 0,
       justifyContent: 'center',

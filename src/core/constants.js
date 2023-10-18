@@ -3,6 +3,12 @@ export const LOGIN_ERROR_MESSAGE = "Invalid username or password"
 export const DEFAULT_NO_NETWORK_MESSAGE = "Please check your network connection"
 export const CASE_DETAILS_OFFLINE_ERROR_MESSAGE = DEFAULT_NO_NETWORK_MESSAGE
 
+export const DOC_TYPE = {
+
+    BENEFICIARY_PHOTO : 'BENIFICIARY-PHOTO',
+    OCR : 'OCR'
+}
+
 export const SCREENS = {
     Home: "Home",
     Login : "Login",

@@ -1,9 +1,11 @@
 import * as Request from '../helpers/serviceApi'
 
 //const BASE_URL = 'https://rcu.azurewebsites.net/api';
-const BASE_URL =  'https://icheckify.azurewebsites.net/api'
 //const BASE_URL = 'https://ccutest.free.beeceptor.com'
 //const BASE_URL = 'https://holosync.azurewebsites.net/api'
+
+const BASE_URL =  'https://icheckify.azurewebsites.net/api'
+//const BASE_URL =  'https://chek.azurewebsites.net/api'
 
 
 const verifyLogin =  async (emailId) => {

@@ -9,6 +9,8 @@ import Background from "../components/UI/Background";
 const ImageCaptureScreen = ({ route }) => {
   
   const [photoData, setPhotoData] = useState(); 
+  const [bothEyeOpen, setBothEyeOpen] = useState(false)
+  const [smiling, setSmiling] = useState(false)
 
   const claimId = route.params?.claimId
   const docType = route.params?.docType
@@ -18,7 +20,7 @@ const ImageCaptureScreen = ({ route }) => {
   const imageCaptureSceen =  (
     <Background>
         <View style={styles.container}>
-          <ImageCapture setPhotoData={setPhotoData} docType = {docType}/>
+          <ImageCapture setPhotoData={setPhotoData} setBothEyeOpen={setBothEyeOpen} setSmiling={setSmiling} docType = {docType}/>
         </View>  
         </Background>
      
@@ -27,7 +29,7 @@ const ImageCaptureScreen = ({ route }) => {
   const imagePreviewScreen =  (
     <Background>
       <View style={styles.container}>
-        <ImagePreview photoData= {photoData} setPhotoData={setPhotoData} claimId = {claimId} docType = {docType} email = {email}/>
+        <ImagePreview photoData= {photoData} setPhotoData={setPhotoData} isSmiling={smiling} isBothEyeOpen={bothEyeOpen} claimId = {claimId} docType = {docType} email = {email}/>
       </View>  
     </Background>
   )
