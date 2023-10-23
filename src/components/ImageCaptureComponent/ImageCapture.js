@@ -77,17 +77,20 @@ const ImageCapture = ({setPhotoData, docType, setBothEyeOpen, setSmiling}) => {
 
 
   let boundingArea = faceData.length > 0 ? faceData.map((face, index) => {
-    eyesShut = face.rightEyeOpenProbability < 0.4 && face.leftEyeOpenProbability < 0.4;
+    let eyesShut = face.rightEyeOpenProbability < 0.4 && face.leftEyeOpenProbability < 0.4;
     const winking = !eyesShut && (face.rightEyeOpenProbability < 0.4 || face.leftEyeOpenProbability < 0.4);
-    isSmiling = face.smilingProbability > 0.7;
-    console.log(isSmiling)
+    let isSmiling = face.smilingProbability > 0.7;
+    //console.log(face)
     //setIsEyeClosed(!eyesShut)
     //setIsSmiling(smiling)
     return (
       <View key={index} style= {[styles.facebox, {left: face.bounds.origin.x, 
         top: face.bounds.origin.y, 
         width: face.bounds.size.width,
-        height: face.bounds.size.height}]}/> 
+        height: face.bounds.size.height}]}> 
+        {eyesShut && <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/2}]}>{ `Left Eye : ${face.leftEyeOpenProbability}, Right Eye : ${face.rightEyeOpenProbability}`} </Paragraph>}
+        {isSmiling && <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/1.6}]}>{ `Smile : ${face.smilingProbability}`} </Paragraph>}
+        </View>
     );
   }) : docType === 'BENIFICIARY-PHOTO' ? <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/2}]}> NO BENEFICIARY FACE DETECTED</Paragraph> : '';
 
@@ -105,7 +108,7 @@ const ImageCapture = ({setPhotoData, docType, setBothEyeOpen, setSmiling}) => {
               onFacesDetected={handleFacesDetected}
               faceDetectorSettings={{
                 mode: FaceDetector.FaceDetectorMode.fast,
-                detectLandmarks: FaceDetector.FaceDetectorLandmarks.all,
+                detectLandmarks: FaceDetector.FaceDetectorLandmarks.none,
                 runClassifications: FaceDetector.FaceDetectorClassifications.all,
                 minDetectionInterval: 100,
                 tracking: true

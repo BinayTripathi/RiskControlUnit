@@ -66,7 +66,8 @@ export const getCaseDetails = async (email, claim) => {
 
 
 export const updateCase = async (body) => {
-  console.log('Upodate case API being called')
+  console.log('Update case API being called')
+  //console.log(body)
   try {
       const url = `${BASE_URL}/agent/post`;
       //const url = `https://ccutest.free.beeceptor.com/update`
@@ -93,6 +94,7 @@ export const updateCase = async (body) => {
           ...body
         };
         console.log(url)
+        
         let response = await  Request.post({url, config, data});
         return response
       }  catch (error) {

@@ -27,6 +27,7 @@ async function callGoogleVisionAsync(base64Image) {
        
     const body = generateBody(base64Image); //pass in our image for the payload
     console.log(API_URL)
+    //console.log(base64Image)
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {

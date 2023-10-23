@@ -23,6 +23,7 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
     
     const savePhoto = async () => {        
 
+      console.log(`Beneficiary is ${isSmiling ? "": 'NOT'} smiling and has both eyes ${isBothEyeOpen ? 'OPEN' : 'CLOSED'}`)
       const documentDetailsForSubmission = {
         email,
         claimId,            
