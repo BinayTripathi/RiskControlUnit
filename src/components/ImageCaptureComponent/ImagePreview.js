@@ -7,6 +7,7 @@ import { PaperProvider } from 'react-native-paper';
 import UserTracker from "./UserTracker";
 
 import {theme} from '../../core/theme'
+import { DOC_TYPE } from '@core/constants';
 
 import {requestUpdateBeneficiaryPhotoCaseAction, requestUpdatePanCaseAction} from '@store/ducks/case-submission-slice'
 import useLocationTracker from "@hooks/useLocationTracker";
@@ -28,10 +29,10 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
         email,
         claimId,            
         Remarks:null,
-        docType
+        docType: docType.name
       }
       
-      if(docType === 'BENIFICIARY-PHOTO'){
+      if(docType.name === DOC_TYPE.PHOTO_ID_SCANNER.FACE_READER.name){
         documentDetailsForSubmission.LocationLongLat = tracker
         documentDetailsForSubmission.locationImage = photoData
         documentDetailsForSubmission.locationData = `Beneficiary is ${isSmiling ? "": 'NOT'} smiling and has both eyes ${isBothEyeOpen ? 'OPEN' : 'CLOSED'}`
@@ -53,23 +54,20 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
         [  
             {  
                 text: 'Ok',  
-                onPress: () => {
-                  setPhotoData();                 
-                  if(docType === 'BENIFICIARY-PHOTO')
+                onPress: () => {                 
+                  if(docType.type === 'PHOTO')
                     dispatch(requestUpdateBeneficiaryPhotoCaseAction(savePayload))
                   else
                    dispatch(requestUpdatePanCaseAction(savePayload))
-                  navigation.goBack()
-                 
+
+                  navigation.goBack()                 
                 },  
                 style: 'default',  
             }  ,
             {  
               text: 'Cancel',  
-              onPress: () => {
-               
-                navigation.goBack()
-               
+              onPress: () => {               
+                navigation.goBack()               
               },  
               style: 'default',  
           }  
@@ -87,7 +85,7 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
                               <UserTracker photoData={photoData} displayMapHandler={displayMapHandler} shouldDisplayMap = {displayMap}/>
                              : ( <>
                                  <UserTracker photoData={false}/>
-                                 <Image source={{uri: `data:image/jpg;base64,${photoData}`}} style={{ flex: 1, borderRadius: 10 }} />
+                                 <Image source={{uri: `data:image/jpg;base64,${photoData}`}} style={{flex: 1, borderRadius: 10 }}  resizeMode='contain'  />
                                    </> )
                             
  
@@ -130,6 +128,10 @@ const styles = StyleSheet.create({
   middlePhoto: {
     flex: 1,
     position: "relative",
+    marginTop: 80,
+    paddingHorizontal: 5
+
+    
   },
   bottomPrev: {
     height: 100,    

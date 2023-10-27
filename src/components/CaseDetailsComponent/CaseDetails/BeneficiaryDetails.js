@@ -7,7 +7,6 @@ import Card from '@components/UI/Card';
 
 import { theme } from '@core/theme';
 import { Padder } from '@components/UI/Wrapper';
-import ImageModalCreator from '@components/UI/ImageModalCreator';
 
 
 const { width, height } = Dimensions.get('window');

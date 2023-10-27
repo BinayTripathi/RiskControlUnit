@@ -17,14 +17,18 @@
         {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
         }
-      ]
+      ], [
+      "react-native-document-scanner-plugin",
+      {
+        "cameraPermission": "We need camera access, so you can scan documents"
+      } ]
     ],
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.binaytripathi.RiskControlUnit",      
+      "bundleIdentifier": "com.binaytripathi.RiskControlUnit",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to let user click client photos and scan documents"
       }

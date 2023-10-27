@@ -44,6 +44,7 @@ export const theme = {
     button_label: 'white',
     submitButton : '#992e1e',
     disabledSubmitButton : '#ed978a',
-    updateDetailsBackground: '#f8fbf8'
+    updateDetailsBackground: '#f8fbf8',
+    capabilitiesCardBackgroundColor :  '#f5f4f4',
   }
 }

@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
+import { StyleSheet, TouchableOpacity, View, Alert,Text } from "react-native";
 import { FontAwesome, AntDesign, Ionicons } from '@expo/vector-icons';
 import { Camera } from "expo-camera";
 import * as FaceDetector from 'expo-face-detector';
 import {useWindowDimensions} from 'react-native';
-import Paragraph from '@components/UI/Paragraph'
 
-import { StyleSheet, TouchableOpacity, View, Alert,Text } from "react-native";
+import Paragraph from '@components/UI/Paragraph'
+import { DOC_TYPE } from '@core/constants';
 
   
 const ImageCapture = ({setPhotoData, docType, setBothEyeOpen, setSmiling}) => {
@@ -24,7 +25,7 @@ const ImageCapture = ({setPhotoData, docType, setBothEyeOpen, setSmiling}) => {
   
   useEffect(() => {
     permission();
-    docType === 'BENIFICIARY-PHOTO' ? setType(Camera.Constants.Type.front) : setType(Camera.Constants.Type.back)
+      setType(docType.cameraType)
   }, []);
 
   const permission = async () => {
@@ -54,18 +55,13 @@ const ImageCapture = ({setPhotoData, docType, setBothEyeOpen, setSmiling}) => {
     setFaceData(faces);
     
   }
-
-
-  
-
-
   
   const takePhoto = async () => {
 
-    if(faceData.length <  1 && docType === 'BENIFICIARY-PHOTO')
+    if(faceData.length < docType.faceCount)
       return
 
-      if(docType === 'BENIFICIARY-PHOTO') {
+      if(docType.name === DOC_TYPE.PHOTO_ID_SCANNER.FACE_READER.name) {
         setBothEyeOpen(!eyesShut)
         setSmiling(isSmiling)
       }
@@ -74,25 +70,22 @@ const ImageCapture = ({setPhotoData, docType, setBothEyeOpen, setSmiling}) => {
     setPhotoData(base64.replaceAll(" ","+"));
   };
 
-
-
-  let boundingArea = faceData.length > 0 ? faceData.map((face, index) => {
+  let boundingArea = faceData.length >= docType.faceCount? faceData.map((face, index) => {
     let eyesShut = face.rightEyeOpenProbability < 0.4 && face.leftEyeOpenProbability < 0.4;
     const winking = !eyesShut && (face.rightEyeOpenProbability < 0.4 || face.leftEyeOpenProbability < 0.4);
     let isSmiling = face.smilingProbability > 0.7;
-    //console.log(face)
-    //setIsEyeClosed(!eyesShut)
-    //setIsSmiling(smiling)
+
     return (
       <View key={index} style= {[styles.facebox, {left: face.bounds.origin.x, 
         top: face.bounds.origin.y, 
         width: face.bounds.size.width,
         height: face.bounds.size.height}]}> 
-        {eyesShut && <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/2}]}>{ `Left Eye : ${face.leftEyeOpenProbability}, Right Eye : ${face.rightEyeOpenProbability}`} </Paragraph>}
-        {isSmiling && <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/1.6}]}>{ `Smile : ${face.smilingProbability}`} </Paragraph>}
+        {docType.name === DOC_TYPE.PHOTO_ID_SCANNER.FACE_READER.name && eyesShut && <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/2}]}>{ `Left Eye : ${face.leftEyeOpenProbability}, Right Eye : ${face.rightEyeOpenProbability}`} </Paragraph>}
+        {docType.name === DOC_TYPE.PHOTO_ID_SCANNER.FACE_READER.name && isSmiling && <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/1.6}]}>{ `Smile : ${face.smilingProbability}`} </Paragraph>}
         </View>
     );
-  }) : docType === 'BENIFICIARY-PHOTO' ? <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/2}]}> NO BENEFICIARY FACE DETECTED</Paragraph> : '';
+  }) : docType.name !== DOC_TYPE.PHOTO_ID_SCANNER.OTHERS.name && faceData.length < docType.faceCount?
+                  <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/2}]}> NOT ENOUGH FACES DETECTED</Paragraph> : '';
 
 
   let camera = useRef(null);
@@ -141,7 +134,7 @@ const ImageCapture = ({setPhotoData, docType, setBothEyeOpen, setSmiling}) => {
               </View>                 
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={takePhoto} disabled={faceData.length <  1 && docType === 'BENIFICIARY-PHOTO'}>
+            <TouchableOpacity style={styles.button} onPress={takePhoto} disabled={faceData.length < docType.faceCount}>
               <FontAwesome name="camera" style={
                { color: "white", fontSize: 40}}  />
             </TouchableOpacity>
@@ -173,6 +166,8 @@ const styles = StyleSheet.create({
     },
     cameraContainer: {
       flex: 1,
+      marginTop: 70,
+      borderRadius: 10
     },
     top: {
       flex: 6,

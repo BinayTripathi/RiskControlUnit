@@ -1,7 +1,11 @@
 import { useState } from 'react'
-import { StyleSheet,View, Text , Dimensions} from 'react-native';
+import { StyleSheet,View, Text , Dimensions,  ScrollView} from 'react-native';
 import  { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+
+import PhotoIdScanner from './InvestigationDetails/PhotoIdScanner'
+import DocumentScanner from './InvestigationDetails/DocumentScanner'
+import FormInitiator from './InvestigationDetails/FormInitiator'
 
 
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -10,6 +14,7 @@ import Button from '@components/UI/Button'
 import { SCREENS } from '@core/constants';
 import InvestigationDocumentList from './InvestigationDetails/InvestigationDocumentsList';
 import LoadingModalWrapper from "@components/UI/LoadingModal"
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -24,72 +29,25 @@ export default InvestigationDetails = function ({selectedClaimId, userId}) {
    const navigation = useNavigation();
    let loading = useSelector((state) => state.casesUpdates.loading);
 
-    //let isLoading = useSelector(state => state.casesUpdates.loading)
-   // let error = useSelector(state => state.casesUpdates.error)
-    //let caseUpdates = useSelector(state => state.casesUpdates.casesUpdates); //To get updated list of documents saved for submission
     return (
-      <LoadingModalWrapper shouldModalBeVisible = {loading}>
+   
+   
         <View style={styles.container}>
           
-          <View style = {{marginTop: 100}}>
+          <View style = {{marginTop: 40}}>
             <Text style = {[styles.textBase, styles.description ]}>AGENT CAPABILITIES</Text>
           </View>
           
+          <ScrollView> 
+          <PhotoIdScanner selectedClaimId  userId/>
+          <DocumentScanner/>
+          <FormInitiator/>
 
-          <View style= {styles.inputContainer}>
-
-              <View style={{padding: 10}}>
-                  <Button mode="elevated" style={[styles.button,!value? {backgroundColor: 'grey'} : {}]} 
-                              disabled={value === null} onPress={() => navigation.navigate(SCREENS.ImageCaptureScreen, {
-                                docType: value,
-                                claimId: selectedClaimId,
-                                email: userId
-                              })}> { value === 'BENIFICIARY-PHOTO' ? 'CLICK' : 'SCAN'}  </Button>
-              </View>
-        
-              <View style={{marginLeft: 5}}>
-                
-              </View>
-
-              <DropDownPicker open={open} value={value} items={items} setOpen={setOpen} setValue={setValue} setItems={setItems}
-                  
-                    containerStyle={{
-                    }}
-                    style={{
-                      backgroundColor: 'white',
-                      zIndex: 1000,
-                      width: 180
-                    }}
-                    textStyle={{
-                      fontSize:15
-                    }} 
-                    labelStyle={{
-                      fontWeight: "bold"
-                    }}
-                    dropDownContainerStyle={{
-                      backgroundColor: "#dfdfdf",
-                      width: 180
-                    }}
-                    itemSeparator={true}
-                    listItemContainer={{
-                      height: 40
-                    }}
-                    selectedItemContainerStyle={{
-                      backgroundColor: "grey"
-                    }}
-                    modalProps={{
-                      animationType: "fade"
-                    }}
-                    listMode="FLATLIST"
-                    
-                    />
-
-            
-              
-          </View>
-          <InvestigationDocumentList selectedClaimId = {selectedClaimId}/>
+          </ScrollView>
         </View>
-     </LoadingModalWrapper>
+        
+
+ 
     );
 
     
@@ -99,9 +57,8 @@ const styles = StyleSheet.create({
   container: {
     height: height,
     overflow: 'hidden',
-    alignItems: "center",
-    
-    paddingHorizontal: 20,
+    alignItems: "center",    
+    paddingHorizontal: 5,
     padding: 50,
   },
   textBase: {
@@ -110,7 +67,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 24,
     fontWeight: 'bold',
-  },
+  },  
   inputContainer : {
     flexDirection: 'row',
     marginVertical: 30,    
