@@ -6,7 +6,7 @@ import types from '../types';
 import { deleteCaseFromListAfterSubmission } from './cases-slice'
 import { deleteCaseDetailsAfterSubmission } from './case-details-slice'
 import callGoogleVisionAsync from '../../helpers/OCRHelper'
-import ImageCompressor from '../../helpers/imageCompressor'
+import { UPLOAD_TYPE } from '@core/constants';
 
 
 // ACTIONS
@@ -146,7 +146,7 @@ const initialState = {
       
 
       let readText = null
-      if(action.payload.documentDetails.docType !== 'BENIFICIARY-PHOTO')
+      if(action.payload.documentDetails.docType !== UPLOAD_TYPE.PHOTO)
         readText = yield call(callGoogleVisionAsync,action.payload.documentDetails.OcrImage)
 
         let postUpdatePayload = action.payload.documentDetails

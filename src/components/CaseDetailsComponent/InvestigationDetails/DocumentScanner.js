@@ -11,73 +11,69 @@ const DocumentScanner = ({selectedClaimId, userId}) => {
 
   const navigation = useNavigation();
 
-  return (
+  const onClickDigitalId = (documentObj) => {
 
-    <View style =  {styles.capabilityCardContainer}>                    
-    <Card style = {styles.card}>     
-        <Text style = {[styles.textBase , styles.capabilityDescription]}>DOCUMENT UPLOADER</Text>     
-        <View style= {styles.allIconContainerRow}>                
+    navigation.navigate(SCREENS.ImageCaptureScreen, {
+        docType: documentObj,
+        claimId: selectedClaimId,
+        email: userId})
+}
+
+  let capabilities = DOC_TYPE.DOCUMENT_SCANNER.map((documentType, index)=> {
+   
+    if(index %2 != 0) {
+      let prevDocumentType = DOC_TYPE.DOCUMENT_SCANNER[index-1]
+      return (
+
+        <View style= {styles.allIconContainerRow}  key={index}>                 
                
             <TouchableHighlight underlayColor="#ee5e33" style={styles.touchable}
-                onPress={() => { navigation.navigate(SCREENS.ImageCaptureScreen, {
-                  docType: DOC_TYPE.DOCUMENT_SCANNER.PAN,
-                  claimId: selectedClaimId,
-                  email: userId
-                })
-                return}}>
-                <View style= {styles.eachIconContainer}>
+                onPress={()=> onClickDigitalId(prevDocumentType)}>
+                <View style= {[styles.eachIconContainer, prevDocumentType?.enabled == true ? {} : styles.disabled]}>
                     <View style={styles.imageContainer} >
-                      <Image source={require('@root/assets/PAN.webp')} style={styles.image} />
+                      <Image source = {{uri:`${prevDocumentType.icon}`}} style={styles.image} />
                     </View>
-                    <Text style = {[styles.textBase , styles.label]}>PAN</Text> 
+                    <Text style = {[styles.textBase , styles.label]}>{prevDocumentType.name}</Text> 
                 </View>                    
             </TouchableHighlight>           
             
-            <TouchableHighlight underlayColor="#ee5e33" onPress={()=> console.log('clicked')} style={styles.touchable}>
-                <View style= {styles.eachIconContainer}>
+            <TouchableHighlight underlayColor="#ee5e33" style={styles.touchable} 
+              onPress={()=> onClickDigitalId(documentType)} >
+                <View style= {[styles.eachIconContainer,  documentType?.enabled == true ? {} : styles.disabled]}>
                     <View style={styles.imageContainer} >
-                      <Image source={require('@root/assets/Adhar.png')} style={styles.image} />
+                      <Image source = {{uri:`${documentType.icon}`}} style={styles.image} />
                     </View>
-                    <Text style = {[styles.textBase , styles.label]}>Adhar </Text>                       
+                    <Text style = {[styles.textBase , styles.label]}>{documentType.name}</Text>                       
                 </View>
             </TouchableHighlight>                
                    
         </View>
 
-        <View style= {styles.allIconContainerRow}>
+    ) }
+    else if(index %2 == 0 && index ==  DOC_TYPE.DOCUMENT_SCANNER.length-1) 
+        return(
+          <View style= {styles.allIconContainerRow}  key={index}>
 
-            <TouchableHighlight underlayColor="#ee5e33" onPress={()=> console.log('clicked')} style={styles.touchable}>
-                <View style= {styles.eachIconContainer}>
-                    <View style={styles.imageContainer} >
-                      <Image source={require('@root/assets/passport.png')} style={styles.image} />
-                    </View>
-                    <Text style = {[styles.textBase , styles.label]}>Passport</Text>                              
-                </View>   
-            </TouchableHighlight>
-
-            <TouchableHighlight underlayColor="#ee5e33" onPress={()=> console.log('clicked')} style={styles.touchable}>
-                <View style= {styles.eachIconContainer}>
-                    <View style={styles.imageContainer} >
-                      <Image source={require('@root/assets/driver-licence.jpg')} style={styles.image} />
-                    </View>
-                    <Text style = {[styles.textBase , styles.label]}>Driving Licence</Text>                              
-                </View>                
-            </TouchableHighlight>
+            <TouchableHighlight underlayColor="#ee5e33"  style={styles.touchable}
+               onPress={()=> onClickDigitalId(documentType)}>
+                  <View style= {[styles.eachIconContainer,  documentType?.enabled == true ? {} : styles.disabled]}>
+                      <View style={styles.imageContainer} >
+                        <Image source={{uri:`${documentType.icon}`}} style={styles.image} />
+                      </View>
+                      <Text style = {[styles.textBase , styles.label]}>{documentType.name} </Text>                       
+                  </View>
+              </TouchableHighlight>        
         </View>
+      )
+    else return null
+  })
 
-        <View style= {styles.allIconContainerRow}>
+  return (
 
-            <TouchableHighlight underlayColor="#ee5e33" onPress={()=> console.log('clicked')} style={styles.touchable}>
-                <View style= {styles.eachIconContainer}>
-                    <View style={styles.imageContainer} >
-                      <Image source={require('@root/assets/OtherDocument.webp')} style={styles.image} />
-                    </View>
-                    <Text style = {[styles.textBase , styles.label]}>Other Document</Text>                              
-                </View>                
-            </TouchableHighlight>
-        </View>
-        
-       
+    <View style =  {styles.capabilityCardContainer}>                    
+    <Card style = {styles.card}>     
+        <Text style = {[styles.textBase , styles.capabilityDescription]}>DOCUMENT UPLOADER</Text>      
+        {capabilities}
     
     </Card>                    
   </View>  
@@ -110,12 +106,17 @@ allIconContainerRow : {
 eachIconContainer : {       
   alignContent: 'center',
   alignItems: 'center',
+  justifyContent: 'center',
   padding: 4,
   borderWidth: 2,
   borderColor: 'orange',
   borderRadius: 20,
   width: 100,
   height: 100,
+},
+disabled: {
+    opacity: 0.5,
+    backgroundColor: '#eae6e6'
 },
 imageContainer: {
   width: 60,

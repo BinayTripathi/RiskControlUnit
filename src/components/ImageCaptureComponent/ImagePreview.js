@@ -7,7 +7,7 @@ import { PaperProvider } from 'react-native-paper';
 import UserTracker from "./UserTracker";
 
 import {theme} from '../../core/theme'
-import { DOC_TYPE } from '@core/constants';
+import { UPLOAD_TYPE } from '@core/constants';
 
 import {requestUpdateBeneficiaryPhotoCaseAction, requestUpdatePanCaseAction} from '@store/ducks/case-submission-slice'
 import useLocationTracker from "@hooks/useLocationTracker";
@@ -26,13 +26,13 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
 
       console.log(`Beneficiary is ${isSmiling ? "": 'NOT'} smiling and has both eyes ${isBothEyeOpen ? 'OPEN' : 'CLOSED'}`)
       const documentDetailsForSubmission = {
-        email,
-        claimId,            
+        email : email,
+        claimId: claimId,            
         Remarks:null,
-        docType: docType.name
+        docType: docType.type
       }
       
-      if(docType.name === DOC_TYPE.PHOTO_ID_SCANNER.FACE_READER.name){
+      if(docType.type === UPLOAD_TYPE.PHOTO){
         documentDetailsForSubmission.LocationLongLat = tracker
         documentDetailsForSubmission.locationImage = photoData
         documentDetailsForSubmission.locationData = `Beneficiary is ${isSmiling ? "": 'NOT'} smiling and has both eyes ${isBothEyeOpen ? 'OPEN' : 'CLOSED'}`
@@ -41,6 +41,7 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
         documentDetailsForSubmission.OcrImage = photoData
       } 
       
+      console.log(JSON.stringify(documentDetailsForSubmission))
 
       const savePayload = {
         claimId,

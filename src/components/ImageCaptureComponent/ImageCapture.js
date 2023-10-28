@@ -61,7 +61,7 @@ const ImageCapture = ({setPhotoData, docType, setBothEyeOpen, setSmiling}) => {
     if(faceData.length < docType.faceCount)
       return
 
-      if(docType.name === DOC_TYPE.PHOTO_ID_SCANNER.FACE_READER.name) {
+      if(docType.name === DOC_TYPE.PHOTO_ID_SCANNER[0].name) {
         setBothEyeOpen(!eyesShut)
         setSmiling(isSmiling)
       }
@@ -80,11 +80,11 @@ const ImageCapture = ({setPhotoData, docType, setBothEyeOpen, setSmiling}) => {
         top: face.bounds.origin.y, 
         width: face.bounds.size.width,
         height: face.bounds.size.height}]}> 
-        {docType.name === DOC_TYPE.PHOTO_ID_SCANNER.FACE_READER.name && eyesShut && <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/2}]}>{ `Left Eye : ${face.leftEyeOpenProbability}, Right Eye : ${face.rightEyeOpenProbability}`} </Paragraph>}
-        {docType.name === DOC_TYPE.PHOTO_ID_SCANNER.FACE_READER.name && isSmiling && <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/1.6}]}>{ `Smile : ${face.smilingProbability}`} </Paragraph>}
+        {docType.name === DOC_TYPE.PHOTO_ID_SCANNER[0].name && eyesShut && <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/2}]}>{ `Left Eye : ${face.leftEyeOpenProbability}, Right Eye : ${face.rightEyeOpenProbability}`} </Paragraph>}
+        {docType.name === DOC_TYPE.PHOTO_ID_SCANNER[0].name && isSmiling && <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/1.6}]}>{ `Smile : ${face.smilingProbability}`} </Paragraph>}
         </View>
     );
-  }) : docType.name !== DOC_TYPE.PHOTO_ID_SCANNER.OTHERS.name && faceData.length < docType.faceCount?
+  }) : docType.name !== DOC_TYPE.PHOTO_ID_SCANNER[3].name && faceData.length < docType.faceCount?
                   <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/2}]}> NOT ENOUGH FACES DETECTED</Paragraph> : '';
 
 

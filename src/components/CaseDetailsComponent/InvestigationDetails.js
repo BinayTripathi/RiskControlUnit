@@ -39,9 +39,9 @@ export default InvestigationDetails = function ({selectedClaimId, userId}) {
           </View>
           
           <ScrollView> 
-          <PhotoIdScanner selectedClaimId  userId/>
-          <DocumentScanner/>
-          <FormInitiator/>
+          <PhotoIdScanner selectedClaimId = {selectedClaimId}  userId = {userId}/>
+          <DocumentScanner selectedClaimId = {selectedClaimId}  userId = {userId}/>
+          <FormInitiator selectedClaimId = {selectedClaimId}  userId = {userId}/>
 
           </ScrollView>
         </View>
