@@ -1,11 +1,13 @@
+import Constanst from 'expo-constants'
 import * as Request from '../helpers/serviceApi'
 
 //const BASE_URL = 'https://rcu.azurewebsites.net/api';
 //const BASE_URL = 'https://ccutest.free.beeceptor.com'
 //const BASE_URL = 'https://holosync.azurewebsites.net/api'
 
-const BASE_URL =  'https://icheckify.azurewebsites.net/api'
+//let  BASE_URL =  'https://icheckify.azurewebsites.net/api'
 //const BASE_URL =  'https://chek.azurewebsites.net/api'
+const BASE_URL = Constanst?.expoConfig?.extra?.baseURL
 
 
 const verifyLogin =  async (emailId) => {
