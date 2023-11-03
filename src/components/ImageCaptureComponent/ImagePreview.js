@@ -29,7 +29,8 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
         email : email,
         claimId: claimId,            
         Remarks:null,
-        docType: docType.type
+        docType: docType.type,
+        capability: docType.name
       }
       
       if(docType.type === UPLOAD_TYPE.PHOTO){
@@ -41,8 +42,6 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
         documentDetailsForSubmission.OcrImage = photoData
       } 
       
-      console.log(JSON.stringify(documentDetailsForSubmission))
-
       const savePayload = {
         claimId,
         documentDetails : documentDetailsForSubmission,
@@ -51,7 +50,7 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
      
       Alert.alert(  
         'Save document',  
-        `Do you want to save now ?`,  
+        `Do you want to save ${docType.name} image ?`,  
         [  
             {  
                 text: 'Ok',  

@@ -1,18 +1,20 @@
-import { StyleSheet,View, Text , Dimensions, TouchableHighlight} from 'react-native';
+import { StyleSheet,View, Text , Dimensions, TouchableHighlight, Image} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
 import Card from '@components/UI/Card';
 import { theme } from '@core/theme';
-import { SCREENS, DOC_TYPE } from '@core/constants';
+import { SCREENS, DOC_TYPE, checkLoading, checkSuccess } from '@core/constants';
+import * as Speech from 'expo-speech';
 
 
 
 const { width, height } = Dimensions.get('window');
 
-const PhotoIdScanner = ({selectedClaimId, userId}) => {
+const PhotoIdScanner = ({selectedClaimId, userId, caseUpdates}) => {
 
     const navigation = useNavigation();
+    const iconSize = 50;
 
     const onClickDigitalId = (documentObj) => {
         if(documentObj.enabled !== true ) return
@@ -20,8 +22,11 @@ const PhotoIdScanner = ({selectedClaimId, userId}) => {
             docType: documentObj,
             claimId: selectedClaimId,
             email: userId})
-    }
+    } 
 
+    const speechHandler = (documentObj) => {
+        Speech.speak(documentObj.speach);
+      };
 
     let capabilities = DOC_TYPE.PHOTO_ID_SCANNER.map((documentType, index)=> {
    
@@ -30,25 +35,41 @@ const PhotoIdScanner = ({selectedClaimId, userId}) => {
           return (
     
             <View style= {styles.allIconContainerRow}  key={index}>                
-                   
-                <TouchableHighlight underlayColor="#ee5e33" style={styles.touchable}
-                    onPress={()=> onClickDigitalId(prevDocumentType)}>
+                <View>
+                    <TouchableHighlight underlayColor="#ee5e33" style={styles.touchable}
+                        disabled =  {prevDocumentType?.enabled == true ? false: true}
+                        onPress={()=> onClickDigitalId(prevDocumentType)}>
 
-                    <View style= {[styles.eachIconContainer, prevDocumentType?.enabled == true ? {} : styles.disabled]}>
-                        <Ionicons name={prevDocumentType.icon} size={50} color="orange" />
-                        <Text style = {[styles.textBase , styles.label]}>{prevDocumentType.name}</Text> 
-                    </View>                     
-                </TouchableHighlight>           
+                        <View style= {[styles.eachIconContainer, prevDocumentType?.enabled == true ? {} : styles.disabled]}>
+                            { checkLoading(prevDocumentType, caseUpdates) && <Image source={require('@root/assets/loading.gif')} style={styles.statusImage} /> }
+                            { checkSuccess(prevDocumentType, caseUpdates) && <Image source={require('@root/assets/checkmark.png')} style={styles.statusImage} /> }
+                            <Ionicons name={prevDocumentType.icon} size={iconSize} color="orange" />
+                            <Text style = {[styles.textBase , styles.label]}>{prevDocumentType.name}</Text>                         
+                        </View>                     
+                    </TouchableHighlight>   
+                    <TouchableHighlight  onPress={()=> speechHandler(prevDocumentType)}>        
+                        <Ionicons name='volume-medium' size={iconSize-30} color="orange" />
+                    </TouchableHighlight>
+                </View>
                 
-                <TouchableHighlight underlayColor="#ee5e33" style={styles.touchable}
-                     onPress={()=> onClickDigitalId(documentType)} >
-                    
-                    <View style= {[styles.eachIconContainer,  documentType?.enabled == true ? {} : styles.disabled]}>
-                        <Ionicons name={documentType.icon} size={50} color="orange" />
-                        <Text style = {[styles.textBase , styles.label]}>{documentType.name}</Text> 
-                    </View>  
-                </TouchableHighlight>                
-                       
+                <View>
+                    <TouchableHighlight underlayColor="#ee5e33" style={styles.touchable}
+                        disabled =  {documentType?.enabled == true ? false: true}
+                        onPress={()=> onClickDigitalId(documentType)} >
+                        
+                        <View style= {[styles.eachIconContainer,  documentType?.enabled == true ? {} : styles.disabled]}>
+                            
+                            { checkLoading(documentType, caseUpdates) && <Image source={require('@root/assets/loading.gif')} style={styles.statusImage} /> }
+                            { checkSuccess(documentType, caseUpdates) && <Image source={require('@root/assets/checkmark.png')} style={styles.statusImage} /> }                        
+                        
+                            <Ionicons name={documentType.icon} size={iconSize} color="orange" />
+                            <Text style = {[styles.textBase , styles.label]}>{documentType.name}</Text> 
+                        </View>  
+                    </TouchableHighlight>                
+                    <TouchableHighlight  onPress={()=> speechHandler(documentType)}>        
+                        <Ionicons name='volume-medium' size={iconSize-30} color="orange" />
+                    </TouchableHighlight>
+                </View>
             </View>
     
          ) 
@@ -57,13 +78,24 @@ const PhotoIdScanner = ({selectedClaimId, userId}) => {
             return(
               <View style= {styles.allIconContainerRow}  key={index}>
     
-                <TouchableHighlight underlayColor="#ee5e33" style={styles.touchable} 
-                    onPress={()=> onClickDigitalId(documentType)} >
-                    <View style= {[styles.eachIconContainer,  documentType?.enabled == true ? {} : styles.disabled]}>
-                        <Ionicons name={documentType.icon} size={50} color="orange" />
-                        <Text style = {[styles.textBase , styles.label]}>{documentType.name}</Text> 
-                    </View>  
-                </TouchableHighlight>        
+                  <View>
+                        <TouchableHighlight underlayColor="#ee5e33" style={styles.touchable} 
+                            disabled =  {documentType?.enabled == true ? false: true}
+                            onPress={()=> onClickDigitalId(documentType)} >
+
+                                { checkLoading(documentType, caseUpdates) && <Image source={require('@root/assets/loading.gif')} style={styles.statusImage} /> }
+                                { checkSuccess(documentType, caseUpdates) && <Image source={require('@root/assets/checkmark.png')} style={styles.statusImage} /> }                        
+                            
+                            
+                            <View style= {[styles.eachIconContainer,  documentType?.enabled == true ? {} : styles.disabled]}>
+                                <Ionicons name={documentType.icon} size={iconSize} color="orange" />
+                                <Text style = {[styles.textBase , styles.label]}>{documentType.name}</Text> 
+                            </View>  
+                        </TouchableHighlight>      
+                        <TouchableHighlight  onPress={()=> speechHandler(documentType)}>        
+                            <Ionicons name='volume-medium' size={iconSize-30} color="orange" />
+                        </TouchableHighlight>  
+                    </View>
             </View>
           )
         else return null
@@ -87,7 +119,7 @@ const PhotoIdScanner = ({selectedClaimId, userId}) => {
 const styles = StyleSheet.create({
 
     capabilityCardContainer : {      
-      marginTop: 40,          
+      marginTop: 50,          
       alignContent: 'center',
       alignItems: 'center'       
       },   
@@ -100,11 +132,11 @@ const styles = StyleSheet.create({
 
     allIconContainerRow : {
         flexDirection: 'row',
-        marginTop: 16,
+        marginTop: 30,
         alignContent: 'center',
         alignItems: 'center',
         justifyContent:'space-around',
-        width: '95%',
+        width: '100%',
 
     },
     eachIconContainer : {       
@@ -115,9 +147,11 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: 'orange',
         borderRadius: 20,
-        width: 100,
-        height: 100,
+        width: 120,
+        height: 120,
+        
     },
+    
     disabled: {
         opacity: 0.5,
         backgroundColor: '#eae6e6'
@@ -129,13 +163,20 @@ const styles = StyleSheet.create({
         color: 'black',
     },
     capabilityDescription: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
     },
     label: {
         fontWeight: '500',
         fontSize: 14,
-     },  
+     },      
+    statusImage : {
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        resizeMode: 'contain',
+        transform: [{ translateX: 50 }, { translateY: 0 }],
+      }
   })
 
   export default PhotoIdScanner;

@@ -16,7 +16,6 @@ const ImageCaptureScreen = ({ route }) => {
   const claimId = route.params?.claimId
   const docType = route.params?.docType
   const email = route.params?.email
-  console.log(`Image Capture Screen ${JSON.stringify(docType)}`)
 
 
   const imageCaptureSceen =  (

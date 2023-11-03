@@ -1,47 +1,36 @@
 import { useState } from 'react'
 import { StyleSheet,View, Text , Dimensions,  ScrollView} from 'react-native';
 import  { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+
 
 import PhotoIdScanner from './InvestigationDetails/PhotoIdScanner'
 import DocumentScanner from './InvestigationDetails/DocumentScanner'
 import FormInitiator from './InvestigationDetails/FormInitiator'
-
-
-import DropDownPicker from 'react-native-dropdown-picker';
-
-import Button from '@components/UI/Button'
-import { SCREENS } from '@core/constants';
-import InvestigationDocumentList from './InvestigationDetails/InvestigationDocumentsList';
-import LoadingModalWrapper from "@components/UI/LoadingModal"
+import { theme } from "@core/theme";
+import {UPLOAD_TYPE} from '@core/constants'
 
 
 const { width, height } = Dimensions.get('window');
 
-export default InvestigationDetails = function ({selectedClaimId, userId}) {
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
-    const [items, setItems] = useState([
-      {label: 'ID OCR', value: 'PAN'},
-      {label: 'FACE READER', value: 'BENIFICIARY-PHOTO'}
-    ]);
+export default InvestigationDetails = function ({selectedClaimId, userId, capability}) {
+ 
+  let allCaseUpdates = useSelector((state) => state.casesUpdates.casesUpdates);
+  let loading = useSelector((state) => state.casesUpdates.loading);
+  let err = useSelector((state) => state.casesUpdates.error);
+  const caseUpdates = allCaseUpdates[selectedClaimId]
 
-   const navigation = useNavigation();
-   let loading = useSelector((state) => state.casesUpdates.loading);
-
-    return (
-   
+    return (   
    
         <View style={styles.container}>
           
-          <View style = {{marginTop: 40}}>
+          <View style = {styles.descriptionContainer}>
             <Text style = {[styles.textBase, styles.description ]}>AGENT CAPABILITIES</Text>
           </View>
           
           <ScrollView> 
-          <PhotoIdScanner selectedClaimId = {selectedClaimId}  userId = {userId}/>
-          <DocumentScanner selectedClaimId = {selectedClaimId}  userId = {userId}/>
-          <FormInitiator selectedClaimId = {selectedClaimId}  userId = {userId}/>
+          {capability === UPLOAD_TYPE.PHOTO && <PhotoIdScanner selectedClaimId = {selectedClaimId}  userId = {userId} caseUpdates = {caseUpdates}/> }
+          {capability === UPLOAD_TYPE.DOCUMENT && <DocumentScanner selectedClaimId = {selectedClaimId}  userId = {userId} caseUpdates = {caseUpdates}/> }
+          {capability === UPLOAD_TYPE.FORM &&  <FormInitiator selectedClaimId = {selectedClaimId}  userId = {userId} caseUpdates = {caseUpdates}/> }
 
           </ScrollView>
         </View>
@@ -61,27 +50,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     padding: 50,
   },
+  descriptionContainer : {
+    marginTop: 40,
+    
+  } ,
   textBase: {
-    color: 'black',
+   color: '#050505',
   },
   description: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
+    textShadowColor: 'rgba(22, 6, 96, 0.75)',
+    textShadowOffset: {width: 1, height: 1},
+    textShadowRadius: 20,
   },  
-  inputContainer : {
-    flexDirection: 'row',
-    marginVertical: 30,    
-    paddingHorizontal: 5,
-    alignItems: 'center',
-    borderColor: 'white',
-    borderWidth: 2,
-    width: width*0.95,
-    zIndex: 200,
-  },
-  button: {
-    marginRight: 5,
-    marginBottom: 10
-  }
-
+ 
 })
 

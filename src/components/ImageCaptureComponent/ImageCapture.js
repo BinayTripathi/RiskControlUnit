@@ -8,6 +8,7 @@ import {useWindowDimensions} from 'react-native';
 import Paragraph from '@components/UI/Paragraph'
 import { DOC_TYPE } from '@core/constants';
 
+const cameraMarginTop = 70
   
 const ImageCapture = ({setPhotoData, docType, setBothEyeOpen, setSmiling}) => {
 
@@ -77,7 +78,7 @@ const ImageCapture = ({setPhotoData, docType, setBothEyeOpen, setSmiling}) => {
 
     return (
       <View key={index} style= {[styles.facebox, {left: face.bounds.origin.x, 
-        top: face.bounds.origin.y, 
+        top: face.bounds.origin.y + cameraMarginTop, 
         width: face.bounds.size.width,
         height: face.bounds.size.height}]}> 
         {docType.name === DOC_TYPE.PHOTO_ID_SCANNER[0].name && eyesShut && <Paragraph style={[styles.noFaceWarning, {left : 50, top : screenHeight/2}]}>{ `Left Eye : ${face.leftEyeOpenProbability}, Right Eye : ${face.rightEyeOpenProbability}`} </Paragraph>}
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
     },
     cameraContainer: {
       flex: 1,
-      marginTop: 70,
+      marginTop: cameraMarginTop,
       borderRadius: 10
     },
     top: {

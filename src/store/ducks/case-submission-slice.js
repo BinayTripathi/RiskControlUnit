@@ -6,7 +6,7 @@ import types from '../types';
 import { deleteCaseFromListAfterSubmission } from './cases-slice'
 import { deleteCaseDetailsAfterSubmission } from './case-details-slice'
 import callGoogleVisionAsync from '../../helpers/OCRHelper'
-import { UPLOAD_TYPE } from '@core/constants';
+import { UPLOAD_TYPE, UPLOAD_SUCCESS_INDICATOR } from '@core/constants';
 
 
 // ACTIONS
@@ -90,17 +90,16 @@ const initialState = {
                updateDetails = value
               }
               
-              if(claimId in state.casesUpdates) {
-
-                let replaceIndex = state.casesUpdates[claimId].findIndex((eachClaim) =>   {                 
-                  return updateDetails.docType === eachClaim.docType // Since this was made array with the intention that multiple clicks of same docType is possible. Disabling it for Demo
-                })
-                if ( replaceIndex === -1)
-                  state.casesUpdates[claimId].push(updateDetails)
-                else 
-                  state.casesUpdates[claimId][replaceIndex] = updateDetails
+              // {caseID : 
+              //    {capability1: update}
+              //     capability2: update} }  Only one update per capability, we can enable more if we want with array of updates
+              let thisUpdate = {
+                [updateDetails.capability] : updateDetails
+              }
+              if(claimId in state.casesUpdates) {           
+               state.casesUpdates[claimId][updateDetails.capability] = updateDetails
               } else {                    
-                state.casesUpdates[claimId] = [updateDetails]   
+                state.casesUpdates[claimId] = thisUpdate   
               }
           },
           failureUpdateCase: (state, action) => {
@@ -146,7 +145,7 @@ const initialState = {
       
 
       let readText = null
-      if(action.payload.documentDetails.docType !== UPLOAD_TYPE.PHOTO)
+      if(action.payload.documentDetails.docType ===  UPLOAD_TYPE.DOCUMENT)
         readText = yield call(callGoogleVisionAsync,action.payload.documentDetails.OcrImage)
 
         let postUpdatePayload = action.payload.documentDetails
@@ -159,8 +158,8 @@ const initialState = {
         if (responseUserData) {                      
             let successPayload = {
               [action.payload.claimId] : {...action.payload.documentDetails, 
-                    locationImage: responseUserData.locationImage, 
-                    OcrImage: responseUserData.ocrImage, 
+                    locationImage: action.payload.documentDetails.docType ===  UPLOAD_TYPE.PHOTO ? UPLOAD_SUCCESS_INDICATOR:'', 
+                    OcrImage: action.payload.documentDetails.docType ===  UPLOAD_TYPE.DOCUMENT ? UPLOAD_SUCCESS_INDICATOR: '', 
                     id: action.payload.id }
             }
 

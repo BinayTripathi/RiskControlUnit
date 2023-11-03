@@ -50,7 +50,8 @@
     "use-debounce": "^9.0.4",
     "expo-splash-screen": "~0.20.5",
     "expo-system-ui": "~2.4.0",
-    "expo-constants": "~14.4.2"
+    "expo-constants": "~14.4.2",
+    "expo-speech": "~11.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
