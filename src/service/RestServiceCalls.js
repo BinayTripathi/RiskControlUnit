@@ -78,7 +78,6 @@ export const updateCase = async (body) => {
         ...body
       };
       let response = await  Request.post({url, config, data});
-      console.log(response)
       return response
     }  catch (error) {
       console.log(JSON.stringify(error.message)); // this is the main part. Use the response property from the error object
