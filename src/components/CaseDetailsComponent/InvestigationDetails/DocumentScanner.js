@@ -25,167 +25,210 @@ const speechHandler = (documentObj) => {
   Speech.speak(documentObj.speach);
 };
 
-  let capabilities = DOC_TYPE.DOCUMENT_SCANNER.map((documentType, index)=> {
-   
-    if(index %2 != 0) {
-      let prevDocumentType = DOC_TYPE.DOCUMENT_SCANNER[index-1]
-      return (
+  let capabilities = DOC_TYPE.DOCUMENT_SCANNER.map((documentType, index)=> {  
 
-        <View style= {styles.allIconContainerRow}  key={index}>                 
-            <View>
-              <TouchableHighlight underlayColor="#ee5e33" style={styles.touchable}
-                  disabled =  {prevDocumentType?.enabled == true ? false: true}
-                  onPress={()=> onClickDigitalId(prevDocumentType)}>
-                  <View style= {[styles.eachIconContainer, prevDocumentType?.enabled == true ? {} : styles.disabled]}>
+    let panValid = caseUpdates !== undefined && Object.keys(caseUpdates).includes(documentType.name) === true ? 
+    (caseUpdates[documentType.name].facePercent === ''? false : caseUpdates[documentType.name].facePercent ) : false
 
-                          { checkLoading(prevDocumentType, caseUpdates) && <Image source={require('@root/assets/loading.gif')} style={styles.statusImage} /> }
-                          { checkSuccess(prevDocumentType, caseUpdates) && <Image source={require('@root/assets/checkmark.png')} style={styles.statusImage} /> }
-
-                      <View style={styles.imageContainer} >
-                        <Image source = {{uri:`${prevDocumentType.icon}`}} style={styles.image} />
-                      </View>
-                      <Text style = {[styles.textBase , styles.label]}>{prevDocumentType.name}</Text> 
-                  </View>                    
-              </TouchableHighlight>    
-              <TouchableHighlight  onPress={()=> speechHandler(prevDocumentType)}>        
-                  <Ionicons name='volume-medium' size={iconSize-30} color="orange" />
-              </TouchableHighlight>
-            </View>       
-            
-            <View>
-              <TouchableHighlight underlayColor="#ee5e33" style={styles.touchable} 
-                disabled =  {documentType?.enabled == true ? false: true}
-                onPress={()=> onClickDigitalId(documentType)} >
-                  <View style= {[styles.eachIconContainer,  documentType?.enabled == true ? {} : styles.disabled]}>
-
-                      { checkLoading(documentType, caseUpdates) && <Image source={require('@root/assets/loading.gif')} style={styles.statusImage} /> }
-                      { checkSuccess(documentType, caseUpdates) && <Image source={require('@root/assets/checkmark.png')} style={styles.statusImage} /> }                        
-                        
-
-                      <View style={styles.imageContainer} >
-                        <Image source = {{uri:`${documentType.icon}`}} style={styles.image} />
-                      </View>
-                      <Text style = {[styles.textBase , styles.label]}>{documentType.name}</Text>                       
-                  </View>
-              </TouchableHighlight>       
-              <TouchableHighlight  onPress={()=> speechHandler(documentType)}>        
-                    <Ionicons name='volume-medium' size={iconSize-30} color="orange" />
-              </TouchableHighlight>
-            </View>                
-                   
-        </View>
-
-    ) }
-    else if(index %2 == 0 && index ==  DOC_TYPE.DOCUMENT_SCANNER.length-1) 
         return(
-          <View style= {styles.allIconContainerRow}  key={index}>
+            <Card style = {styles.card}  key={index}>
 
-            <View>
-              <TouchableHighlight underlayColor="#ee5e33"  style={styles.touchable}
-                disabled =  {documentType?.enabled == true ? false: true}
-                onPress={()=> onClickDigitalId(documentType)}>
-                    <View style= {[styles.eachIconContainer,  documentType?.enabled == true ? {} : styles.disabled]}>
+              <TouchableHighlight onPress={()=> speechHandler(documentType)}  style={styles.button} underlayColor="#a2a1a0">
+                  <View style = {styles.labelContainer}>
+                      <Text style = {[styles.textBase , styles.label]}>{documentType.name} </Text>                    
+                      <Ionicons name='volume-medium' size={iconSize-30} color="orange" /> 
+                  </View>                
+              </TouchableHighlight>  
 
-                        { checkLoading(documentType, caseUpdates) && <Image source={require('@root/assets/loading.gif')} style={styles.statusImage} /> }
-                        { checkSuccess(documentType, caseUpdates) && <Image source={require('@root/assets/checkmark.png')} style={styles.statusImage} /> }                        
-                        
-                        <View style={styles.imageContainer} >
-                          <Image source={{uri:`${documentType.icon}`}} style={styles.image} />
+              <View style= {styles.allIconContainerRow} >            
+
+                  <View style={{alignContent: 'center', alignItems: 'center'}}>
+                  <TouchableHighlight underlayColor="#ee5e33"  style={styles.touchable}
+                      disabled =  {documentType?.enabled == true ? false: true}
+                      onPress={()=> onClickDigitalId(documentType)}>
+                          <View style= {[styles.eachIconContainer,  documentType?.enabled == true ? {} : styles.disabled]}>
+
+                              { checkLoading(documentType, caseUpdates) && <Image source={require('@root/assets/loading.gif')} style={styles.statusImage} /> }
+                              { checkSuccess(documentType, caseUpdates) && <Image source={require('@root/assets/checkmark.png')} style={styles.statusImage} /> }                        
+
+                              <View style={styles.imageContainer} >
+                                <Image source={{uri:`${documentType.icon}`}} style={styles.iconImage} />
+                              </View>                              
+                          
+                          </View>
+                          
+                      </TouchableHighlight>   
+                      
+                  
+                  </View>     
+
+                  <View style={styles.verticalSeperator}>
+                  </View>
+                 
+
+                  {documentType?.enabled === true && checkSuccess(documentType, caseUpdates) &&
+                    <View style={styles.resultContainer}>
+                        <View style={styles.resultImageContainer}>
+                            <Image style = {[styles.image,panValid === false? {borderColor: 'red'} :{}]} 
+                                source = {{uri:`data:image/jpeg;base64,${caseUpdates[documentType.name].OcrImage}`}}/>               
                         </View>
-                        <Text style = {[styles.textBase , styles.label]}>{documentType.name} </Text>                       
-                    </View>
-                </TouchableHighlight>      
-                <TouchableHighlight  onPress={()=> speechHandler(documentType)}>        
-                      <Ionicons name='volume-medium' size={iconSize-30} color="orange" />
-                </TouchableHighlight>
-            </View>     
-        </View>
+                        <View style= {styles.resultStatusContainer}>
+                            { checkSuccess(documentType, caseUpdates) &&
+                            <Text style = {[styles.textBase , styles.resultStatusLabel, panValid === false? styles.resultStatusLabelFail: {}]}>{documentType.name} Check</Text> }
+                            { checkSuccess(documentType, caseUpdates) &&
+                            <Text style = {[styles.textBase , styles.resultStatusLabel, panValid === false? styles.resultStatusLabelFail: {}]}>{panValid === false? 'FAIL' : 'PASS'}</Text> }
+                        </View>
+                        </View>
+                 }
+                  
+
+                      {(documentType?.enabled !== true || 
+                      (documentType?.enabled === true &&  !checkSuccess(documentType, caseUpdates))) && 
+                      <View>
+                          <Image style = {{width: 100, height: 70, borderRadius: 10}} source={require('@root/assets/No-Image.png')}/>
+                      </View> }
+                      
+
+
+              </View>
+            </Card>
       )
-    else return null
+   
   })
 
   return (
-
-    <View style =  {styles.capabilityCardContainer}>                    
-    <Card style = {styles.card}>     
-        <Text style = {[styles.textBase , styles.capabilityDescription]}>DOCUMENT UPLOADER</Text>      
+    <View style =  {styles.capabilityCardContainer}>                   
         {capabilities}
-    
-    </Card>                    
   </View>  
 )
 }
 
 const styles = StyleSheet.create({
 
-capabilityCardContainer : {      
-  marginTop: 40,          
-  alignContent: 'center',
-  alignItems: 'center'       
-  },   
-card : { 
-    alignItems: 'flex-start', 
-    padding: 20, 
-    width: width*0.90,
-    backgroundColor: theme.colors.capabilitiesCardBackgroundColor,
-},
-
-allIconContainerRow : {
+  capabilityCardContainer : {      
+    marginTop: 50,          
+    alignContent: 'center',
+    alignItems: 'center'       
+    },   
+  card : { 
+      alignItems: 'center', 
+      padding: 10, 
+      marginBottom: 10,
+      width: width*0.80,
+      //backgroundColor: theme.colors.caseItemBackground
+      //backgroundColor: theme.colors.capabilitiesCardBackgroundColor,
+      backgroundColor: theme.colors.details_card_color
+  },
+  allIconContainerRow : {
     flexDirection: 'row',
-    marginTop: 16,
+    marginTop: 10,
     alignContent: 'center',
     alignItems: 'center',
-    justifyContent:'space-around',
     width: '100%',
-
-},
-eachIconContainer : {       
-  alignContent: 'center',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginBottom: 5,
-  padding: 4,
-  borderWidth: 2,
-  borderColor: 'orange',
-  borderRadius: 20,
-  width: 120,
-  height: 120,
-},
-disabled: {
+  },
+  eachIconContainer : {       
+    alignContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'orange',
+    borderRadius: 20,
+    width: 70,
+    height: 70,
+    marginHorizontal: 20        
+  },
+  labelContainer : {
+    flexDirection: 'row',
+    borderRadius: 10,
+    borderBottomWidth: 2,
+    padding: 2,
+    paddingHorizontal: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: 'orange',
+  },
+  disabled: {
     opacity: 0.5,
     backgroundColor: '#eae6e6'
+  },
+  imageContainer: {
+    position: 'absolute',
+    width: 60,
+    height: 60, 
+    borderRadius: 25,
+    alignItems: 'center'
+  },
+  iconImage : {
+    flex: 1,
+    width: '90%',
+    height: '90%',
+    borderRadius: 30,
+    resizeMode: 'contain',
+  },
+  touchable: {
+      borderRadius: 8,
+    },
+  textBase: {
+      color: 'black',
+      textAlign: 'center'
+  },
+  capabilityDescription: {
+      fontSize: 18,
+      fontWeight: 'bold',
+  },
+  label: {
+    fontWeight: '500',
+    fontSize: 18,
+    color: 'white'
+ },  
+  statusImage : {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    resizeMode: 'contain',
+    transform: [{ translateX: 30 }, { translateY: -30 }],
+  },
+
+  verticalSeperator: {
+    width: 2, 
+    paddingVertical: 30, 
+    borderWidth: 1, 
+    borderColor: '#b5b1b1',
+    marginRight: 10
+  },
+  resultContainer : {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 10,
+    padding: 2,
+    backgroundColor: '#E18A07'
 },
-imageContainer: {
-  width: 60,
-  height: 60, 
-  borderRadius: 25,
+resultImageContainer : {
+  borderColor: 'orange',
+  borderRadius: 5,
+  width: 50,
+  height: 50,
+  borderWidth:2,
 },
 image : {
-  flex: 1,
-  width: '100%',
-  height: '100%',
-  resizeMode: 'contain',
+  width: '99%',
+  height: '99%',
+  borderWidth: 2,
+  borderColor: 'green'
 },
-touchable: {
-    borderRadius: 8,
-  },
-textBase: {
-    color: 'black',
+resultStatusContainer : {
+  flexDirection: 'column',
+  alignSelf: 'center',
+  marginLeft: 10,
 },
-capabilityDescription: {
-    fontSize: 18,
-    fontWeight: 'bold',
+resultStatusLabel : {
+  fontWeight: '800',
+  fontSize: 15,
+  color: 'green',
+  width : 85,
 },
-label: {
-    fontWeight: '500',
-    fontSize: 14,
- },  
- statusImage : {
-  width: 30,
-  height: 30,
-  borderRadius: 15,
-  resizeMode: 'contain',
-  transform: [{ translateX: 50 }, { translateY: 0 }],
+resultStatusLabelFail : {
+  color: 'red'
 }
 })
 

@@ -107,7 +107,8 @@ const styles = StyleSheet.create({
   },
   caseItem: {
     padding: 12,
-    backgroundColor: theme.colors.caseItemBackground,
+    //backgroundColor: theme.colors.caseItemBackground,
+    backgroundColor: theme.colors.details_card_color,
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderTopRightRadius : 8,
@@ -126,7 +127,8 @@ const styles = StyleSheet.create({
     alignContent: 'center'
   },
   textBase: {
-    color: theme.colors.text,
+    //color: theme.colors.text,
+    color: 'white'
   },
   name: {
     fontSize: 22,

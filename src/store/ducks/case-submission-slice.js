@@ -144,9 +144,9 @@ const initialState = {
 
       
 
-      let readText = null
-      if(action.payload.documentDetails.docType ===  UPLOAD_TYPE.DOCUMENT)
-        readText = yield call(callGoogleVisionAsync,action.payload.documentDetails.OcrImage)
+        let readText = null
+        //if(action.payload.documentDetails.docType ===  UPLOAD_TYPE.DOCUMENT)
+        //  readText = yield call(callGoogleVisionAsync,action.payload.documentDetails.OcrImage)
 
         let postUpdatePayload = action.payload.documentDetails
         postUpdatePayload.OcrData = readText?.text
@@ -158,9 +158,11 @@ const initialState = {
         if (responseUserData) {                      
             let successPayload = {
               [action.payload.claimId] : {...action.payload.documentDetails, 
-                    locationImage: action.payload.documentDetails.docType ===  UPLOAD_TYPE.PHOTO ? UPLOAD_SUCCESS_INDICATOR:'', 
-                    OcrImage: action.payload.documentDetails.docType ===  UPLOAD_TYPE.DOCUMENT ? UPLOAD_SUCCESS_INDICATOR: '', 
-                    id: action.payload.id }
+                    locationImage: action.payload.documentDetails.docType ===  UPLOAD_TYPE.PHOTO ? responseUserData.locationImage:'', 
+                    OcrImage: action.payload.documentDetails.docType ===  UPLOAD_TYPE.DOCUMENT ? responseUserData.ocrImage: '', 
+                    id: action.payload.id,
+                    facePercent: responseUserData.facePercent,
+                    panValid: responseUserData.panValid }
             }
 
           yield put(successUpdateCase(successPayload)); 

@@ -104,8 +104,8 @@ export const checkSuccess = (capabilityBox, caseUpdates) => {
     return  capabilityBox.enabled == true  // Capability is enabled
             && caseUpdates != undefined    // There is some update
             && capabilityBox.name in caseUpdates  // updates contain something for this capability
-            &&  (caseUpdates[capabilityBox.name].locationImage === UPLOAD_SUCCESS_INDICATOR  || // Has been uploaded successfully 
-                caseUpdates[capabilityBox.name].OcrImage === UPLOAD_SUCCESS_INDICATOR 
+            &&  (caseUpdates[capabilityBox.name].locationImage !== ''  || // Has been uploaded successfully 
+                caseUpdates[capabilityBox.name].OcrImage !== ''
             )
 }
 
@@ -113,8 +113,8 @@ export const checkLoading = (capabilityBox, caseUpdates) => {
     return  capabilityBox.enabled == true  // Capability is enabled
             && caseUpdates != undefined    // There is some update
             && capabilityBox.name in caseUpdates  // updates contain something for this capability
-            && (caseUpdates[capabilityBox.name].locationImage !== UPLOAD_SUCCESS_INDICATOR  // Has been uploaded successfully 
-            && caseUpdates[capabilityBox.name].OcrImage !== UPLOAD_SUCCESS_INDICATOR)  // Has been uploaded successfully 
+            && (caseUpdates[capabilityBox.name].locationImage === ''  // Has been uploaded successfully 
+            && caseUpdates[capabilityBox.name].OcrImage === '')  // Has been uploaded successfully 
 }
 
 export const SCREENS = {
