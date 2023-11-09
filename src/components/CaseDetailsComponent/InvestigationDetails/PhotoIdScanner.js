@@ -38,12 +38,14 @@ const PhotoIdScanner = ({selectedClaimId, userId, caseUpdates}) => {
         return(
         <Card style = {styles.card}  key={index}>
 
+
             <TouchableHighlight onPress={()=> speechHandler(documentType)}  style={styles.button} underlayColor="#a2a1a0">
                 <View style = {styles.labelContainer}>
                     <Text style = {[styles.textBase , styles.label]}>{documentType.name} </Text>                    
                     <Ionicons name='volume-medium' size={iconSize-30} color="orange" /> 
                 </View>                
             </TouchableHighlight>  
+
 
             <View style= {styles.allIconContainerRow} >            
 
@@ -56,9 +58,9 @@ const PhotoIdScanner = ({selectedClaimId, userId, caseUpdates}) => {
                             { checkLoading(documentType, caseUpdates) && <Image source={require('@root/assets/loading.gif')} style={styles.statusImage} /> }
                             { checkSuccess(documentType, caseUpdates) && <Image source={require('@root/assets/checkmark.png')} style={styles.statusImage} /> }                        
                             
-                        <View style= {{position: 'absolute'}}>
-                            <Ionicons name={documentType.icon} size={iconSize} color="orange" />
-                        </View>
+                            <View style= {{position: 'absolute'}}>
+                                <Ionicons name={documentType.icon} size={iconSize} color="orange" />
+                            </View>
                             
                         
                         </View>
@@ -90,8 +92,8 @@ const PhotoIdScanner = ({selectedClaimId, userId, caseUpdates}) => {
 
                     {(documentType?.enabled !== true || 
                     (documentType?.enabled === true &&  !checkSuccess(documentType, caseUpdates))) && 
-                    <View>
-                        <Image style = {{width: 100, height: 70, borderRadius: 10}} source={require('@root/assets/No-Image.png')}/>
+                    <View style={{width: '60%', alignItems: 'center', justifyContent: 'center'}}>
+                        <Image style = {{width: 100, height: 70, borderRadius: 10}} source={require('@root/assets/noImage.png')}/>
                     </View> }
                     
             

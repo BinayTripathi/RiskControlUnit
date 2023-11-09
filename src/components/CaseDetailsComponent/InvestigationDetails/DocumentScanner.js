@@ -84,8 +84,8 @@ const speechHandler = (documentObj) => {
 
                       {(documentType?.enabled !== true || 
                       (documentType?.enabled === true &&  !checkSuccess(documentType, caseUpdates))) && 
-                      <View>
-                          <Image style = {{width: 100, height: 70, borderRadius: 10}} source={require('@root/assets/No-Image.png')}/>
+                      <View style={{width: '60%', alignItems: 'center', justifyContent: 'center'}}>
+                          <Image style = {{width: 100, height: 70, borderRadius: 10}} source={require('@root/assets/noImage.png')}/>
                       </View> }
                       
 
