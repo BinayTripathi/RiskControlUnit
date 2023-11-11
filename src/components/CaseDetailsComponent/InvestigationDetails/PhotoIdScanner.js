@@ -36,7 +36,7 @@ const PhotoIdScanner = ({selectedClaimId, userId, caseUpdates}) => {
                (caseUpdates[documentType.name].facePercent === null? "0" : caseUpdates[documentType.name].facePercent ) : "0")
         
         return(
-        <Card style = {styles.card}  key={index}>
+        <Card style = {[styles.card, documentType?.enabled !== true? styles.cardDisabled: {}]}  key={index}>
 
 
             <TouchableHighlight onPress={()=> speechHandler(documentType)}  style={styles.button} underlayColor="#a2a1a0">
@@ -132,7 +132,9 @@ const styles = StyleSheet.create({
         //backgroundColor: theme.colors.capabilitiesCardBackgroundColor,
         backgroundColor: theme.colors.details_card_color
     },
-
+    cardDisabled: {
+        opacity: 0.5
+    },
     allIconContainerRow : {
         flexDirection: 'row',
         marginTop: 10,

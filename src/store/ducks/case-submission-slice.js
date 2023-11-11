@@ -43,6 +43,19 @@ export const requestUpdatePanCaseAction = createAction(
 );
 
 
+export const requestSaveFormAction = createAction(
+  types.REQUEST_SAVE_FORM,
+  function prepare({claimId, formData }) {
+    return {
+      payload: {
+        claimId,         
+        formData  
+      },
+    };
+  },
+);
+
+
 export const requestSubmitCaseAction = createAction(
   types.REQUEST_SUBMIT_CASE,
   function prepare({claimId, email, beneficiaryId, Remarks, Question1, Question2, Question3, Question4 }) {
@@ -121,6 +134,22 @@ const initialState = {
           failureSubmitCase : (state,action) => {
             state.loading = false;     
             state.error = action.error 
+          },
+
+          requestSaveForm : (state,action) => {
+                           
+            let claimId = action.payload.claimId;
+            let formData = action.payload.formData
+
+            let thisUpdate = {
+              [formData.capability] : formData
+            }
+            if(claimId in state.casesUpdates) {           
+              state.casesUpdates[claimId][formData.capability] = formData
+            } else {                    
+              state.casesUpdates[claimId] = thisUpdate   
+            }
+            console.log(claimId)
           }
 
     }

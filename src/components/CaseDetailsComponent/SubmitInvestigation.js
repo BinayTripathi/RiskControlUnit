@@ -3,92 +3,47 @@ import { View, Text , TextInput, StyleSheet, Dimensions , ScrollView} from "reac
 import Checkbox from 'expo-checkbox';
 import { FontAwesome } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import Button from '@components/UI/Button'
 import { SCREENS } from '@core/constants';
 import {requestSubmitCaseAction} from '@store/ducks/case-submission-slice'
 import { theme } from '@core/theme';
 import useNetworkInfo from "../../hooks/useNetworkInfo";
-import  CustomTextInput  from "../UI/TextInput";
-import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
-import Slider from '@react-native-community/slider';
-import CustomDateTimePicker from '@components/UI/CustomDateTimePicker'
-import { useDebounce } from "use-debounce";
+import { DOC_TYPE } from '@core/constants';
+
+
 
 
 const { width, height } = Dimensions.get('window');
 const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
-
-    const [metBeneficiary, setMetBeneficiary] = useState(false);
-    const [metNeighbor, setMetNeighbor] = useState(false);
-    const [financialStatus, setFinancialStatus] = useState(0.5)
-
-    const [personMet, setPersonMet] = useState('')
-    const [debouncedPersonMet] = useDebounce(personMet, 5000);
-
-    //const [open, setOpen] = useState(false);
-    const [dateTime, setDateTime] = useState('');
     
-    console.log(dateTime)
-
-    const [propertyOwnership, setPropertyOwnership] = useState("owned");
+  let allCaseUpdates = useSelector((state) => state.casesUpdates.casesUpdates);
+  const caseUpdates = allCaseUpdates[selectedClaimId]
+  
     const [remark, setRemark] = useState(null);
     const [isTermsAccepted, setTermsAccepted] = useState(false);
     const navigation = useNavigation()
     const dispatch = useDispatch()
     const [isOnline] = useNetworkInfo();
-
-    let financialStatusString = financialStatus === 0 ? 'LOW' 
-      :  financialStatus === 0.5 ? 'MEDIUM' : 'HIGH'
-
-    const BenifiaryFormPart = () => {      
-
-      return <View style={{ marginTop: 10, marginBottom: 20, paddingBottom: 10, marginHorizontal: 10, borderBottomColor: 'grey', borderBottomWidth: 3 }}>
-        <Text style={styles.label1}>Ownership of residence</Text>
-      <RadioButtonGroup containerStyle={{ marginBottom: 10 }}
-                        selected={propertyOwnership}
-                        onSelected={(value) => setPropertyOwnership(value)}
-                        radioBackground="green">
-        <RadioButtonItem value="owned" label="OWNED" />
-        <RadioButtonItem value="rented" label="RENTED" />
-      </RadioButtonGroup>
-
-     
-
-      <Text style={styles.label1}>Perceived financial status</Text>
-      <Text style={[{marginLeft: 10, fontWeight: 'bold',color: 'red'}]}>{financialStatusString}</Text>
-      <View style = {{borderColor: 'black', borderWidth: 1, marginHorizontal: 20, marginBottom: 20}}> 
-        <Slider style={{width: 200, height: 40}}  minimumValue={0} maximumValue={1} step= {0.5} minimumTrackTintColor="#5a5757"
-          maximumTrackTintColor="#000000" value={financialStatus} onValueChange = {setFinancialStatus }/>
-      </View>
-     
-     
-      
-    </View>
-    }
-
-    const NeighbourFormPart = () => {
-
-      const handlePersonMet = (event) => {
-        const value = event.target.value;
-        setPersonMet(value);
-      };
-
-      return <View style= {{paddingBottom : 10}}>
-                <CustomTextInput onChangeText={setPersonMet} value={personMet} label="Name of the neighbour met" 
-                  underlineColor='#6e6d6d' style= {styles.customInputBox}/>
-                
-                <Text style={styles.label1}> Time when met with Neighbour</Text>  
-                <CustomDateTimePicker   dateTimeInParent={dateTime} setDateTimeInParent = {setDateTime} />
-               
-              </View>
-    }
+    
+    let completeCheckList = true
 
 
+    let docTypeList = [...DOC_TYPE.PHOTO_ID_SCANNER, ... DOC_TYPE.DOCUMENT_SCANNER, ...DOC_TYPE.FORM]
 
-    let benificaryForm = metBeneficiary === true ?<BenifiaryFormPart/> : ""
-    let neighbourForm = metNeighbor === true ? NeighbourFormPart() : ""
+    let checkList = docTypeList.filter(dt => ('enabled' in dt) && dt['enabled'] === true)
+                          .map(capability => {
+                            let checkedTask = caseUpdates !== undefined && Object.keys(caseUpdates).includes(capability.name)
+                            if(checkedTask === false) 
+                              completeCheckList = false
+                            return (
+                              <View style={styles.checklistCheckboxContainer} key={capability.name}>
+                                <Checkbox style={styles.checkbox} value={checkedTask}  />
+                                <Text style={styles.label}>{capability.name}</Text>
+                              </View>
+                            )
+                          } )
 
     return (
     <View style={styles.container}>
@@ -98,27 +53,8 @@ const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
         </View>
 
         <ScrollView style={styles.scrollView}>
-        <View style={styles.questionaireContainer}>
 
-            <View style={[styles.checkboxContainer, { marginBottom: 0, marginTop: 10,}]}>
-              <Checkbox style={styles.checkbox} value={metBeneficiary} onValueChange={setMetBeneficiary} />
-              <Text style={styles.label}>Met beneficiary</Text>
-            </View>
-
-              {benificaryForm}
-
-
-
-            <View style={[styles.checkboxContainer, { marginBottom: 0, marginTop: 10,}]}>
-              <Checkbox style={styles.checkbox} value={metNeighbor} onValueChange={setMetNeighbor} />
-              <Text style={styles.label}>Met Neighbour</Text>
-            </View>
-
-            {neighbourForm}       
-
-            </View>
-
-
+            {checkList}
             <View style={styles.inputContainer}>
               <TextInput
                       placeholder="Enter investigation comments"
@@ -132,25 +68,27 @@ const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
             </View>     
 
             <View style={styles.checkboxContainer}>
-            <Checkbox style={styles.checkbox} value={isTermsAccepted} onValueChange={setTermsAccepted} />
-            <Text style={styles.label}>I agree to the Terms & Conditions</Text>
+              <Checkbox style={styles.checkbox} value={isTermsAccepted} onValueChange={setTermsAccepted} />
+              <Text style={styles.label}>I agree to the Terms & Conditions</Text>
             </View>
 
             <View style={{flexDirection: 'row', marginTop: 20}}>
               <View style={{padding: 10}}>
-                  <Button mode="elevated" style={[styles.button,!remark  || !isTermsAccepted || !isOnline? 
+                  <Button mode="elevated" style={[styles.button,!remark  || !isTermsAccepted || !isOnline || !completeCheckList? 
                   {backgroundColor: theme.colors.disabledSubmitButton} : {backgroundColor: theme.colors.submitButton}]} 
                               disabled={remark === null} onPress={() => {
-                                  if (!remark  || !isTermsAccepted || !isOnline)
+                                  if (!remark  || !isTermsAccepted || !isOnline || !completeCheckList) 
                                     return
+                                  
+                                  let dataAvailable = caseUpdates !== undefined && caseUpdates['FORM_TEMPLATE1'] !== undefined                                  
                                   const payload = {
-                                      claimId: selectedClaimId, 
+                                      claimId: selectedClaimId,  
                                       email: userId,
                                       beneficiaryId: selectedClaim.beneficiary.beneficiaryId,
-                                      Question1: propertyOwnership,
-                                      Question2: financialStatusString,
-                                      Question3: personMet,
-                                      Question4: dateTime,
+                                      Question1:  dataAvailable == true? caseUpdates['FORM_TEMPLATE1'].question1 : '',
+                                      Question2: dataAvailable == true? caseUpdates['FORM_TEMPLATE1'].question2: '',
+                                      Question3: dataAvailable == true? caseUpdates['FORM_TEMPLATE1'].question3 : '',
+                                      Question4: dataAvailable == true? caseUpdates['FORM_TEMPLATE1'].question4 : '',
                                       Remarks: remark
                                   }
                                   console.log(payload)
@@ -258,6 +196,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 20,
         marginTop: 20,
+      },
+      checklistCheckboxContainer: {
+        flexDirection: 'row',
       },
       checkbox: {
         margin: 8,

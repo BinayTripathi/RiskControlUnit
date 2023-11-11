@@ -20,5 +20,8 @@ export default {
     REQUEST_SUBMIT_CASE: 'casesUpdates/requestSubmitCase',
     SUCCESS_SUBMIT_CASE: 'casesUpdates/successDeleteCaseUpdateDetailsAfterSubmission',
     FAILURE_SUBMIT_CASE: 'casesUpdates/failureSubmitCase',
+
+
+    REQUEST_SAVE_FORM: 'casesUpdates/requestSaveForm',
     
   };
