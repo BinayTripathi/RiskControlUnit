@@ -108,7 +108,9 @@ const PhotoIdScanner = ({selectedClaimId, userId, caseUpdates}) => {
     return (
 
         <View style =  {styles.capabilityCardContainer}>           
-                
+                <View style = {styles.descriptionContainer}>
+                    <Text style = {[styles.textBase, styles.description ]}>DIGITAL ID VERIFIER</Text>
+                </View>
                     
                 {capabilities}            
                            
@@ -119,10 +121,22 @@ const PhotoIdScanner = ({selectedClaimId, userId, caseUpdates}) => {
 const styles = StyleSheet.create({
 
     capabilityCardContainer : {      
-      marginTop: 50,          
+      marginTop: 40,          
       alignContent: 'center',
       alignItems: 'center'       
       },   
+      descriptionContainer : {
+        marginBottom: 40,        
+      } ,
+
+      description: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        textShadowColor: 'rgba(22, 6, 96, 0.75)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 20,
+      },  
+     
     card : { 
         alignItems: 'center', 
         padding: 10, 

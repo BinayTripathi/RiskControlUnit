@@ -23,9 +23,7 @@ export default InvestigationDetails = function ({selectedClaimId, userId, capabi
    
         <View style={styles.container}>
           
-          <View style = {styles.descriptionContainer}>
-            <Text style = {[styles.textBase, styles.description ]}>AGENT CAPABILITIES</Text>
-          </View>
+
           
           <ScrollView> 
           {capability === UPLOAD_TYPE.PHOTO && <PhotoIdScanner selectedClaimId = {selectedClaimId}  userId = {userId} caseUpdates = {caseUpdates}/> }

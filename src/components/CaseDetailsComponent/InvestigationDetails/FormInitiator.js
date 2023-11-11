@@ -100,6 +100,9 @@ const FormInitiator = ({selectedClaimId, userId, caseUpdates}) => {
 
       <View>
 
+      <View style = {styles.descriptionContainer}>
+            <Text style = {[styles.textBase, styles.description ]}>FORM TEMPLATE 1</Text>
+      </View> 
       
       <ScrollView style={styles.scrollView}>
           <View style={styles.questionaireContainer}>
@@ -140,14 +143,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     padding: 50,
   },
+  descriptionContainer : {
+        
+    marginTop: 40
+  } ,
+
+  description: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(22, 6, 96, 0.75)',
+    textShadowOffset: {width: 1, height: 1},
+    textShadowRadius: 20,
+  }, 
 
   textBase: {
       color: 'black',
     },
-    description: {
-      fontSize: 24,
-      fontWeight: 'bold',
-    },
+
     label: {
       fontSize: 18,
       fontWeight: 'bold',

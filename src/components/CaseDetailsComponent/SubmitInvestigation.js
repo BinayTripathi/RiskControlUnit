@@ -48,8 +48,8 @@ const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
     return (
     <View style={styles.container}>
 
-        <View style = {{marginTop: 50}}>
-          <Text style = {[styles.textBase, styles.description ]}>FORM TEMPLATE</Text>
+        <View style = {{marginTop: 50, marginBottom: 30}}>
+          <Text style = {[styles.textBase, styles.description ]}>SUBMIT INVESTIGATION</Text>
         </View>
 
         <ScrollView style={styles.scrollView}>
@@ -61,7 +61,7 @@ const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
                       onChangeText={setRemark}
                       value={remark}
                       multiline={true}
-                      numberOfLines={20}
+                      numberOfLines={50}
                       keyboardType={
                       Platform.OS == 'ios' ? 'ascii-capable' : 'visible-password' }
                       style={styles.input}  />
@@ -133,6 +133,12 @@ const styles = StyleSheet.create({
       description: {
         fontSize: 24,
         fontWeight: 'bold',
+        color: '#181818',
+        fontSize: 28,
+        fontWeight: 'bold',
+        textShadowColor: 'rgba(22, 6, 96, 0.75)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 20,
       },
       label: {
         fontSize: 18,
@@ -170,7 +176,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: 'white',
-        height: 120,
+        height: 160,
         borderRadius: 20,
         padding: 0,
         shadowOffset: {width: 0, height: 1},
