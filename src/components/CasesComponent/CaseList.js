@@ -8,7 +8,6 @@ import Background from "@components/UI/Background";
 import Paragraph from '@components/UI/Paragraph'
 import CaseItem from "@components/CasesComponent/CaseItem";
 import Button from "@components/UI/Button"
-import MapLocation from "@components/CasesComponent/mapLocation"
 
 import {requestCases, requestCasesOffline} from '@store/ducks/cases-slice'
 import { Padder } from "../UI/Wrapper";
@@ -129,28 +128,20 @@ export default function CaseList() {
       <Background>      
         <Padder>
           <View style= {styles.container}>
+
               <View style= {styles.searchBoxContainer}>
                   <Searchbar
                         placeholder="Search By Name/Policy"
                         onChangeText={onChangeSearch}
                         value={searchQuery}/>
               </View>
-              <View style= {styles.mapBox}>
-                  <Button style={[styles.viewButton]} 
-                    onPress={() => setShouldShow(!shouldShow)}>
-                      Map view </Button>
-              </View>
-              {shouldShow ? (
-                <View style= {styles.listsContainer}>
-                    {isLoading ? null : casesToShow}
-                </View>  
-                ):
-                <View style= {styles.mapsContainer}>
-                <MapLocation />
-                </View> 
-              }    
-          </View>       
+              <View style= {styles.listsContainer}>
+                  {isLoading ? null : casesToShow}
+              </View>      
+          </View> 
         </Padder>
+              
+        
       </Background>
     </LoadingModalWrapper>
   );

@@ -11,8 +11,27 @@ import { useNavigation } from "@react-navigation/native";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
 
+import Background from "@components/UI/Background";
+
+
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
+const reports= [
+  {
+    "id": 45981,
+    "time": "2020-01-14T04:20:00.000Z",
+    "size": 125,
+    "location": "4 ESE GAMALIEL",
+    "city": "GAMALIEL",
+    "county": "MONROE",
+    "state": "KY",
+    "lat": 36.62,
+    "lon": -85.73,
+    "comments": "PUBLIC REPORT RELAYED BY MEDIA. (LMK)",
+    "filename": null,
+    "created_at": "2020-03-05T14:54:06.650Z",
+    "updated_at": "2020-03-05T14:54:06.650Z"
+  }]
 
 const MapLocation = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -50,31 +69,36 @@ const MapLocation = () => {
     </Marker >)
   }
   return (
-    <View style={styles.container}>
-      {initialRegion && (
-        <MapView style={styles.map} initialRegion={initialRegion}>
-          
-        {currentLocation && (
-        <View>
-            <Marker
-              coordinate={{
-                latitude: currentLocation.latitude,
-                longitude: currentLocation.longitude,
-              }}
-              title="Your Location"
-            />
-            <Marker
-                      coordinate={{ latitude: -37.839677894796516, longitude: 145.16481336623696 }}
-                      title='iCheckify map'
-                      description='This is where the magic beginz !'
-                  >
-                  </Marker >
-          </View>
-          )}
-        </MapView>
-      )}
-      {/* Rest of your code */}
-    </View>
+    
+    <Background>
+      <View style={styles.container}>
+        
+        {initialRegion !== null && (
+          <MapView style={styles.map} initialRegion={initialRegion}>
+            
+          {currentLocation && (
+          <View>
+              <Marker
+                coordinate={{
+                  latitude: currentLocation.latitude,
+                  longitude: currentLocation.longitude,
+                }}
+                title="Your Location"
+              />
+              <Marker
+                        coordinate={{ latitude: -37.839677894796516, longitude: 145.16481336623696 }}
+                        title='iCheckify map'
+                        description='This is where the magic beginz !'
+                    >
+                    </Marker >
+            </View>
+            )}
+          </MapView>
+        )}
+        {/* Rest of your code */}
+        
+      </View>
+    </Background>
   );
 };
 
@@ -83,10 +107,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 90,      
+    justifyContent: 'center',
+    paddingBottom: 10
   },
   map: {
-    width: "100%",
-    height: "100%",
+    width : '100%' | windowWidth *0.95 ,
+    height : '100%' | windowHeight * 0.80 ,
+    borderRadius: 10,
+    borderWidth: 1
   },
 });
 
