@@ -2,7 +2,6 @@ import {useState, useEffect} from "react";
 import { StyleSheet,  View, FlatList, RefreshControl, Alert } from "react-native";
 import { Searchbar } from 'react-native-paper';
 import { useIsFocused } from '@react-navigation/native'
-import MapView, { Marker } from 'react-native-maps'
 import { useDispatch, useSelector } from 'react-redux';
 import Background from "@components/UI/Background";
 import Paragraph from '@components/UI/Paragraph'
@@ -13,27 +12,11 @@ import {requestCases, requestCasesOffline} from '@store/ducks/cases-slice'
 import { Padder } from "../UI/Wrapper";
 
 export default function CaseList() {
-  const reports= [
-    {
-      "id": 45981,
-      "time": "2020-01-14T04:20:00.000Z",
-      "size": 125,
-      "location": "4 ESE GAMALIEL",
-      "city": "GAMALIEL",
-      "county": "MONROE",
-      "state": "KY",
-      "lat": 36.62,
-      "lon": -85.73,
-      "comments": "PUBLIC REPORT RELAYED BY MEDIA. (LMK)",
-      "filename": null,
-      "created_at": "2020-03-05T14:54:06.650Z",
-      "updated_at": "2020-03-05T14:54:06.650Z"
-    }]
+  
   let cases = useSelector((state) => state.cases.cases);
   const isLoading = useSelector((state) => state.cases.loading)
   const error = useSelector((state) => state.cases.error)
   const isConnected = useSelector(state => state.network.isConnected);
-  const [shouldShow, setShouldShow] = useState(true);
   const userId = useSelector(state => state.user.userId)
   
   const dispatch = useDispatch()
@@ -43,7 +26,6 @@ export default function CaseList() {
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(true);
   const [forceRerender, setForceRerender] = useState('')
-
 
   const onChangeSearch = query => setSearchQuery(query);
  
@@ -102,7 +84,7 @@ export default function CaseList() {
   }
 
   const retriveAllCases = () => {
-    return cases.filter(searchCasesByName).reverse();
+    return cases !== undefined ?cases.filter(searchCasesByName).reverse() : null;
   }
 
   let casesToShow = <View style = {{paddingTop: 20}}>
@@ -113,7 +95,7 @@ export default function CaseList() {
                             onPress={() => setForceRerender((Math.random() + 1).toString(36).substring(7))}>
                               REFRESH </Button>
     </View>
-  if(retriveAllCases().length != 0) {
+  if(retriveAllCases() !== null && retriveAllCases().length != 0 && retriveAllCases()[0].customerName !== undefined) {
     casesToShow =    <FlatList data={retriveAllCases()} 
                       renderItem={renderClaimItem} 
                       keyExtractor={(item) => item.claimId}

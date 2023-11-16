@@ -4,9 +4,10 @@ import TYPES from './types';
 import {offlineActionTypes} from 'react-native-offline';
 
 import {asyncRequestValidateUser, asyncRequestValidateUserAutologin} from './ducks/userSlice';
-import { asyncRequestAllCases, requestAllCasesOffline } from './ducks/cases-slice';
+import { asyncRequestAllCases, requestAllCasesOffline, asyncRequestAllCaseCoordinates } from './ducks/cases-slice';
 import { asyncRequestCaseDetails} from './ducks/case-details-slice'
-import { asyncPostCaseDocuments, asyncSubmitCaseDocuments, asyncOfflineUpdateOrSubmitCase } from './ducks/case-submission-slice'
+import { asyncPostCaseDocuments, asyncSubmitCaseDocuments,
+  asyncOfflineUpdateOrSubmitCase } from './ducks/case-submission-slice'
 
 
 export default function* root() {
@@ -15,6 +16,7 @@ export default function* root() {
     takeLatest("user/requestValidateUserAuto", asyncRequestValidateUserAutologin),
     takeLatest("cases/requestCases", asyncRequestAllCases),
     takeLatest("cases/requestCasesOffline", requestAllCasesOffline),
+    takeLatest("cases/requestCasesCoordinates", asyncRequestAllCaseCoordinates),
     takeLatest("casesDetails/requestCaseDetails", asyncRequestCaseDetails),
     takeLatest(TYPES.REQUEST_UPDATE_BENEFICIARY_PHOTO_CASE, asyncPostCaseDocuments),
     takeLatest(TYPES.REQUEST_UPDATE_PAN_CASE, asyncPostCaseDocuments),

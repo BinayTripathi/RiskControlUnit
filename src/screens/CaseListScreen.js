@@ -3,7 +3,7 @@ import { StyleSheet,  View, useWindowDimensions } from "react-native";
 import { TabView, SceneMap } from 'react-native-tab-view';
 
 import CaseList from "@components/CasesComponent/CaseList";
-import MapLocation from "@components/CasesComponent/MapLocation"
+import CaseGeolocation from "@components/CasesComponent/CaseGeolocation"
 
 
 const ListView = () => (
@@ -11,16 +11,8 @@ const ListView = () => (
 );
 
 const MapView = () => (
-     <MapLocation/>
+     <CaseGeolocation/>
 
-);
-
-const FirstRoute = () => (
-  <View style={{ flex: 1, backgroundColor: '#ff4081' }} />
-);
-
-const SecondRoute = () => (
-  <View style={{ flex: 1, backgroundColor: '#673ab7' }} />
 );
 
 const renderScene = SceneMap({

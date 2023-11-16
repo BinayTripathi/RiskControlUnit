@@ -78,7 +78,7 @@ function UserTracker({photoData, displayMapHandler, shouldDisplayMap}) {
           {gps  ? (                     
                 <ModalComponent displayMapHandler = {displayMapHandler} diplayModal = {shouldDisplayMap}>                        
                   <View style={styles.mapPreview}>          
-                    <Image style={styles.image} source={{uri: getMapPreview(gps.latitude, gps.longitude)}}/>
+                    <Image style={styles.image} resizeMode={'cover'} source={{uri: getMapPreview(gps.latitude, gps.longitude)}}/>
                   </View>              
                 </ModalComponent>             
           ) : (
@@ -117,8 +117,9 @@ const styles = StyleSheet.create({
     opacity: 0.9
   },
   image: {
-    width: '100%',
-    height: '100%',
+    //width: '100%',
+    //height: '100%',
+    flex: 1
   },
   modal: {
     flex: 1,

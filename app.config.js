@@ -15,6 +15,11 @@ module.exports = () => {
           },
           extra: {
             baseURL : 'https://icheckify.azurewebsites.net/api'
+          },
+          config: {
+            googleMaps: {
+              apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAP_API_KEY,
+            },
           }
       };
     } else {
@@ -28,11 +33,16 @@ module.exports = () => {
             "permissions": [
               "android.permission.CAMERA"
             ],
-            "package": "com.binaytripathi.icheckifyIChck"
+            "package": "com.binaytripathi.icheckifyDev",
+            "config": {
+              "googleMaps": {
+                "apiKey": process.env.EXPO_PUBLIC_GOOGLE_MAP_API_KEY
+              }
+            },
           },
           extra: {
             baseURL : 'https://chek.azurewebsites.net/api'
-          }
+          },
       };
     }
   };
