@@ -153,18 +153,5 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     alignSelf: "center"
   },
-  viewButton : {
-    marginLeft: 220,
-    alignSelf: "right",
-    marginTop: 10,
-  },
-  mapBox: {
-    width: 100
-  },
-  mapsContainer : {   
-    flex: 9,
-    width: 320,
-    padding: 0,
-    alignItems: 'right',    
-  },
+
 });
