@@ -33,16 +33,19 @@ export const theme = {
     title1Color :  '#f68e6e',
     title2Color: '#9cba81',
     borderSeperator : '#727070',
+    lightBorderSeperator : '#f3ecec',
     LIGHT_BLUE: '#afd0ff',
     LIGHT_GOLD: '#e8d38f',
     LIGHT_RED: '#ff7e85',
     DARK_BLUE: '#4a64a8',
     DARK_GOLD: '#85692a',
     DARK_RED: '#992e1e',
-    details_card_color: '#011313', //'#3b1818'  '#181818',
+    details_card_color:'#011313', //'#3b1818'  '#181818',
     button:  '#011313',
     button_label: 'white',
     submitButton : '#992e1e',
-    disabledSubmitButton : '#ed978a'
+    disabledSubmitButton : '#ed978a',
+    updateDetailsBackground: '#f8fbf8',
+    capabilitiesCardBackgroundColor :  '#f5f4f4',
   }
 }

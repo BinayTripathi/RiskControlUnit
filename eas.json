@@ -9,7 +9,10 @@
     },
     "preview": {
       "android": {
-        "buildType": "apk"
+        "buildType": "apk"       
+      },
+      "env": {
+        "baseURL" : "https://chek.azurewebsites.net/api"
       },
       "distribution": "internal"
     },

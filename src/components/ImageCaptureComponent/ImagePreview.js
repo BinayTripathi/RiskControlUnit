@@ -7,13 +7,14 @@ import { PaperProvider } from 'react-native-paper';
 import UserTracker from "./UserTracker";
 
 import {theme} from '../../core/theme'
+import { UPLOAD_TYPE } from '@core/constants';
 
 import {requestUpdateBeneficiaryPhotoCaseAction, requestUpdatePanCaseAction} from '@store/ducks/case-submission-slice'
 import useLocationTracker from "@hooks/useLocationTracker";
 
 
 //https://www.farhansayshi.com/post/how-to-save-files-to-a-device-folder-using-expo-and-react-native/
-const ImagePreview = ({photoData, setPhotoData , claimId, docType, email}) => {
+const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimId, docType, email}) => {
   
     const navigation = useNavigation();
     let savedPhoto = useRef(null);
@@ -23,22 +24,24 @@ const ImagePreview = ({photoData, setPhotoData , claimId, docType, email}) => {
     
     const savePhoto = async () => {        
 
+      console.log(`Beneficiary is ${isSmiling ? "": 'NOT'} smiling and has both eyes ${isBothEyeOpen ? 'OPEN' : 'CLOSED'}`)
       const documentDetailsForSubmission = {
-        email,
-        claimId,            
+        email : email,
+        claimId: claimId,            
         Remarks:null,
-        docType
+        docType: docType.type,
+        capability: docType.name
       }
       
-      if(docType === 'BENIFICIARY-PHOTO'){
+      if(docType.type === UPLOAD_TYPE.PHOTO){
         documentDetailsForSubmission.LocationLongLat = tracker
         documentDetailsForSubmission.locationImage = photoData
+        documentDetailsForSubmission.locationData = `Beneficiary is ${isSmiling ? "": 'NOT'} smiling and has both eyes ${isBothEyeOpen ? 'OPEN' : 'CLOSED'}`
       } else {
         documentDetailsForSubmission.OcrLongLat = tracker
         documentDetailsForSubmission.OcrImage = photoData
       } 
       
-
       const savePayload = {
         claimId,
         documentDetails : documentDetailsForSubmission,
@@ -47,27 +50,24 @@ const ImagePreview = ({photoData, setPhotoData , claimId, docType, email}) => {
      
       Alert.alert(  
         'Save document',  
-        `Do you want to save  ${docType} ?`,  
+        `Do you want to save ${docType.name} image ?`,  
         [  
             {  
                 text: 'Ok',  
-                onPress: () => {
-                  setPhotoData();                 
-                  if(docType === 'BENIFICIARY-PHOTO')
+                onPress: () => {                 
+                  if(docType.type === 'PHOTO')
                     dispatch(requestUpdateBeneficiaryPhotoCaseAction(savePayload))
                   else
                    dispatch(requestUpdatePanCaseAction(savePayload))
-                  navigation.goBack()
-                 
+
+                  navigation.goBack()                 
                 },  
                 style: 'default',  
             }  ,
             {  
               text: 'Cancel',  
-              onPress: () => {
-               
-                navigation.goBack()
-               
+              onPress: () => {               
+                navigation.goBack()               
               },  
               style: 'default',  
           }  
@@ -85,7 +85,7 @@ const ImagePreview = ({photoData, setPhotoData , claimId, docType, email}) => {
                               <UserTracker photoData={photoData} displayMapHandler={displayMapHandler} shouldDisplayMap = {displayMap}/>
                              : ( <>
                                  <UserTracker photoData={false}/>
-                                 <Image source={{uri: `data:image/jpg;base64,${photoData}`}} style={{ flex: 1, borderRadius: 10 }} />
+                                 <Image source={{uri: `data:image/jpg;base64,${photoData}`}} style={{flex: 1, borderRadius: 10 }}  resizeMode='contain'  />
                                    </> )
                             
  
@@ -128,6 +128,10 @@ const styles = StyleSheet.create({
   middlePhoto: {
     flex: 1,
     position: "relative",
+    marginTop: 80,
+    paddingHorizontal: 5
+
+    
   },
   bottomPrev: {
     height: 100,    

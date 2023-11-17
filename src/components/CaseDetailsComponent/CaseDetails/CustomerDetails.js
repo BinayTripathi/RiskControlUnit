@@ -105,8 +105,13 @@ export default CustomerDetailsComponent = ({selectedClaim}) => {
 
       description: {
         fontSize: 24,
-      fontWeight: 'bold',
-      color: '#181818'
+        fontWeight: 'bold',
+        color: '#181818',
+        fontSize: 28,
+        fontWeight: 'bold',
+        textShadowColor: 'rgba(22, 6, 96, 0.75)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 20,
       },
       ovalContainer : {            
          

@@ -18,9 +18,12 @@ import { theme } from '../core/theme'
 import { SCREENS, SESSION_TTL_IN_SEC } from '../core/constants'
 import LoadingModalWrapper from '@components/UI/LoadingModal';
 import {reset} from '@services/NavigationService';
+import Constanst from 'expo-constants'
 
 export default function LoginScreen({navigation}) {
 
+  const BASE_URL = "https://chek.azurewebsites.net/api"
+  //Constanst?.expoConfig?.extra?.baseURL
   let isLoading = useSelector((state) => state.user.loading);
   let userLoggingError = useSelector((state) => state.user.error);
   let userLoggingTimestamp = useSelector((state) => state.user.lastLogin);
@@ -124,7 +127,7 @@ export default function LoginScreen({navigation}) {
         <View style = {styles.wrapper}>
 
           <Logo />                  
-         
+         <Text>URL: {BASE_URL}</Text>
           <TextInput
             label="Email"
             returnKeyType="next"

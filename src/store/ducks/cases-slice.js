@@ -1,11 +1,18 @@
 import { createSlice} from "@reduxjs/toolkit"
 import {call, put} from 'redux-saga/effects';
 
-import {getAllCases} from '@services/RestServiceCalls'
+import {getAllCases, getAllCaseCoordinates} from '@services/RestServiceCalls'
 
+
+const mergeByClaimId= (a1, a2) => 
+    a1.map(itm => ({
+        ...a2.find((item) => (item.claimId === itm.claimId) && item),
+        ...itm
+    }));
 
 const initialState = {
   cases: [],
+  caseCoordinates: [],
   loading: false,
   error: false,
 }
@@ -25,8 +32,16 @@ const casesSlice = createSlice({
     },
     successCases:  (state, action) => {      
         state.loading = false;  
-        state.cases = action.payload?.cases
+        state.cases= action.payload?.cases
     },
+    requestCasesCoordinates: (state) => {      
+      state.loading = true;     
+      state.error = null        
+    },
+    successCasesCoordinates:  (state, action) => {      
+      state.loading = false;  
+      state.caseCoordinates= action.payload?.casesCoordinates   
+  },
     failureCases: (state, action) => {
       state.loading = false;
       state.error = action.payload
@@ -45,6 +60,8 @@ const casesSlice = createSlice({
     }
   }
 })
+
+
 
 export function* asyncRequestAllCases(action) {
 
@@ -68,7 +85,24 @@ export function* requestAllCasesOffline(action) {
   return; 
 }
 
-  export const { requestCases, requestCasesOffline, successCases, 
+export function* asyncRequestAllCaseCoordinates(action) {
+
+  try {      
+      const response = yield call(getAllCaseCoordinates,action.payload);      
+      const responseUserData = response.data          
+      if (responseUserData) {          
+        yield put(successCasesCoordinates({casesCoordinates: responseUserData }));          
+      } else {
+        yield put(failureCases("Please try again"));
+      }
+      return;
+  } catch (err) {
+    console.log(err);
+    yield put(failureCases(err));
+  }
+}
+
+  export const { requestCases, requestCasesOffline, requestCasesCoordinates, successCasesCoordinates, successCases, 
     failureCases, deleteCaseFromListAfterSubmission} = casesSlice.actions;
  
 export default casesSlice.reducer

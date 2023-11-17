@@ -6,6 +6,7 @@ import types from '../types';
 import { deleteCaseFromListAfterSubmission } from './cases-slice'
 import { deleteCaseDetailsAfterSubmission } from './case-details-slice'
 import callGoogleVisionAsync from '../../helpers/OCRHelper'
+import { UPLOAD_TYPE, UPLOAD_SUCCESS_INDICATOR } from '@core/constants';
 
 
 // ACTIONS
@@ -42,15 +43,32 @@ export const requestUpdatePanCaseAction = createAction(
 );
 
 
+export const requestSaveFormAction = createAction(
+  types.REQUEST_SAVE_FORM,
+  function prepare({claimId, formData }) {
+    return {
+      payload: {
+        claimId,         
+        formData  
+      },
+    };
+  },
+);
+
+
 export const requestSubmitCaseAction = createAction(
   types.REQUEST_SUBMIT_CASE,
-  function prepare({claimId, email, beneficiaryId, Remarks }) {
+  function prepare({claimId, email, beneficiaryId, Remarks, Question1, Question2, Question3, Question4 }) {
     return {
       payload: {
         claimId, 
         email,
         beneficiaryId,
-        Remarks    
+        Remarks ,
+        Question1,
+        Question2,
+        Question3,
+        Question4  
       },
     };
   },
@@ -85,17 +103,16 @@ const initialState = {
                updateDetails = value
               }
               
-              if(claimId in state.casesUpdates) {
-
-                let replaceIndex = state.casesUpdates[claimId].findIndex((eachClaim) =>   {                 
-                  return updateDetails.docType === eachClaim.docType // Since this was made array with the intention that multiple clicks of same docType is possible. Disabling it for Demo
-                })
-                if ( replaceIndex === -1)
-                  state.casesUpdates[claimId].push(updateDetails)
-                else 
-                  state.casesUpdates[claimId][replaceIndex] = updateDetails
+              // {caseID : 
+              //    {capability1: update}
+              //     capability2: update} }  Only one update per capability, we can enable more if we want with array of updates
+              let thisUpdate = {
+                [updateDetails.capability] : updateDetails
+              }
+              if(claimId in state.casesUpdates) {           
+               state.casesUpdates[claimId][updateDetails.capability] = updateDetails
               } else {                    
-                state.casesUpdates[claimId] = [updateDetails]   
+                state.casesUpdates[claimId] = thisUpdate   
               }
           },
           failureUpdateCase: (state, action) => {
@@ -117,6 +134,22 @@ const initialState = {
           failureSubmitCase : (state,action) => {
             state.loading = false;     
             state.error = action.error 
+          },
+
+          requestSaveForm : (state,action) => {
+                           
+            let claimId = action.payload.claimId;
+            let formData = action.payload.formData
+
+            let thisUpdate = {
+              [formData.capability] : formData
+            }
+            if(claimId in state.casesUpdates) {           
+              state.casesUpdates[claimId][formData.capability] = formData
+            } else {                    
+              state.casesUpdates[claimId] = thisUpdate   
+            }
+            console.log(claimId)
           }
 
     }
@@ -129,9 +162,20 @@ const initialState = {
     try {              
       //ToDo : Do not fetch if case details available within TTL
       //documentDetails : {PAN : {}}
-      let readText = null
-      if(action.payload.documentDetails.docType !== 'BENIFICIARY-PHOTO')
-        readText = yield call(callGoogleVisionAsync,action.payload.documentDetails.OcrImage)
+      //As soon as the image is clicked - show that image is submited.       
+      let successPayload = {
+        [action.payload.claimId] : {...action.payload.documentDetails, 
+              locationImage: '',
+              OcrImage: '',
+              id: action.payload.id }            
+      }
+      yield put(successUpdateCase(successPayload));  
+
+      
+
+        let readText = null
+        //if(action.payload.documentDetails.docType ===  UPLOAD_TYPE.DOCUMENT)
+        //  readText = yield call(callGoogleVisionAsync,action.payload.documentDetails.OcrImage)
 
         let postUpdatePayload = action.payload.documentDetails
         postUpdatePayload.OcrData = readText?.text
@@ -139,17 +183,19 @@ const initialState = {
         const response = yield call(updateCase,postUpdatePayload);    
         const responseUserData = response.data        
         console.log("received claim details")
+        //ToDo :  Handle when there is error calling the one of the 2 APIs
         if (responseUserData) {                      
-
             let successPayload = {
               [action.payload.claimId] : {...action.payload.documentDetails, 
-                    locationImage: responseUserData.locationImage, 
-                    OcrImage: responseUserData.ocrImage, 
-                    id: action.payload.id }
+                    locationImage: action.payload.documentDetails.docType ===  UPLOAD_TYPE.PHOTO ? responseUserData.locationImage:'', 
+                    OcrImage: action.payload.documentDetails.docType ===  UPLOAD_TYPE.DOCUMENT ? responseUserData.ocrImage: '', 
+                    id: action.payload.id,
+                    facePercent: responseUserData.facePercent,
+                    panValid: responseUserData.panValid }
             }
 
-          yield put(successUpdateCase(successPayload));     
-        } else {
+          yield put(successUpdateCase(successPayload)); 
+        } else {    // TODO  :  retry on error
           yield put(failureUpdateCase());
         }
         return;
@@ -166,9 +212,9 @@ const initialState = {
         const response = yield call(submitCase,action.payload);    
         const responseUserData = response.data        
         if (responseUserData) {   
+          yield put(deleteCaseFromListAfterSubmission(action.payload.claimId))
           yield put(successDeleteCaseUpdateDetailsAfterSubmission(action.payload.claimId));   
           yield put(deleteCaseDetailsAfterSubmission(action.payload.claimId)) 
-          yield put(deleteCaseFromListAfterSubmission(action.payload.claimId))
         } else {
           yield put(failureSubmitCase());
         }

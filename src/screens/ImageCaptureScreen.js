@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { StyleSheet, View,} from "react-native";
 
-import ImageCapture from '../components/ImageCaptureComponent/ImageCapture'
-import ImagePreview from "../components/ImageCaptureComponent/ImagePreview";
-import Background from "../components/UI/Background";
+import ImageCapture from '@components/ImageCaptureComponent/ImageCapture'
+import DocumentScanner from '@components/ImageCaptureComponent/DocumentCapture'
+import ImagePreview from "@components/ImageCaptureComponent/ImagePreview";
+import Background from "@components/UI/Background";
 
 
 const ImageCaptureScreen = ({ route }) => {
   
   const [photoData, setPhotoData] = useState(); 
+  const [bothEyeOpen, setBothEyeOpen] = useState(false)
+  const [smiling, setSmiling] = useState(false)
 
   const claimId = route.params?.claimId
   const docType = route.params?.docType
@@ -18,7 +21,8 @@ const ImageCaptureScreen = ({ route }) => {
   const imageCaptureSceen =  (
     <Background>
         <View style={styles.container}>
-          <ImageCapture setPhotoData={setPhotoData} docType = {docType}/>
+        { docType.type === "PHOTO" && <ImageCapture setPhotoData={setPhotoData} setBothEyeOpen={setBothEyeOpen} setSmiling={setSmiling} docType = {docType}/> }
+        { docType.type === "DOCUMENT" && <DocumentScanner setPhotoData={setPhotoData} setBothEyeOpen={setBothEyeOpen} setSmiling={setSmiling} docType = {docType}/> }
         </View>  
         </Background>
      
@@ -27,7 +31,7 @@ const ImageCaptureScreen = ({ route }) => {
   const imagePreviewScreen =  (
     <Background>
       <View style={styles.container}>
-        <ImagePreview photoData= {photoData} setPhotoData={setPhotoData} claimId = {claimId} docType = {docType} email = {email}/>
+        <ImagePreview photoData= {photoData} setPhotoData={setPhotoData} isSmiling={smiling} isBothEyeOpen={bothEyeOpen} claimId = {claimId} docType = {docType} email = {email}/>
       </View>  
     </Background>
   )

@@ -2,27 +2,21 @@ import {useState, useEffect} from "react";
 import { StyleSheet,  View, FlatList, RefreshControl, Alert } from "react-native";
 import { Searchbar } from 'react-native-paper';
 import { useIsFocused } from '@react-navigation/native'
-
 import { useDispatch, useSelector } from 'react-redux';
 import Background from "@components/UI/Background";
 import Paragraph from '@components/UI/Paragraph'
 import CaseItem from "@components/CasesComponent/CaseItem";
-
-
+import Button from "@components/UI/Button"
 
 import {requestCases, requestCasesOffline} from '@store/ducks/cases-slice'
 import { Padder } from "../UI/Wrapper";
 
-
-
-
 export default function CaseList() {
-
+  
   let cases = useSelector((state) => state.cases.cases);
   const isLoading = useSelector((state) => state.cases.loading)
   const error = useSelector((state) => state.cases.error)
   const isConnected = useSelector(state => state.network.isConnected);
-
   const userId = useSelector(state => state.user.userId)
   
   const dispatch = useDispatch()
@@ -31,6 +25,7 @@ export default function CaseList() {
   const [refreshInterval, setRefreshInterval] = useState(1000*300);
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(true);
+  const [forceRerender, setForceRerender] = useState('')
 
   const onChangeSearch = query => setSearchQuery(query);
  
@@ -53,7 +48,7 @@ export default function CaseList() {
         }
     }  
 
-  }, [dispatch, isFocused])
+  }, [dispatch, isFocused, forceRerender])
 
 
   /*useEffect(() => {
@@ -72,6 +67,7 @@ export default function CaseList() {
     return <Text>error...</Text>
   }*/
 
+  
 
   function renderClaimItem(itemData) {
     return(     
@@ -88,15 +84,18 @@ export default function CaseList() {
   }
 
   const retriveAllCases = () => {
-    return cases.filter(searchCasesByName).reverse();
+    return cases !== undefined ?cases.filter(searchCasesByName).reverse() : null;
   }
 
   let casesToShow = <View style = {{paddingTop: 20}}>
       <Paragraph>
         NO CASES TO DISPLAY
       </Paragraph>
+      <Button mode="elevated" style={[styles.refreshButton]} 
+                            onPress={() => setForceRerender((Math.random() + 1).toString(36).substring(7))}>
+                              REFRESH </Button>
     </View>
-  if(retriveAllCases().length != 0) {
+  if(retriveAllCases() !== null && retriveAllCases().length != 0 && retriveAllCases()[0].customerName !== undefined) {
     casesToShow =    <FlatList data={retriveAllCases()} 
                       renderItem={renderClaimItem} 
                       keyExtractor={(item) => item.claimId}
@@ -110,19 +109,18 @@ export default function CaseList() {
     <LoadingModalWrapper shouldModalBeVisible = {isLoading}>
       <Background>      
         <Padder>
-        <View style= {styles.container}>
+          <View style= {styles.container}>
 
-            <View style= {styles.searchBoxContainer}>
-                <Searchbar
-                      placeholder="Search By Name/Policy"
-                      onChangeText={onChangeSearch}
-                      value={searchQuery}/>
-            </View>
-            <View style= {styles.listsContainer}>
-                {isLoading ? null : casesToShow}
-            </View>      
-  </View>       
-
+              <View style= {styles.searchBoxContainer}>
+                  <Searchbar
+                        placeholder="Search By Name/Policy"
+                        onChangeText={onChangeSearch}
+                        value={searchQuery}/>
+              </View>
+              <View style= {styles.listsContainer}>
+                  {isLoading ? null : casesToShow}
+              </View>      
+          </View> 
         </Padder>
               
         
@@ -138,7 +136,8 @@ const styles = StyleSheet.create({
     paddingBottom: 10
   },
   searchBoxContainer : {
-    flex: 1
+    flex: 1,
+    width: 320
   },
   listsContainer : {   
     flex: 9,
@@ -147,6 +146,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',    
   },
   searchBox: {
-    width: 250
-  }
+    width: 320
+  },
+  refreshButton : {
+    marginRight: 5,
+    marginBottom: 10,
+    alignSelf: "center"
+  },
+
 });

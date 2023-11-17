@@ -27,6 +27,7 @@ async function callGoogleVisionAsync(base64Image) {
        
     const body = generateBody(base64Image); //pass in our image for the payload
     console.log(API_URL)
+    //console.log(base64Image)
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
@@ -35,6 +36,7 @@ async function callGoogleVisionAsync(base64Image) {
       },
       body: JSON.stringify(body),
     });
+
     const result = await response.json();
     const detectedText = result.responses[0].fullTextAnnotation;
     return detectedText   ? detectedText   : { text: "This image doesn't contain any text!" };

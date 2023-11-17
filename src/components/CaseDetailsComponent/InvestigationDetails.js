@@ -1,74 +1,40 @@
 import { useState } from 'react'
-import { StyleSheet,View, Text , Dimensions} from 'react-native';
+import { StyleSheet,View, Text , Dimensions,  ScrollView} from 'react-native';
 import  { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
 
 
-import DropDownPicker from 'react-native-dropdown-picker';
+import PhotoIdScanner from './InvestigationDetails/PhotoIdScanner'
+import DocumentScanner from './InvestigationDetails/DocumentScanner'
+import FormInitiator from './InvestigationDetails/FormInitiator'
+import { theme } from "@core/theme";
+import {UPLOAD_TYPE} from '@core/constants'
 
-import Button from '@components/UI/Button'
-import { SCREENS } from '@core/constants';
-import InvestigationDocumentList from './InvestigationDetails/InvestigationDocumentsList';
-import LoadingModalWrapper from "@components/UI/LoadingModal"
 
 const { width, height } = Dimensions.get('window');
 
-export default InvestigationDetails = function ({selectedClaimId, userId}) {
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
-    const [items, setItems] = useState([
-      {label: 'PAN', value: 'PAN'},
-      {label: 'BENIFICIARY PHOTO', value: 'BENIFICIARY-PHOTO'},
-    ]);
+export default InvestigationDetails = function ({selectedClaimId, userId, capability}) {
+ 
+  let allCaseUpdates = useSelector((state) => state.casesUpdates.casesUpdates);
+  let loading = useSelector((state) => state.casesUpdates.loading);
+  let err = useSelector((state) => state.casesUpdates.error);
+  const caseUpdates = allCaseUpdates[selectedClaimId]
 
-   const navigation = useNavigation();
-   let loading = useSelector((state) => state.casesUpdates.loading);
-
-    //let isLoading = useSelector(state => state.casesUpdates.loading)
-   // let error = useSelector(state => state.casesUpdates.error)
-    //let caseUpdates = useSelector(state => state.casesUpdates.casesUpdates); //To get updated list of documents saved for submission
-    return (
-      <LoadingModalWrapper shouldModalBeVisible = {loading}>
+    return (   
+   
         <View style={styles.container}>
           
-          <View style = {{marginTop: 100}}>
-            <Text style = {[styles.textBase, styles.description ]}>DOCUMENT SUBMISSION</Text>
-          </View>
+
           
+          <ScrollView> 
+          {capability === UPLOAD_TYPE.PHOTO && <PhotoIdScanner selectedClaimId = {selectedClaimId}  userId = {userId} caseUpdates = {caseUpdates}/> }
+          {capability === UPLOAD_TYPE.DOCUMENT && <DocumentScanner selectedClaimId = {selectedClaimId}  userId = {userId} caseUpdates = {caseUpdates}/> }
+          {capability === UPLOAD_TYPE.FORM &&  <FormInitiator selectedClaimId = {selectedClaimId}  userId = {userId} caseUpdates = {caseUpdates}/> }
 
-          <View style= {styles.inputContainer}>
-
-              <View style={{padding: 10}}>
-                  <Button mode="elevated" style={[styles.button,!value? {backgroundColor: 'grey'} : {}]} 
-                              disabled={value === null} onPress={() => navigation.navigate(SCREENS.ImageCaptureScreen, {
-                                docType: value,
-                                claimId: selectedClaimId,
-                                email: userId
-                              })}> { value === 'BENIFICIARY-PHOTO' ? 'CLICK' : 'SCAN'}  </Button>
-              </View>
-        
-              <View style={{marginLeft: 5}}>
-                
-              </View>
-
-              <DropDownPicker open={open} value={value} items={items} setOpen={setOpen} setValue={setValue} setItems={setItems}
-                  
-                    containerStyle={{
-                    }}
-                    style={{
-                      backgroundColor: 'white',
-                      zIndex: 1000
-                    }}
-                    textStyle={{
-                      fontSize:15
-                    }} />
-
-            
-              
-          </View>
-          <InvestigationDocumentList selectedClaimId = {selectedClaimId}/>
+          </ScrollView>
         </View>
-     </LoadingModalWrapper>
+        
+
+ 
     );
 
     
@@ -78,28 +44,24 @@ const styles = StyleSheet.create({
   container: {
     height: height,
     overflow: 'hidden',
-    alignItems: "center",
-    
-    paddingHorizontal: 20,
+    alignItems: "center",    
+    paddingHorizontal: 5,
     padding: 50,
   },
+  descriptionContainer : {
+    marginTop: 40,
+    
+  } ,
   textBase: {
-    color: 'black',
+   color: '#050505',
   },
   description: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-  },
-  inputContainer : {
-    flexDirection: 'row',
-    margin: 30,    
-    paddingHorizontal: 50,
-    alignItems: 'baseline',
-  },
-  button: {
-    marginRight: 5,
-    marginBottom: 10
-  }
-
+    textShadowColor: 'rgba(22, 6, 96, 0.75)',
+    textShadowOffset: {width: 1, height: 1},
+    textShadowRadius: 20,
+  },  
+ 
 })
 

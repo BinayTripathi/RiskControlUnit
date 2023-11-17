@@ -1,9 +1,14 @@
+import Constanst from 'expo-constants'
 import * as Request from '../helpers/serviceApi'
 
 //const BASE_URL = 'https://rcu.azurewebsites.net/api';
-const BASE_URL =  'https://icheckify.azurewebsites.net/api'
 //const BASE_URL = 'https://ccutest.free.beeceptor.com'
 //const BASE_URL = 'https://holosync.azurewebsites.net/api'
+
+//let  BASE_URL =  'https://icheckify.azurewebsites.net/api'
+//const BASE_URL =  'https://chek.azurewebsites.net/api'
+const BASE_URL = "https://chek.azurewebsites.net/api"
+//Constanst?.expoConfig?.extra?.baseURL
 
 
 const verifyLogin =  async (emailId) => {
@@ -48,6 +53,20 @@ export const getAllCases = async (email) => {
   }
 }
 
+
+export const getAllCaseCoordinates = async (email) => {
+
+  try {
+    const url = `${BASE_URL}/agent/agent-map?email=${email}`
+    console.log(url)
+    let response = await Request.get({url});
+    return response
+  } catch (error) {
+    console.log(JSON.stringify(error.message)); // this is the main part. Use the response property from the error object
+    throw JSON.stringify(error.message);
+  }
+}
+
 export const getCaseDetails = async (email, claim) => {
   try {
   const url = `${BASE_URL}/agent/get?email=${email}&claimid=${claim}`
@@ -63,8 +82,12 @@ export const getCaseDetails = async (email, claim) => {
 }
 
 
+
+
+
 export const updateCase = async (body) => {
-  console.log('Upodate case API being called')
+  console.log('Update case API being called')
+  //console.log(body)
   try {
       const url = `${BASE_URL}/agent/post`;
       //const url = `https://ccutest.free.beeceptor.com/update`
@@ -73,7 +96,6 @@ export const updateCase = async (body) => {
         ...body
       };
       let response = await  Request.post({url, config, data});
-      
       return response
     }  catch (error) {
       console.log(JSON.stringify(error.message)); // this is the main part. Use the response property from the error object
@@ -91,6 +113,7 @@ export const updateCase = async (body) => {
           ...body
         };
         console.log(url)
+        
         let response = await  Request.post({url, config, data});
         return response
       }  catch (error) {

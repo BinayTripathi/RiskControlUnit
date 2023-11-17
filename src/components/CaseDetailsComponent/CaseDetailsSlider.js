@@ -7,10 +7,13 @@ import BeneficiaryDetails from "./CaseDetails/BeneficiaryDetails";
 import InvestigationDetails from './InvestigationDetails'
 import SubmitInvestigation from "./SubmitInvestigation";
 
+import {UPLOAD_TYPE} from '@core/constants'
+
+const { width, height } = Dimensions.get('window');
 export default function CaseDetailsSlider({selectedClaimId, selectedClaim, userId}) {
 
     const [sliderState, setSliderState] = useState({ currentPage: 0 });
-    const { width, height } = Dimensions.get('window');
+    
   
     const setSliderPage = (event) => {
       const { currentPage } = sliderState;
@@ -45,17 +48,26 @@ export default function CaseDetailsSlider({selectedClaimId, selectedClaim, userI
             <View style={{ width, height }}>
                 <BeneficiaryDetails selectedClaim = {selectedClaim}/>
             </View>    
-            <View style={{ width, height }}>
-                <InvestigationDetails selectedClaimId = {selectedClaimId} userId = {userId}/>
-            </View>
 
+            <View style={{ width, height }}>
+                <InvestigationDetails selectedClaimId = {selectedClaimId} userId = {userId} capability = {UPLOAD_TYPE.PHOTO}/>
+            </View>            
+
+            <View style={{ width, height }}>
+                <InvestigationDetails selectedClaimId = {selectedClaimId} userId = {userId} capability = {UPLOAD_TYPE.DOCUMENT}/>
+            </View>
+            
+            <View style={{ width, height }}>
+                <InvestigationDetails selectedClaimId = {selectedClaimId} userId = {userId} capability = {UPLOAD_TYPE.FORM}/>
+            </View>
+            
             <View style={{ width, height }}>
                 <SubmitInvestigation selectedClaimId = {selectedClaimId} userId = {userId}  selectedClaim = {selectedClaim}/>
             </View>
             
             </ScrollView>
             <View style={styles.paginationWrapper}>
-            {Array.from(Array(4).keys()).map((key, index) => (
+            {Array.from(Array(6).keys()).map((key, index) => (
                 <View style={[styles.paginationDots, { opacity: pageIndex === index ? 1 : 0.2 }]} key={index} />
             ))}
             </View>
@@ -78,7 +90,8 @@ const styles = StyleSheet.create({
       
     paginationWrapper: {
       position: 'absolute',
-      bottom: 20,
+      //bottom: 20,
+      top: height - 20,
       left: 0,
       right: 0,
       justifyContent: 'center',

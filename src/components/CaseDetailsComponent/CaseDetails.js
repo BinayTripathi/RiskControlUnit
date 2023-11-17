@@ -17,7 +17,7 @@ export default function CaseDetails({claimId, userId}) {
 
     
 
-        return  <LoadingModalWrapper shouldModalBeVisible = {isLoading}> 
+        return  <LoadingModalWrapper shouldModalBeVisible = {isLoading && caseDetails[claimId] == undefined}> 
                      <CaseDetailsSlider selectedClaim = {caseDetails[claimId]} selectedClaimId = {claimId} userId = {userId}/>
                 </LoadingModalWrapper>  
    
