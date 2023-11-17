@@ -1,6 +1,9 @@
 set MY_ENVIRONMENT=production
+set /P id=Enter GOOGLE API KEY: 
+set EXPO_PUBLIC_GOOGLE_MAP_API_KEY=%id%
+ECHO ..%EXPO_PUBLIC_GOOGLE_MAP_API_KEY%
 rmdir /s /q android
-call npx expo prebuild --clean
+call npx expo prebuild --clean --no-install --platform android
 cd ./android
 call ./gradlew -stop
 call ./gradlew assembleRelease

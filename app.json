@@ -41,7 +41,7 @@
       "permissions": [
         "android.permission.CAMERA"
       ],
-      "package": "com.binaytripathi.icheckifyDev"
+      "package": "com.binaytripathi.icheckifyDev"    
     },
     "web": {
       "favicon": "./assets/favicon.png"
