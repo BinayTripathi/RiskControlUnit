@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Searchbar } from 'react-native-paper';
 import {requestCasesCoordinates} from '@store/ducks/cases-slice'
 import MapCallout from '../UI/MapCallout'
-import Geolocation from 'react-native-geolocation-service';
 
 
 import Background from "@components/UI/Background";
@@ -65,7 +64,6 @@ const CaseGeolocation = () => {
     if (mapRef) {
       console.log(mapRef);
     }
-    autoFocus()
   }, []);
 
 
@@ -93,11 +91,11 @@ const CaseGeolocation = () => {
   const focusMap = (focusMarkers, animated) => {
     focusMarkers.push("currentLocation")
     console.log(`Markers received to populate map: ${focusMarkers}`);
-    mapRef.current.fitToSuppliedMarkers(focusMarkers, animated);
+    setTimeout(() => {mapRef.current.fitToSuppliedMarkers(focusMarkers, animated)},10)
+    
   }
   const autoFocus = () => {
   
-    console.log('inside')
       if (mapRef.current) {       
         console.log('outside')
         animationTimeout = setTimeout(() => { focusMap(caseMarkers.map((eachCase) => eachCase.claimId ), true) , timeout });
@@ -134,7 +132,9 @@ const CaseGeolocation = () => {
 
           {initialRegion !== null && (
             <MapView ref={mapRef} provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={initialRegion}
-                  mapPadding={{ top: 100, right: 100, bottom: 100, left: 100 }} >
+                  mapPadding={{ top: 100, right: 100, bottom: 100, left: 100 }} 
+                  onMapReady={() => autoFocus()}
+                  onMapLoaded={() => console.log('Map loaded')}>
               
             {true && (
             <View>
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     width:  windowWidth *0.95,
     padding: 0,       
     alignContent: 'center',
-    borderRadius: 30,
+    borderRadius: 8,
     overflow: 'hidden'
   },
   map: {

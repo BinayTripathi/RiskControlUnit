@@ -6,19 +6,9 @@ import CaseList from "@components/CasesComponent/CaseList";
 import CaseGeolocation from "@components/CasesComponent/CaseGeolocation"
 
 
-const ListView = () => (
-      <CaseList/>
-);
 
-const MapView = () => (
-     <CaseGeolocation/>
 
-);
 
-const renderScene = SceneMap({
-  first: ListView,
-  second: MapView,
-});
 
 export default function CaseListScreen() {
 
@@ -29,6 +19,19 @@ export default function CaseListScreen() {
     { key: 'first', title: 'ListView' },
     { key: 'second', title: 'MapView' },
   ]);
+
+  const ListView = () => (
+    <CaseList reloadProp={index}/>
+);
+
+const MapView = () => (
+   <CaseGeolocation reloadProp={index}/>
+);
+
+const renderScene = SceneMap({
+  first: ListView,
+  second: MapView,
+});
   return (
 
     <TabView
@@ -37,6 +40,7 @@ export default function CaseListScreen() {
       onIndexChange={setIndex}
       initialLayout={{ width: layout.width }}
       tabBarPosition= "bottom"
+      options={{unmountOnBlur: true}}
     />
 
     
