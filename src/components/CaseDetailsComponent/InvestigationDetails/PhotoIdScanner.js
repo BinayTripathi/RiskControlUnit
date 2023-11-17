@@ -36,7 +36,7 @@ const PhotoIdScanner = ({selectedClaimId, userId, caseUpdates}) => {
                (caseUpdates[documentType.name].facePercent === null? "0" : caseUpdates[documentType.name].facePercent ) : "0")
         
         return(
-        <Card style = {styles.card}  key={index}>
+        <Card style = {[styles.card, documentType?.enabled !== true? styles.cardDisabled: {}]}  key={index}>
 
 
             <TouchableHighlight onPress={()=> speechHandler(documentType)}  style={styles.button} underlayColor="#a2a1a0">
@@ -108,7 +108,9 @@ const PhotoIdScanner = ({selectedClaimId, userId, caseUpdates}) => {
     return (
 
         <View style =  {styles.capabilityCardContainer}>           
-                
+                <View style = {styles.descriptionContainer}>
+                    <Text style = {[styles.textBase, styles.description ]}>DIGITAL ID VERIFIER</Text>
+                </View>
                     
                 {capabilities}            
                            
@@ -119,10 +121,22 @@ const PhotoIdScanner = ({selectedClaimId, userId, caseUpdates}) => {
 const styles = StyleSheet.create({
 
     capabilityCardContainer : {      
-      marginTop: 50,          
+      marginTop: 40,          
       alignContent: 'center',
       alignItems: 'center'       
       },   
+      descriptionContainer : {
+        marginBottom: 40,        
+      } ,
+
+      description: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        textShadowColor: 'rgba(22, 6, 96, 0.75)',
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 20,
+      },  
+     
     card : { 
         alignItems: 'center', 
         padding: 10, 
@@ -132,7 +146,9 @@ const styles = StyleSheet.create({
         //backgroundColor: theme.colors.capabilitiesCardBackgroundColor,
         backgroundColor: theme.colors.details_card_color
     },
-
+    cardDisabled: {
+        opacity: 0.5
+    },
     allIconContainerRow : {
         flexDirection: 'row',
         marginTop: 10,

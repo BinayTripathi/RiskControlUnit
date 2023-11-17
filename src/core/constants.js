@@ -18,6 +18,13 @@ export const DOC_TYPE = {
     BENEFICIARY_PHOTO : 'BENIFICIARY-PHOTO',
     OCR : 'OCR' ,
 
+    FORM : [
+        {
+            name : 'FORM_TEMPLATE1',
+            enabled: true,
+        }
+    ],
+
     PHOTO_ID_SCANNER : [ 
         {
             name : 'Single FaceReader',

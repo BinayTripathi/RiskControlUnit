@@ -28,10 +28,10 @@ const speechHandler = (documentObj) => {
   let capabilities = DOC_TYPE.DOCUMENT_SCANNER.map((documentType, index)=> {  
 
     let panValid = caseUpdates !== undefined && Object.keys(caseUpdates).includes(documentType.name) === true ? 
-    (caseUpdates[documentType.name].facePercent === ''? false : caseUpdates[documentType.name].facePercent ) : false
+    (caseUpdates[documentType.name].panValid === ''? false : caseUpdates[documentType.name].panValid ) : false
 
         return(
-            <Card style = {styles.card}  key={index}>
+            <Card style = {[styles.card, documentType?.enabled !== true? styles.cardDisabled: {}]}  key={index}>
 
               <TouchableHighlight onPress={()=> speechHandler(documentType)}  style={styles.button} underlayColor="#a2a1a0">
                   <View style = {styles.labelContainer}>
@@ -97,7 +97,10 @@ const speechHandler = (documentObj) => {
   })
 
   return (
-    <View style =  {styles.capabilityCardContainer}>                   
+    <View style =  {styles.capabilityCardContainer}>         
+      <View style = {styles.descriptionContainer}>
+            <Text style = {[styles.textBase, styles.description ]}>DOCUMENT VERIFIER</Text>
+      </View>          
         {capabilities}
   </View>  
 )
@@ -106,10 +109,21 @@ const speechHandler = (documentObj) => {
 const styles = StyleSheet.create({
 
   capabilityCardContainer : {      
-    marginTop: 50,          
+    marginTop: 40,          
     alignContent: 'center',
     alignItems: 'center'       
     },   
+    descriptionContainer : {
+      marginBottom: 40,        
+    } ,
+
+    description: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      textShadowColor: 'rgba(22, 6, 96, 0.75)',
+      textShadowOffset: {width: 1, height: 1},
+      textShadowRadius: 20,
+    },  
   card : { 
       alignItems: 'center', 
       padding: 10, 
@@ -118,6 +132,9 @@ const styles = StyleSheet.create({
       //backgroundColor: theme.colors.caseItemBackground
       //backgroundColor: theme.colors.capabilitiesCardBackgroundColor,
       backgroundColor: theme.colors.details_card_color
+  },
+  cardDisabled: {
+    opacity: 0.5
   },
   allIconContainerRow : {
     flexDirection: 'row',
