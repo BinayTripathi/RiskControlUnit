@@ -5,7 +5,6 @@ import types from '../types';
 
 import { deleteCaseFromListAfterSubmission } from './cases-slice'
 import { deleteCaseDetailsAfterSubmission } from './case-details-slice'
-import callGoogleVisionAsync from '../../helpers/OCRHelper'
 import { UPLOAD_TYPE, UPLOAD_SUCCESS_INDICATOR } from '@core/constants';
 
 
