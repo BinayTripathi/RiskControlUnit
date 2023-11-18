@@ -164,7 +164,7 @@ const CaseGeolocation = (reloadProp) => {
 
           {initialRegion !== null && (
             <MapView ref={mapRef} provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={initialRegion}
-            minZoomLevel={5}
+            minZoomLevel={10}
             key={userLocation}
             showsUserLocation = {true}
             followsUserLocation = {true}
