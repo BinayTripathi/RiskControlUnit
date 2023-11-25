@@ -11,20 +11,20 @@ module.exports = () => {
             "permissions": [
               "android.permission.CAMERA"
             ],
-            "package": "com.binaytripathi.icheckify"
+            "package": "com.binaytripathi.icheckify",
+            "config": {
+              "googleMaps": {
+                "apiKey": process.env.EXPO_PUBLIC_GOOGLE_MAP_API_KEY
+              }
+            },
           },
           extra: {
             baseURL : 'https://icheckify.azurewebsites.net/api'
-          },
-          config: {
-            googleMaps: {
-              apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAP_API_KEY,
-            },
           }
       };
     } else {
       return {
-        "name": "icheckifyIChck",
+        "name": "icheckifyDev",
         "android": {
             "adaptiveIcon": {
               "foregroundImage": "./assets/icheckifyIcon.png",

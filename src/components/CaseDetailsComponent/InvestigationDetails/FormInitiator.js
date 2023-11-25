@@ -1,4 +1,4 @@
-import { StyleSheet,View, Text , Dimensions, ScrollView} from 'react-native';
+import { StyleSheet,View, Text , Dimensions, ScrollView, Alert} from 'react-native';
 import Checkbox from 'expo-checkbox';
 import { useState } from "react";
 import { useDispatch} from 'react-redux'
@@ -74,6 +74,16 @@ const FormInitiator = ({selectedClaimId, userId, caseUpdates}) => {
              
             </View>
   }
+  const showAlert = () =>
+  Alert.alert(
+    'Form Data',
+    'Form data is saved',
+    [
+      {
+        text: 'OK',        
+      },
+    ],    
+  );
 
   const onSavePressed = async (e) => {
 
@@ -90,7 +100,10 @@ const FormInitiator = ({selectedClaimId, userId, caseUpdates}) => {
     }
     
     dispatch(requestSaveFormAction(payload))
+    showAlert()
   }
+
+
 
 
   let benificaryForm = metBeneficiary === true ?<BenifiaryFormPart/> : ""
@@ -101,7 +114,7 @@ const FormInitiator = ({selectedClaimId, userId, caseUpdates}) => {
       <View>
 
       <View style = {styles.descriptionContainer}>
-            <Text style = {[styles.textBase, styles.description ]}>FORM TEMPLATE 1</Text>
+            <Text style = {[styles.textBase, styles.description ]}>FORM TEMPLATE </Text>
       </View> 
       
       <ScrollView style={styles.scrollView}>
@@ -144,7 +157,6 @@ const styles = StyleSheet.create({
     padding: 50,
   },
   descriptionContainer : {
-        
     marginTop: 40
   } ,
 

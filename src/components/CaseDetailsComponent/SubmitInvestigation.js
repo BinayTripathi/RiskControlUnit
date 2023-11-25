@@ -40,7 +40,7 @@ const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
                             return (
                               <View style={styles.checklistCheckboxContainer} key={capability.name}>
                                 <Checkbox style={styles.checkbox} value={checkedTask}  />
-                                <Text style={styles.label}>{capability.name}</Text>
+                                <Text style={styles.label1}>{capability.name === 'FORM_TEMPLATE1' ? "Form Template" : capability.name}</Text>
                               </View>
                             )
                           } )
@@ -48,13 +48,17 @@ const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
     return (
     <View style={styles.container}>
 
-        <View style = {{marginTop: 50, marginBottom: 30}}>
+        <View style = {{marginTop: 40, marginBottom: 20}}>
           <Text style = {[styles.textBase, styles.description ]}>SUBMIT INVESTIGATION</Text>
         </View>
 
         <ScrollView style={styles.scrollView}>
 
-            {checkList}
+            <View style={styles.checklistContainer}>
+            <Text style={[styles.label, {textDecorationLine: 'underline'}]}>CHECKLIST:</Text>
+              {checkList}
+            </View>
+            
             <View style={styles.inputContainer}>
               <TextInput
                       placeholder="Enter investigation comments"
@@ -122,7 +126,7 @@ const styles = StyleSheet.create({
     container: {
       height: height,
       overflow: 'hidden',
-      alignItems: "center",      
+      alignItems: "center",     
       paddingHorizontal: 20,
       padding: 50,
     },
@@ -151,10 +155,11 @@ const styles = StyleSheet.create({
         margin: 8,
       },
 
-      questionaireContainer : {
-        marginTop: 30,
+      checklistContainer : {
+        marginTop: 5,
         width: '90%',
-        backgroundColor: 'white',
+        backgroundColor: '#d1cbcb',
+        opacity: 0.7,
         borderRadius: 20,
         paddingHorizontal: 10,
         shadowOffset: {width: 0, height: 1},

@@ -4,11 +4,7 @@ import {call, put} from 'redux-saga/effects';
 import {getAllCases, getAllCaseCoordinates} from '@services/RestServiceCalls'
 
 
-const mergeByClaimId= (a1, a2) => 
-    a1.map(itm => ({
-        ...a2.find((item) => (item.claimId === itm.claimId) && item),
-        ...itm
-    }));
+
 
 const initialState = {
   cases: [],

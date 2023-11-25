@@ -1,6 +1,7 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import { StyleSheet,  View, useWindowDimensions } from "react-native";
 import { TabView, SceneMap } from 'react-native-tab-view';
+import * as Location from "expo-location";
 
 import CaseList from "@components/CasesComponent/CaseList";
 import CaseGeolocation from "@components/CasesComponent/CaseGeolocation"
@@ -12,6 +13,24 @@ import CaseGeolocation from "@components/CasesComponent/CaseGeolocation"
 
 export default function CaseListScreen() {
 
+  useEffect(() => {
+
+    const getLocationPermission = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setUserLocation(location.coords);
+
+    };
+
+    getLocationPermission();
+
+  }, []);
+  const [userLocation, setUserLocation] = useState(null)  
   const layout = useWindowDimensions();
 
   const [index, setIndex] = useState(0);
@@ -25,9 +44,9 @@ export default function CaseListScreen() {
 );
 
 const MapView = () => (
-   <CaseGeolocation reloadProp={index}/>
+   <CaseGeolocation reloadProp={index} userLoc = {userLocation}/>
 );
-
+console.log(userLocation)
 const renderScene = SceneMap({
   first: ListView,
   second: MapView,
