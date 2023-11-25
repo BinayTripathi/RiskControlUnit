@@ -21,7 +21,7 @@ const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 
-const CaseGeolocation = (reloadProp) => {
+const CaseGeolocation = ({reloadProp, userLoc}) => {
 
   let caseMarkers = useSelector((state) => state.cases.caseCoordinates);
   let cases = useSelector((state) => state.cases.cases);
@@ -30,8 +30,6 @@ const CaseGeolocation = (reloadProp) => {
   const isConnected = useSelector(state => state.network.isConnected);
   const userId = useSelector(state => state.user.userId)
   const [searchQuery, setSearchQuery] = useState('');
-  const [userLocation, setUserLocation] = useState(null)
-
 
 
   const dispatch = useDispatch()
@@ -54,25 +52,6 @@ const CaseGeolocation = (reloadProp) => {
         ...a2.find((item) => (item.claimId === itm.claimId) && item),
         ...itm
     }));
-
- 
-  useEffect(() => {
-
-    const getLocationPermission = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission to access location was denied");
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      setUserLocation(location.coords);
-
-    };
-
-    getLocationPermission();
-
-  }, []);
 
 
   useEffect(() => {
@@ -98,7 +77,7 @@ const CaseGeolocation = (reloadProp) => {
   }
 
   const focusMap = (focusMarkers, animated) => {
-    focusMarkers.push("USER_LOC")
+    if(userLoc !== null) focusMarkers.push("USER_LOC")
     console.log(`Markers received to populate map: ${focusMarkers}`);
     setTimeout(() => {mapRef?.current.fitToSuppliedMarkers(focusMarkers, animated)},10)
     
@@ -122,11 +101,11 @@ const CaseGeolocation = (reloadProp) => {
                   <MapCallout title={eachCase.policyNumber} description={eachCase.address} claimId={eachCase.claimId}></MapCallout>
                 </Marker >) 
 
-        if(userLocation !== null) {
-          console.log(userLocation)
+        if(userLoc !== null) {
+          console.log(userLoc)
           allMarkers.push(<Marker key ={"USER_LOC"} 
             identifier={"USER_LOC"} 
-            coordinate={userLocation}
+            coordinate={userLoc}
             title={"You are here"}/>)
         }
 
@@ -139,14 +118,14 @@ const CaseGeolocation = (reloadProp) => {
     return  retriveAllCases().map(eachCase => <Circle
       key ={eachCase.claimId} 
         center={{ latitude:eachCase.coordinate.lat, longitude: eachCase.coordinate.lng }}
-        radius={500}
+        radius={5000}
         strokeWidth = { 1 }
                 strokeColor = { '#1a66ff' }
                 fillColor = { 'rgba(230,238,255,0.5)' }
       />)
     }
 
-    
+    console.log(userLoc)
 
   return (
     
@@ -163,9 +142,9 @@ const CaseGeolocation = (reloadProp) => {
         <View style={styles.mapContainer}>
 
           {initialRegion !== null && (
-            <MapView ref={mapRef} provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={initialRegion}
-            minZoomLevel={10}
-            key={userLocation}
+            <MapView ref={mapRef} provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={initialRegion}  
+            key={userLoc}
+            maxZoomLevel={15} 
             showsUserLocation = {true}
             followsUserLocation = {true}
             mapPadding={{ top: 100, right: 100, bottom: 100, left: 100 }} 

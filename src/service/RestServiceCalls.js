@@ -85,11 +85,11 @@ export const getCaseDetails = async (email, claim) => {
 
 
 
-export const updateCase = async (body) => {
+export const updateCaseDocument = async (body) => {
   console.log('Update case API being called')
   //console.log(body)
   try {
-      const url = `${BASE_URL}/agent/post`;
+      const url = `${BASE_URL}/agent/documentid`;
       //const url = `https://ccutest.free.beeceptor.com/update`
       const config = {}
       const data = {
@@ -102,6 +102,26 @@ export const updateCase = async (body) => {
       throw JSON.stringify(error.message);
     }
   };
+
+  export const updateCaseFace = async (body) => {
+    body.OcrData=""
+    console.log('Update case API being called')
+    
+    try {
+        const url = `${BASE_URL}/agent/faceid`;
+        //const url = `https://ccutest.free.beeceptor.com/update`
+        const config = {}
+        const data = {
+          ...body
+        };
+        console.log(url)
+        let response = await  Request.post({url, config, data});
+        return response
+      }  catch (error) {
+        console.log(JSON.stringify(error.message)); // this is the main part. Use the response property from the error object
+        throw JSON.stringify(error.message);
+      }
+    };
 
   export const submitCase = async (body) => {
     console.log(JSON.stringify(body))

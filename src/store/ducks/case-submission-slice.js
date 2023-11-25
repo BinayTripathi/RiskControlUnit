@@ -1,6 +1,6 @@
 import {createAction, createSlice} from '@reduxjs/toolkit';
 import {call, put, select} from 'redux-saga/effects';
-import {updateCase, submitCase} from '@services/RestServiceCalls'
+import {updateCaseDocument, updateCaseFace, submitCase} from '@services/RestServiceCalls'
 import types from '../types';
 
 import { deleteCaseFromListAfterSubmission } from './cases-slice'
@@ -179,9 +179,14 @@ const initialState = {
         let postUpdatePayload = action.payload.documentDetails
         postUpdatePayload.OcrData = readText?.text
 
-        const response = yield call(updateCase,postUpdatePayload);    
+        let response = ''
+        if (action.payload.documentDetails.docType ===  UPLOAD_TYPE.DOCUMENT)
+          response = yield call(updateCaseDocument,postUpdatePayload);    
+        else
+          response = yield call(updateCaseFace,postUpdatePayload);    
         const responseUserData = response.data        
         console.log("received claim details")
+        
         //ToDo :  Handle when there is error calling the one of the 2 APIs
         if (responseUserData) {                      
             let successPayload = {

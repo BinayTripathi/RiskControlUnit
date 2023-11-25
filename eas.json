@@ -11,9 +11,6 @@
       "android": {
         "buildType": "apk"       
       },
-      "env": {
-        "baseURL" : "https://chek.azurewebsites.net/api"
-      },
       "distribution": "internal"
     },
     "production": {}

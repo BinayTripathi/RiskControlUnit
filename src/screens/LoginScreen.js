@@ -22,8 +22,7 @@ import Constanst from 'expo-constants'
 
 export default function LoginScreen({navigation}) {
 
-  const BASE_URL = "https://chek.azurewebsites.net/api"
-  //Constanst?.expoConfig?.extra?.baseURL
+  const BASE_URL = Constanst?.expoConfig?.extra?.baseURL
   let isLoading = useSelector((state) => state.user.loading);
   let userLoggingError = useSelector((state) => state.user.error);
   let userLoggingTimestamp = useSelector((state) => state.user.lastLogin);
@@ -126,8 +125,10 @@ export default function LoginScreen({navigation}) {
         
         <View style = {styles.wrapper}>
 
-          <Logo />                  
-         <Text>URL: {BASE_URL}</Text>
+          <Logo />         
+          <Text style={{fontWeight: '800'}}>DEMO VERSION</Text>         
+          <Text>URL: {BASE_URL}</Text>
+         
           <TextInput
             label="Email"
             returnKeyType="next"
