@@ -12,7 +12,7 @@ import { theme } from '@core/theme';
 import useNetworkInfo from "../../hooks/useNetworkInfo";
 import { DOC_TYPE } from '@core/constants';
 
-
+import SpeechToText from '@components/UI/SpeechToText'
 
 
 const { width, height } = Dimensions.get('window');
@@ -28,6 +28,11 @@ const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
     const [isOnline] = useNetworkInfo();
     
     let completeCheckList = true
+
+    let setRemarksBySpeechToText = (heardText) => {
+       console.log(remark)
+      setRemark(remark => remark !== null ?  remark +". " + heardText : heardText)
+    }
 
 
     let docTypeList = [...DOC_TYPE.PHOTO_ID_SCANNER, ... DOC_TYPE.DOCUMENT_SCANNER, ...DOC_TYPE.FORM]
@@ -69,6 +74,7 @@ const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
                       keyboardType={
                       Platform.OS == 'ios' ? 'ascii-capable' : 'visible-password' }
                       style={styles.input}  />
+                      <SpeechToText getSpeechToTextResult= {setRemarksBySpeechToText}/>
             </View>     
 
             <View style={styles.checkboxContainer}>
