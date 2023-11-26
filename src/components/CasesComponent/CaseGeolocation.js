@@ -79,7 +79,7 @@ const CaseGeolocation = ({reloadProp, userLoc}) => {
   const focusMap = (focusMarkers, animated) => {
     if(userLoc !== null) focusMarkers.push("USER_LOC")
     console.log(`Markers received to populate map: ${focusMarkers}`);
-    setTimeout(() => {mapRef?.current.fitToSuppliedMarkers(focusMarkers, animated)},10)
+    setTimeout(() => {mapRef?.current?.fitToSuppliedMarkers(focusMarkers, animated)},10)
     
   }
   const autoFocus = () => {

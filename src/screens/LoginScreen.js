@@ -128,7 +128,7 @@ export default function LoginScreen({navigation}) {
           <Logo />         
           <Text style={{fontWeight: '800'}}>DEMO VERSION</Text>         
           <Text>URL: {BASE_URL}</Text>
-         
+
           <TextInput
             label="Email"
             returnKeyType="next"
