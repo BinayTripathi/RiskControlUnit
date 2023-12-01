@@ -19,6 +19,7 @@ import { SCREENS, SESSION_TTL_IN_SEC } from '../core/constants'
 import LoadingModalWrapper from '@components/UI/LoadingModal';
 import {reset} from '@services/NavigationService';
 import Constanst from 'expo-constants'
+import LocalAuthComponent from './../components/AuthComponent/LocalAuthComponent';
 
 export default function LoginScreen({navigation}) {
 
@@ -124,7 +125,7 @@ export default function LoginScreen({navigation}) {
       <Background>
         
         <View style = {styles.wrapper}>
-
+          <LocalAuthComponent navigation = {navigation}/>
           <Logo />         
           <Text style={{fontWeight: '800'}}>DEMO VERSION</Text>         
           <Text>URL: {BASE_URL}</Text>

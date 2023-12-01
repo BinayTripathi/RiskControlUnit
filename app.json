@@ -21,7 +21,13 @@
       "react-native-document-scanner-plugin",
       {
         "cameraPermission": "We need camera access, so you can scan documents"
-      } ]
+      } ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+        }
+      ]
     ],
     "assetBundlePatterns": [
       "**/*"

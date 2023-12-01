@@ -7,8 +7,7 @@ import * as Request from '../helpers/serviceApi'
 
 //let  BASE_URL =  'https://icheckify.azurewebsites.net/api'
 //const BASE_URL =  'https://chek.azurewebsites.net/api'
-const BASE_URL = "https://chek.azurewebsites.net/api"
-//Constanst?.expoConfig?.extra?.baseURL
+const BASE_URL = Constanst?.expoConfig?.extra?.baseURL
 
 
 const verifyLogin =  async (emailId) => {

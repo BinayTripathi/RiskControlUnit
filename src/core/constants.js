@@ -125,7 +125,7 @@ export const checkLoading = (capabilityBox, caseUpdates) => {
 }
 
 export const SCREENS = {
-    Home: "Home",
+    RegistrationScreen: "RegistrationScreen",
     Login : "Login",
     CaseList: "CaseList",
     CaseDetailsScreen: "CaseDetailsScreen",
