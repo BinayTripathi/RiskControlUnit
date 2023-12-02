@@ -12,7 +12,7 @@ import CaseDetailsScreen from '@screens/CaseDetailsScreen';
 import ImageCaptureScreen from '@screens/ImageCaptureScreen';
 
 
-export default function AppNavigator() {
+export default function AppNavigator({isRegistered}) {
 
     
   const Stack = createNativeStackNavigator();
@@ -31,7 +31,7 @@ export default function AppNavigator() {
               }}>      
             
 
-              <Stack.Screen name={SCREENS.RegistrationScreen} component={RegistrationScreen} />
+              {!isRegistered && <Stack.Screen name={SCREENS.RegistrationScreen} component={RegistrationScreen}  options={{headerShown: false}}/>}
               <Stack.Screen name={SCREENS.Login} component={LoginScreen} /> 
               <Stack.Screen name={SCREENS.CaseList} component={CaseListScreen} options={
                 {title: 'Your Case List',

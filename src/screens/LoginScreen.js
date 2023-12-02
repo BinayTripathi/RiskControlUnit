@@ -10,7 +10,7 @@ import Header from '@components/UI/Header'
 import Button from '@components/UI/Button'
 import Paragraph from '@components/UI/Paragraph'
 import TextInput from '@components/UI/TextInput'
-import { emailValidator } from '../helpers/emailValidator'
+
 import { passwordValidator } from '../helpers/passwordValidator'
 import { Entypo } from '@expo/vector-icons';
 
@@ -20,6 +20,8 @@ import LoadingModalWrapper from '@components/UI/LoadingModal';
 import {reset} from '@services/NavigationService';
 import Constanst from 'expo-constants'
 import LocalAuthComponent from './../components/AuthComponent/LocalAuthComponent';
+import * as SecureStore from 'expo-secure-store';
+import {SECURE_USER_KEY, SECURE_USER_PIN} from '../core/constants'
 
 export default function LoginScreen({navigation}) {
 
@@ -31,35 +33,32 @@ export default function LoginScreen({navigation}) {
   let dispatch = useDispatch();
   const isFocused = useIsFocused()
 
-  const [email, setEmail] = useState({ value: '', error: '' })
+
+  const [biometicCancelled, setBiometicCancelled] = useState(false)
+  const [email, setEmail] = useState()
   const [password, setPassword] = useState({ value: '', error: '' })
 
-
-  //If coming from home page state should be no error and not loading
-  /*useEffect(() => {
-    
-    const routes = navigation.getState()?.routes;
-    const prevRoute = routes[routes.length - 2];
-    if(prevRoute.name === SCREENS.Home ) {
-      dispatch(navigateFromHomePage())
-    }
-  }, [navigation])
-
-  useEffect(() => {
-    if (isFocused) {
-      dispatch(navigateFromHomePage())
-    }  
-
-  }, [dispatch, isFocused])*/
-
-
   // if loging within 30 sec of loggout, dispatch autologin
+
+  useEffect(() => { 
+
+    async function getSecure(key) {
+      return await SecureStore.getItemAsync(key);
+    }
+    
+    (async() => {
+      const user = await getSecure(SECURE_USER_KEY)
+      setEmail(user)
+      }
+    )()    
+  },[])
+
   useEffect(() => { 
     dispatch(navigateFromHomePage())
     console.log(Math.floor(new Date() - new Date(userLoggingTimestamp)))
     if(Math.floor(new Date() - new Date(userLoggingTimestamp)) < SESSION_TTL_IN_SEC.USER_SESSION) {
       const dataforLogin = {
-        emailId: userId
+        emailId: email
       }
       dispatch(requestValidateUserAuto(dataforLogin))
       navigation.reset({routes: [{name: 'CaseList'}]});   
@@ -67,14 +66,10 @@ export default function LoginScreen({navigation}) {
     
   }, [dispatch, isFocused, navigation])
 
+
+
   const onLoginPressed = async (e) => {
-    const emailError = emailValidator(email.value)
-    const passwordError = passwordValidator(password.value)
-    if (emailError || passwordError) {
-      setEmail({ ...email, error: emailError })
-      setPassword({ ...password, error: passwordError })
-      return
-    }
+    
     const headerOptions = new Headers()
     headerOptions.append(
       'Content-Type',
@@ -86,33 +81,14 @@ export default function LoginScreen({navigation}) {
     )
     headerOptions.append('Access-Control-Allow-Credentials', 'true')
     headerOptions.append('GET', 'POST', 'OPTIONS')
+
+    console.log(email)
     const dataToSendForAuth = {
-      emailId: email.value,
+      emailId: email,
       password: password.value,
       returnUrl: 'http://localhost:19006/',
     }
-    /*let formBody = []
-    for (const key in dataToSend) {
-      if (Object.hasOwn(dataToSend, key)) {
-        const encodedKey = encodeURIComponent(key)
-        const encodedValue = encodeURIComponent(dataToSend[key])
-        formBody.push(encodedKey + '=' + encodedValue)
-      }
-    }
-
-    formBody = formBody.join('&')
-    e.preventDefault()
-    const requestOptions = {
-      method: 'POST',
-      headers: headerOptions,
-      body: formBody,
-    }*/
-
-    //Moved to Saga
-    /*navigation.reset({
-      index: 0,
-      routes: [{ name: 'CaseList' }],
-    })*/
+   
 
     dispatch(requestValidateUser(dataToSendForAuth))
   }
@@ -125,23 +101,12 @@ export default function LoginScreen({navigation}) {
       <Background>
         
         <View style = {styles.wrapper}>
-          <LocalAuthComponent navigation = {navigation}/>
+          {!biometicCancelled && <LocalAuthComponent navigation = {navigation} setBiometicCancelled = {setBiometicCancelled}/> }
           <Logo />         
           <Text style={{fontWeight: '800'}}>DEMO VERSION</Text>         
           <Text>URL: {BASE_URL}</Text>
 
-          <TextInput
-            label="Email"
-            returnKeyType="next"
-            value={email.value}
-            onChangeText={(text) => setEmail({ value: text, error: '' })}
-            error={!!email.error}
-            errorText={email.error}
-            autoCapitalize="none"
-            autoCompleteType="email"
-            textContentType="emailAddress"
-            keyboardType="email-address"
-          />
+          
           <TextInput
             label="Password"
             returnKeyType="done"

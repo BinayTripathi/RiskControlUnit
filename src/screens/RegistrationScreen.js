@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import Background from '@components/UI/Background';
 import { Padder } from '@components/UI/Wrapper';
 import Logo from '@components/UI/Logo'
@@ -8,20 +8,59 @@ import Button from '@components/UI/Button'
 import { useDispatch } from 'react-redux'
 import { FontAwesome5 } from '@expo/vector-icons';
 import TextInput from '@components/UI/TextInput'
+import {
+  CodeField,
+  Cursor,
+  useBlurOnFulfill,
+  useClearByFocusCell,
+} from 'react-native-confirmation-code-field';
 
 import * as Application from 'expo-application';
 import { Platform } from 'expo-modules-core';
+import * as SecureStore from 'expo-secure-store';
+import { emailValidator } from '../helpers/emailValidator'
+import { passwordValidator } from '../helpers/passwordValidator'
 
+import {requestRegisterUser} from '@store/ducks/userSlice'
+import {SECURE_USER_KEY, SECURE_USER_PIN} from '../core/constants'
+
+const CELL_COUNT = 6;
 export default function RegistrationScreen({ route, navigation }) {
 
-  const dispatch = useDispatch()
-    //const userTracker = route.params && route.params.lastState ? <UserTracker displayCoordinates={false}/> : null
+  //const userTracker = route.params && route.params.lastState ? <UserTracker displayCoordinates={false}/> : null
+    const dispatch = useDispatch()
     const [email, setEmail] = useState({ value: '', error: '' })
-    const [password, setPassword] = useState({ value: '', error: '' })
+    const [pin, setPin] = useState('')
+    const ref = useBlurOnFulfill({pin, cellCount: CELL_COUNT});
+    const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+      pin,
+      setPin,
+    });
 
-   const fetchImei = async () => {
+
+    async function secureSave(key, value) {
+      await SecureStore.setItemAsync(key, value);
+    }
+
+   const registerUser = async () => {
+
+    const emailError = emailValidator(email.value)
+    if (emailError) {
+      setEmail({ ...email, error: emailError })      
+      return
+    }
     if (Platform.OS === 'android') {
       console.log(Application.androidId)
+      secureSave(SECURE_USER_PIN,pin.toString())
+      secureSave(SECURE_USER_KEY,email.value)
+
+      const dataToSendForReg = {
+        emailId: email.value,
+        password: pin,
+        deviceId: Application.androidId,
+      }
+
+      dispatch(requestRegisterUser(dataToSendForReg))
     }
    }
     
@@ -42,10 +81,30 @@ export default function RegistrationScreen({ route, navigation }) {
             textContentType="emailAddress"
             keyboardType="email-address"
           />
+
+      <CodeField
+        ref={ref}        
+        value={pin}
+        onChangeText={setPin}
+        cellCount={CELL_COUNT}
+        rootStyle={Styles.codeFieldRoot}
+        keyboardType="number-pad"
+        textContentType="oneTimeCode"
+        renderCell={({index, symbol, isFocused}) => (
+          <Text
+            key={index}
+            style={[Styles.cell, isFocused && Styles.focusCell]}
+            onLayout={getCellOnLayoutHandler(index)}>
+            {symbol || (isFocused ? <Cursor/> : null)}
+          </Text>
+        )}
+      />
+          
           <Button
             mode="elevated"
-            style={Styles.button}
-            onPress={fetchImei }
+            disabled = {pin.toString().length < CELL_COUNT  && emailValidator(email.value) === ''}
+            style={[Styles.button, pin.toString().length < CELL_COUNT? Styles.button_disabled: {}]}
+            onPress={registerUser }
              onLongPress={() => {
               dispatch({ type: "DESTROY_SESSION" });
               navigation.navigate('Login')}}
@@ -62,5 +121,23 @@ export default function RegistrationScreen({ route, navigation }) {
   const Styles = StyleSheet.create({
     button: {
       marginTop: 70
-    }
+    },
+    button_disabled: {
+      opacity: 0.5
+    },
+    codeFieldRoot: {marginTop: 20},
+    cell: {
+      width: 40,
+      height: 40,
+      lineHeight: 38,
+      marginRight: 2,
+      fontSize: 24,
+      borderWidth: 2,
+      borderRadius: 8,
+      borderColor: '#00000030',
+      textAlign: 'center',
+    },
+    focusCell: {
+      borderColor: '#000',
+    },
   });

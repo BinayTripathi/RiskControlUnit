@@ -5,6 +5,9 @@ import { AntDesign } from '@expo/vector-icons';
 import {logoutUser} from '@store/ducks/userSlice'
 import { SCREENS } from '@core/constants';
 
+import * as SecureStore from 'expo-secure-store';
+import {SECURE_USER_KEY} from '@core/constants'
+
 export default function Logout() {
 
     const dispatch = useDispatch()
@@ -20,10 +23,11 @@ export default function Logout() {
             }}
 
             onLongPress={() => {
+                SecureStore.deleteItemAsync(SECURE_USER_KEY)
                 dispatch({ type: "DESTROY_SESSION" });
                 navigation.reset({
                     index: 0,
-                    routes: [{ name: SCREENS.Login , params: { lastState: 'Logout' }}],
+                    routes: [{ name: SCREENS.RegistrationScreen , params: { lastState: 'Logout' }}],
             })
             }}
 

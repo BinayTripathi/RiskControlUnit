@@ -3,7 +3,7 @@ import {networkSaga} from 'react-native-offline';
 import TYPES from './types';
 import {offlineActionTypes} from 'react-native-offline';
 
-import {asyncRequestValidateUser, asyncRequestValidateUserAutologin} from './ducks/userSlice';
+import {asyncRequestRegisterUser, asyncRequestValidateUser, asyncRequestValidateUserAutologin} from './ducks/userSlice';
 import { asyncRequestAllCases, requestAllCasesOffline, asyncRequestAllCaseCoordinates } from './ducks/cases-slice';
 import { asyncRequestCaseDetails} from './ducks/case-details-slice'
 import { asyncPostCaseDocuments, asyncSubmitCaseDocuments,
@@ -12,6 +12,7 @@ import { asyncPostCaseDocuments, asyncSubmitCaseDocuments,
 
 export default function* root() {
   yield all([
+    takeLatest("user/requestRegisterUser", asyncRequestRegisterUser),
     takeLatest("user/requestValidateUser", asyncRequestValidateUser),
     takeLatest("user/requestValidateUserAuto", asyncRequestValidateUserAutologin),
     takeLatest("cases/requestCases", asyncRequestAllCases),

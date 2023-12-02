@@ -21,6 +21,20 @@ const verifyLogin =  async (emailId) => {
 
 }
 
+export const userRegister = async (emailId, pin, deviceId) => {
+  try {  
+   
+      const url = `${BASE_URL}/agent/agent?email=${emailId}`
+      console.log(url)
+      let response = await Request.get({url});
+      return response
+   
+  } catch (error) {
+    console.log(JSON.stringify(error.message)); // this is the main part. Use the response property from the error object
+    throw JSON.stringify(error);
+  }
+}
+
 export const userLogin = async (emailId) => {
   try {
     
