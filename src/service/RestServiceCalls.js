@@ -7,7 +7,7 @@ import * as Request from '../helpers/serviceApi'
 
 //let  BASE_URL =  'https://icheckify.azurewebsites.net/api'
 //const BASE_URL =  'https://chek.azurewebsites.net/api'
-const BASE_URL = "https://chek.azurewebsites.net/api"
+const BASE_URL = "https://i-taskify.azurewebsites.net/api"
 //Constanst?.expoConfig?.extra?.baseURL
 
 
