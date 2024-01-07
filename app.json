@@ -45,7 +45,7 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "android.permission.CAMERA"
+        "android.permission.CAMERA", "android.permission.READ_PHONE_STATE"
       ],
       "package": "com.binaytripathi.icheckifyDev"    
     },

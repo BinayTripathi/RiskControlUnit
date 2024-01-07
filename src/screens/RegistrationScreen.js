@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { StyleSheet, View, Text } from 'react-native';
 import Background from '@components/UI/Background';
 import { Padder } from '@components/UI/Wrapper';
@@ -17,14 +17,13 @@ import {
 
 import * as Application from 'expo-application';
 import { Platform } from 'expo-modules-core';
-import * as SecureStore from 'expo-secure-store';
 import { emailValidator } from '../helpers/emailValidator'
-import { passwordValidator } from '../helpers/passwordValidator'
 
 import {requestRegisterUser} from '@store/ducks/userSlice'
 import {SECURE_USER_KEY, SECURE_USER_PIN} from '../core/constants'
+import {secureSave} from '@helpers/SecureStore'
 
-const CELL_COUNT = 6;
+const CELL_COUNT = 4;
 export default function RegistrationScreen({ route, navigation }) {
 
   //const userTracker = route.params && route.params.lastState ? <UserTracker displayCoordinates={false}/> : null
@@ -37,12 +36,7 @@ export default function RegistrationScreen({ route, navigation }) {
       setPin,
     });
 
-
-    async function secureSave(key, value) {
-      await SecureStore.setItemAsync(key, value);
-    }
-
-   const registerUser = async () => {
+    const registerUser = async () => {
 
     const emailError = emailValidator(email.value)
     if (emailError) {

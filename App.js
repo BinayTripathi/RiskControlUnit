@@ -11,8 +11,8 @@ import { RootSiblingParent } from 'react-native-root-siblings';
 
 import AppNavigator from './src/components/NavigationComponent/AppNavigator';
 import {en, registerTranslation } from 'react-native-paper-dates'
-import * as SecureStore from 'expo-secure-store';
-import {SECURE_USER_KEY, SECURE_USER_PIN} from '@core/constants'
+import {secureGet} from '@helpers/SecureStore'
+import {SECURE_USER_KEY} from '@core/constants'
 
 export default function App() {
 
@@ -20,13 +20,10 @@ export default function App() {
   const [isRegistered, setIsRegistered] = useState(false)
 
   useEffect( () => {
-        async function getSecure(key) {
-            return await SecureStore.getItemAsync(key);
-          }
-
+       
         (async ()=> {         
           try{
-            const email = await getSecure(SECURE_USER_KEY)                     
+            const email = await secureGet(SECURE_USER_KEY)                     
             if(email !== '' && email !== undefined && email !== null){
               console.log(email)
               setIsRegistered(true)
