@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { StyleSheet, View, Text, PermissionsAndroid } from 'react-native';
+import { StyleSheet, View, Text, PermissionsAndroid, Alert } from 'react-native';
 import Background from '@components/UI/Background';
 import { Padder } from '@components/UI/Wrapper';
 import Logo from '@components/UI/Logo'
@@ -171,9 +171,13 @@ export default function RegistrationScreen({ route, navigation }) {
         setIsPinValidated(true)
 
       } else {
-        console.log(await secureGet(SECURE_USER_KEY))
-        console.log('Retry')
-      }
+        Alert.alert('Incorrect PIN', 'Please try again...', [
+            
+          {text: 'OK', onPress: () => setPin('')},
+        ]);      
+        
+      }  
+
     }
 
    }
