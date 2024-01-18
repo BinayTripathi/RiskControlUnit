@@ -22,7 +22,16 @@ import Constanst from 'expo-constants'
 import LocalAuthComponent from './../components/AuthComponent/LocalAuthComponent';
 import * as SecureStore from 'expo-secure-store';
 import {SECURE_USER_KEY, SECURE_USER_PIN} from '../core/constants'
+import {secureGet, secureRemove} from '@helpers/SecureStore'
 
+import {
+  CodeField,
+  Cursor,
+  useBlurOnFulfill,
+  useClearByFocusCell,
+} from 'react-native-confirmation-code-field';
+
+const CELL_COUNT = 4
 export default function LoginScreen({navigation}) {
 
   const BASE_URL = Constanst?.expoConfig?.extra?.baseURL
@@ -37,18 +46,27 @@ export default function LoginScreen({navigation}) {
   const [biometicCancelled, setBiometicCancelled] = useState(false)
   const [email, setEmail] = useState()
   const [password, setPassword] = useState({ value: '', error: '' })
+  const [pin, setPin] = useState('')
+  const [pinValidated, setIsPinValidated] = useState(false)
+  const ref = useBlurOnFulfill({pin, cellCount: CELL_COUNT});
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+    pin,
+    setPin,
+  })
 
   // if loging within 30 sec of loggout, dispatch autologin
 
   useEffect(() => { 
 
-    async function getSecure(key) {
-      return await SecureStore.getItemAsync(key);
-    }
-    
     (async() => {
-      const user = await getSecure(SECURE_USER_KEY)
-      setEmail(user)
+      try{
+        const user = await secureGet(SECURE_USER_KEY)
+        console.log(`Within login ${user}`)
+        setEmail(user)
+      } catch (error) {
+        console.log(error)
+      }
+      
       }
     )()    
   },[])
@@ -106,21 +124,33 @@ export default function LoginScreen({navigation}) {
           <Text style={{fontWeight: '800'}}>DEMO VERSION</Text>         
           <Text>URL: {BASE_URL}</Text>
 
+          <CodeField
+            ref={ref}        
+            value={pin}
+            onChangeText={setPin}
+            cellCount={CELL_COUNT}
+            rootStyle={styles.codeFieldRoot}
+            keyboardType="number-pad"
+            textContentType="oneTimeCode"
+            renderCell={({index, symbol, isFocused}) => (
+              <Text
+                key={index}
+                style={[styles.cell, isFocused && styles.focusCell]}
+                onLayout={getCellOnLayoutHandler(index)}>
+                {symbol || (isFocused ? <Cursor/> : null)}
+              </Text>
+            )}/>
           
-          <TextInput
-            label="Password"
-            returnKeyType="done"
-            value={password.value}
-            onChangeText={(text) => setPassword({ value: text, error: '' })}
-            error={!!password.error}
-            errorText={password.error}
-            secureTextEntry
-          />
           <View>{loggingError}</View>
           <Button mode="contained" onPress={onLoginPressed} 
             onLongPress={() => {
               dispatch({ type: "DESTROY_SESSION" });
-              onLoginPressed() }}
+              secureRemove(SECURE_USER_KEY)
+              navigation.reset({
+                index: 0,
+                routes: [{ name: SCREENS.RegistrationScreen }],
+        })
+              /*onLoginPressed()*/ }}
               style={styles.button}>
           <Entypo name="key" size={18} color="white" /> LOGIN
           </Button>
@@ -152,5 +182,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold'
   },
+
+  codeFieldRoot: {marginTop: 20},
+    cell: {
+      width: 40,
+      height: 40,
+      lineHeight: 38,
+      marginRight: 2,
+      fontSize: 24,
+      borderWidth: 2,
+      borderRadius: 8,
+      borderColor: '#00000030',
+      textAlign: 'center',
+    },
+    focusCell: {
+      borderColor: '#000',
+    },
 
 })

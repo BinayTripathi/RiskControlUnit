@@ -184,6 +184,12 @@ const styles = StyleSheet.create({
     },
     touchable: {
         borderRadius: 20,
+        borderRadius: 8,
+        elevation: 10,      
+        alignItems: 'center',
+        width: 70,
+        height: 70,
+        marginHorizontal: 20,
       },
 
     button: {

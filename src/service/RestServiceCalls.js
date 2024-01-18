@@ -1,5 +1,7 @@
 import Constanst from 'expo-constants'
 import * as Request from '../helpers/serviceApi'
+import * as Application from 'expo-application';
+import { Platform } from 'expo-modules-core';
 
 //const BASE_URL = 'https://rcu.azurewebsites.net/api';
 //const BASE_URL = 'https://ccutest.free.beeceptor.com'
@@ -21,15 +23,50 @@ const verifyLogin =  async (emailId) => {
 
 }
 
-export const userRegister = async (emailId, pin, deviceId) => {
+export const userRegister = async (phoneNo, deviceId) => {
   try {  
-   
-      const url = `${BASE_URL}/agent/agent?email=${emailId}`
-      console.log(url)
-      let response = await Request.get({url});
-      return response
+    const url = `${BASE_URL}/Agent/VerifyMobile`
+    console.log(url)
+    const config = {}
+    const data = {
+      "mobile" : phoneNo,
+      "uid" : deviceId,
+      "checkUid" : false,
+      "sendSMS": true
+    };
+    let response = await  Request.post({url, config, data});
+    console.log(response.data)
+    return response
    
   } catch (error) {
+    console.log('EXCEPTION')
+    console.log(JSON.stringify(error.message)); // this is the main part. Use the response property from the error object
+    throw JSON.stringify(error);
+  }
+}
+
+
+export const userRegisterPhoto = async (image, iosDeviceId) => {
+
+  let deviceId = ''
+  if (Platform.OS === 'android') 
+    deviceId = Application.androidId
+  console.log(deviceId)
+  try {  
+    const url = `${BASE_URL}/Agent/VerifyId`
+    console.log(url)
+    const config = {}
+    const data = {
+      "image": image,
+      "uid": deviceId,
+      "verifyId": true
+    }
+    
+    let response = await  Request.post({url, config, data});
+    return response
+   
+  } catch (error) {
+    console.log('EXCEPTION')
     console.log(JSON.stringify(error.message)); // this is the main part. Use the response property from the error object
     throw JSON.stringify(error);
   }

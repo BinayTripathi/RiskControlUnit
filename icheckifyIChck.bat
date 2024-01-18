@@ -1,4 +1,5 @@
 set MY_ENVIRONMENT=iChck
+#$env:MY_ENVIRONMENT='iChck'
 set CUR_YYYY=%date:~10,4%
 set CUR_MM=%date:~4,2%
 set CUR_DD=%date:~7,2%
@@ -17,6 +18,7 @@ ECHO ..%EXPO_PUBLIC_GOOGLE_MAP_API_KEY%
 rmdir /s /q android
 call expo install
 call npx expo prebuild --clean --no-install --platform android
+xcopy "build.gradle" ".\android\build.gradle" /Y
 cd ./android
 call ./gradlew -stop
 call ./gradlew assembleRelease

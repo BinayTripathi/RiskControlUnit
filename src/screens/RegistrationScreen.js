@@ -1,12 +1,13 @@
 import React, {useState, useEffect} from 'react'
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, PermissionsAndroid } from 'react-native';
 import Background from '@components/UI/Background';
 import { Padder } from '@components/UI/Wrapper';
 import Logo from '@components/UI/Logo'
 import Header from '@components/UI/Header'
 import Button from '@components/UI/Button'
-import { useDispatch } from 'react-redux'
-import { FontAwesome5 } from '@expo/vector-icons';
+import LoadingModalWrapper from '@components/UI/LoadingModal';
+import { useDispatch, useSelector } from 'react-redux'
+import { AntDesign , FontAwesome5 } from '@expo/vector-icons';
 import TextInput from '@components/UI/TextInput'
 import {
   CodeField,
@@ -17,98 +18,243 @@ import {
 
 import * as Application from 'expo-application';
 import { Platform } from 'expo-modules-core';
-import { emailValidator } from '../helpers/emailValidator'
+import RegistrationImageScanner from '@components/AuthComponent/RegistrationImageScanner'
 
 import {requestRegisterUser} from '@store/ducks/userSlice'
 import {SECURE_USER_KEY, SECURE_USER_PIN} from '../core/constants'
-import {secureSave} from '@helpers/SecureStore'
+import {secureSave, secureGet} from '@helpers/SecureStore'
+//import DeviceNumber from 'react-native-device-number';
+//import {   getHash, requestHint,  startOtpListener,  useOtpVerify,} from 'react-native-otp-verify';
+import SmsRetriever from 'react-native-sms-retriever';
+
 
 const CELL_COUNT = 4;
 export default function RegistrationScreen({ route, navigation }) {
 
+
   //const userTracker = route.params && route.params.lastState ? <UserTracker displayCoordinates={false}/> : null
+    let isLoading = useSelector((state) => state.user.loading);
+    let userId = useSelector((state) => state.user.userId);
+    let auth = useSelector((state) => state.user.auth)
+
     const dispatch = useDispatch()
-    const [email, setEmail] = useState({ value: '', error: '' })
+
+    const [registeredPhoneNumber, setRegisteredPhoneNumber] = useState('')
     const [pin, setPin] = useState('')
+    const [pinValidated, setIsPinValidated] = useState(false)
     const ref = useBlurOnFulfill({pin, cellCount: CELL_COUNT});
     const [props, getCellOnLayoutHandler] = useClearByFocusCell({
       pin,
       setPin,
     });
 
-    const registerUser = async () => {
+    /*useEffect( () => {
+        getHash().then(setHashFromMethod).catch(console.log);
+        requestHint().then(setHint).catch(console.log);
+        startOtpListener(setOtpFromMethod);
+      (async ()=> {         
+        try{
+          const phoneNumber = ''//await DeviceNumber.get()                     
+          if(phoneNumber !== '' && phoneNumber !== undefined && phoneNumber !== null){
+            console.log(phoneNumber)
+            setRegisteredPhoneNumber(phoneNumber.mobileNumber)
+          }
+         
+        } catch(error){
+      console.log(error)
+      }
+          
+      })()       
+  },[]) */ 
 
-    const emailError = emailValidator(email.value)
-    if (emailError) {
-      setEmail({ ...email, error: emailError })      
-      return
+  const getPhoneNumber = async => {
+    (async () => {
+      await getUserPhoneNumber()
+    })()
+  }
+
+
+  const getUserPhoneNumber = async () => {
+    
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_PHONE_NUMBERS,
+        {
+          title: 'iCheckfy Phone State Permission',
+          message:
+            'Needed to get you phone details ',
+
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      console.log(`checking permissions ${granted}`)   
+        
+       
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        try {
+          const phoneNumber = await SmsRetriever.requestPhoneNumber();
+          console.log(`Phone no is ${phoneNumber}`)
+          setRegisteredPhoneNumber(phoneNumber)
+        } catch (error) {
+          console.log(JSON.stringify(error));
+        }
+        
+      }
+    } catch (err) {
+      console.warn(err);
     }
+  }
+
+  _onSmsListenerPressed = async () => {
+    try {
+
+      const grantedRcv = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.RECEIVE_SMS,
+        {
+          title: 'iCheckfy SMS Permission',
+          message:
+            'Needed to get you phone details ',
+
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+
+      const grantedRead = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_SMS,
+        {
+          title: 'iCheckfy SMS Permission',
+          message:
+            'Needed to get you phone details ',
+
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      console.log('SMS listner')
+      const registered = await SmsRetriever.startSmsRetriever();
+      if (registered) {
+        SmsRetriever.addSmsListener(event => {
+          console.log(event.message);
+          SmsRetriever.removeSmsListener();
+        }); 
+      }
+    } catch (error) {
+      console.log(JSON.stringify(error));
+    }
+  };
+
+  const registerUser = async () => {
+ 
     if (Platform.OS === 'android') {
       console.log(Application.androidId)
-      secureSave(SECURE_USER_PIN,pin.toString())
-      secureSave(SECURE_USER_KEY,email.value)
-
       const dataToSendForReg = {
-        emailId: email.value,
-        password: pin,
+        phoneNo: registeredPhoneNumber.substring(1),
         deviceId: Application.androidId,
       }
-
       dispatch(requestRegisterUser(dataToSendForReg))
+      _onSmsListenerPressed()
     }
    }
+
+  
+
+   const vaildateOtp = async ()  => { 
+    
+    if (Platform.OS === 'android') {
+      secureSave(SECURE_USER_PIN,auth)
+      secureSave(SECURE_USER_KEY,userId)
+
+      if(auth === pin.toString()) {
+        //navigation.navigate('Login')
+        setIsPinValidated(true)
+
+      } else {
+        console.log(await secureGet(SECURE_USER_KEY))
+        console.log('Retry')
+      }
+    }
+
+   }
+
+  
     
     return (
-      <Background>
-        <Padder>
-          <Logo />
-          <Header>REGISTRATION</Header>
-          <TextInput
-            label="Email"
-            returnKeyType="next"
-            value={email.value}
-            onChangeText={(text) => setEmail({ value: text, error: '' })}
-            error={!!email.error}
-            errorText={email.error}
-            autoCapitalize="none"
-            autoCompleteType="email"
-            textContentType="emailAddress"
-            keyboardType="email-address"
-          />
+      <LoadingModalWrapper shouldModalBeVisible = {isLoading}>
+          <Background>
+          <Padder>
+            <Logo />
+            <Header>REGISTRATION</Header>
+            
+            {!userId && 
+            <> 
+              <TextInput
+                label="Phone Number"
+                returnKeyType="next"
+                value={registeredPhoneNumber}
+                //editable={false} 
+                onFocus = {getUserPhoneNumber}
+                onChangeText={(text) => setRegisteredPhoneNumber(text)}
+                //error={!!email.error}
+                //errorText={email.error}
+                autoCapitalize="none"
+                autoCompleteType="tel"
+                textContentType="telephoneNumber"
+                keyboardType="phone-pad"
+              />   
+              
+              <Button
+                mode="elevated"
+                //disabled = {pin.toString().length < CELL_COUNT  && emailValidator(email.value) === ''}
+                style={[Styles.button,]}
+                onPress={registerUser }
+                onLongPress={() => {
+                  dispatch({ type: "DESTROY_SESSION" });
+                 }}>
+                Please Enter Your Mobile Number  
+                <AntDesign name="phone" size={24} color="white" />
+              </Button> 
+            </>}
 
-      <CodeField
-        ref={ref}        
-        value={pin}
-        onChangeText={setPin}
-        cellCount={CELL_COUNT}
-        rootStyle={Styles.codeFieldRoot}
-        keyboardType="number-pad"
-        textContentType="oneTimeCode"
-        renderCell={({index, symbol, isFocused}) => (
-          <Text
-            key={index}
-            style={[Styles.cell, isFocused && Styles.focusCell]}
-            onLayout={getCellOnLayoutHandler(index)}>
-            {symbol || (isFocused ? <Cursor/> : null)}
-          </Text>
-        )}
-      />
-          
+        {userId && !pinValidated &&
+        <>
+          <CodeField
+            ref={ref}        
+            value={pin}
+            onChangeText={setPin}
+            cellCount={CELL_COUNT}
+            rootStyle={Styles.codeFieldRoot}
+            keyboardType="number-pad"
+            textContentType="oneTimeCode"
+            renderCell={({index, symbol, isFocused}) => (
+              <Text
+                key={index}
+                style={[Styles.cell, isFocused && Styles.focusCell]}
+                onLayout={getCellOnLayoutHandler(index)}>
+                {symbol || (isFocused ? <Cursor/> : null)}
+              </Text>
+            )}/>
+
           <Button
-            mode="elevated"
-            disabled = {pin.toString().length < CELL_COUNT  && emailValidator(email.value) === ''}
-            style={[Styles.button, pin.toString().length < CELL_COUNT? Styles.button_disabled: {}]}
-            onPress={registerUser }
-             onLongPress={() => {
-              dispatch({ type: "DESTROY_SESSION" });
-              navigation.navigate('Login')}}
-          >
-            <FontAwesome5 name="praying-hands" size={20} color="white" />
-            WELCOME AGENT
-          </Button>
-        </Padder>
+                mode="elevated"
+                //disabled = {pin.toString().length < CELL_COUNT  && emailValidator(email.value) === ''}
+                style={[Styles.button,]}
+                onPress={vaildateOtp }
+                onLongPress={() => {
+                  dispatch({ type: "DESTROY_SESSION" });
+                  }} >                
+                Please Enter OTP
+              </Button>
+        </>  }
+                
+              {userId && pinValidated && <RegistrationImageScanner/>}
         
-      </Background>
+          </Padder>
+          
+        </Background>
+      </LoadingModalWrapper>
+      
     )
   }
 
@@ -134,4 +280,5 @@ export default function RegistrationScreen({ route, navigation }) {
     focusCell: {
       borderColor: '#000',
     },
+    
   });

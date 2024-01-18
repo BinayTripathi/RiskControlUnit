@@ -40,12 +40,21 @@
       }
     },
     "android": {
+      "compileSdkVersion": 31,
+      "targetSdkVersion": 31,
+      "buildToolsVersion": "31.0.0",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icheckifyIcon.png",
         "backgroundColor": "#ffffff"
       },
+      "usesCleartextTraffic": true,
+       "uses-permission android":"name",
       "permissions": [
-        "android.permission.CAMERA", "android.permission.READ_PHONE_STATE"
+        "CAMERA", 
+        "READ_PHONE_STATE",
+        "READ_PHONE_NUMBERS",
+        "RECEIVE_SMS",
+        "READ_SMS"
       ],
       "package": "com.binaytripathi.icheckifyDev"    
     },

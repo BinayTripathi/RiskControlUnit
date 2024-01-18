@@ -4,8 +4,9 @@ import {call, put} from 'redux-saga/effects';
 
 import {userLogin, userRegister} from '@services/RestServiceCalls'
 import {reset} from '@services/NavigationService';
-import { LOGIN_ERROR_MESSAGE, REGISTRATION_ERROR_MESSAGE } from '@core/constants'
+import { SECURE_USER_KEY, SECURE_USER_PIN, LOGIN_ERROR_MESSAGE, REGISTRATION_ERROR_MESSAGE } from '@core/constants'
 import { SCREENS } from '@core/constants';
+import {secureSave, secureGet} from '@helpers/SecureStore'
 
 const initialState = {
     data: {},
@@ -69,7 +70,8 @@ export const logoutUser = createAction(TYPES.LOGOUT_USER);
         auth: null,
         lastLogin: null,
         isLoggedIn : false,
-        isRegistered : false
+        isRegistered : false, 
+        deviceId : null
      
     },
     reducers:{
@@ -79,9 +81,13 @@ export const logoutUser = createAction(TYPES.LOGOUT_USER);
             state.error = null        
           },
           
-          successRegisterUser: (state) => {            
+          successRegisterUser: (state, action) => { 
+            console.log(action.payload)        
             state.loading = false;
-            state.isRegistered= true                  
+            state.isRegistered= true      
+            state.userId = action.payload.email,
+            state.auth = action.payload.pin
+            state.deviceId = action.payload.deviceId
           },
 
           failureRegisterUser: (state) => {
@@ -98,7 +104,7 @@ export const logoutUser = createAction(TYPES.LOGOUT_USER);
           },
           successValidateUser: (state, action) => {            
             state.loading = false;
-            state.userId = action.payload.emailId,
+            //state.userId = action.payload.emailId,
             state.auth = action.payload.password
             state.isLoggedIn = true
             state.lastLogin =  (new Date()).toISOString()
@@ -133,12 +139,13 @@ export const logoutUser = createAction(TYPES.LOGOUT_USER);
 
   export function* asyncRequestRegisterUser(action) {
     try {      
-        const response = yield call(userRegister, action.payload.emailId, action.payload.pin, action.payload.deviceId);
+        const response = yield call(userRegister, action.payload.phoneNo, action.payload.deviceId);
         //const responseUserData = response.data?.token;     
         const responseUserData = response.data
         if (responseUserData) {          
-          yield put(successRegisterUser());
-          return reset({routes: [{name: SCREENS.Login}]});
+          yield put(successRegisterUser({"deviceId":action.payload.deviceId, ...responseUserData}));
+          return
+          //return reset({routes: [{name: SCREENS.Login}]});
         }      
       yield put(failureRegisterUser());
     } catch (err) {
