@@ -45,8 +45,6 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
       
     }   
      
-
-    console.log(`Loaded ${loading}`)
     Image.getSize(`data:image/png;base64,${photoData}`, (width, height) => {imageRatio = width/ width});
 
       console.log(imageRatio)
