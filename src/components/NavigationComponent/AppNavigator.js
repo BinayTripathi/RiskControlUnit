@@ -1,18 +1,18 @@
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { theme } from '@core/theme';
-import Logout from '@components/LogoutComponent';
+import Logout from '@components/AuthComponent/LogoutComponent';
 import {navigationRef} from '@services/NavigationService'
 
 import { SCREENS } from '@core/constants';
-import StartScreen from '@screens/StartScreen';
+import RegistrationScreen from '@screens/RegistrationScreen';
 import LoginScreen from '@screens/LoginScreen';
 import CaseListScreen from '@screens/CaseListScreen';
 import CaseDetailsScreen from '@screens/CaseDetailsScreen';
 import ImageCaptureScreen from '@screens/ImageCaptureScreen';
 
-export default function AppNavigator() {
+
+export default function AppNavigator({isRegistered}) {
 
     
   const Stack = createNativeStackNavigator();
@@ -30,7 +30,8 @@ export default function AppNavigator() {
                 },
               }}>      
             
-                    
+
+              {!isRegistered && <Stack.Screen name={SCREENS.RegistrationScreen} component={RegistrationScreen}  options={{headerShown: false}}/>}
               <Stack.Screen name={SCREENS.Login} component={LoginScreen} /> 
               <Stack.Screen name={SCREENS.CaseList} component={CaseListScreen} options={
                 {title: 'Your Case List',

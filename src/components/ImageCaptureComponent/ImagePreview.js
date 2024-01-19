@@ -1,9 +1,11 @@
 import React, {  useRef, useState  } from "react";
-import { StyleSheet,Text,TouchableOpacity, View, Image, Alert} from "react-native";
+import { StyleSheet,Text,TouchableOpacity, View, Image, Alert, Dimensions} from "react-native";
 import { useDispatch} from 'react-redux'
 import { useNavigation } from "@react-navigation/native";
 import { PaperProvider } from 'react-native-paper';
 
+import {userRegisterPhoto} from '@services/RestServiceCalls'
+import useApi from '@hooks/useApi'
 import UserTracker from "./UserTracker";
 
 import {theme} from '../../core/theme'
@@ -11,8 +13,10 @@ import { UPLOAD_TYPE } from '@core/constants';
 
 import {requestUpdateBeneficiaryPhotoCaseAction, requestUpdatePanCaseAction} from '@store/ducks/case-submission-slice'
 import useLocationTracker from "@hooks/useLocationTracker";
+import LoadingModalWrapper from '@components/UI/LoadingModal';
 
 
+let imageRatio = 1
 //https://www.farhansayshi.com/post/how-to-save-files-to-a-device-folder-using-expo-and-react-native/
 const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimId, docType, email}) => {
   
@@ -21,6 +25,30 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
     const [displayMap, setDisplayMap] = useState(false);
     const dispatch = useDispatch()
     const tracker = useLocationTracker()
+    const { triggerApi, data, error, loading } = useApi(userRegisterPhoto, photoData);
+    //const {widthPic, heightPic} = Image.resolveAssetSource(photoData);
+    //console.log(`${widthPic} , ${heightPic}`)
+
+    if (data !== null)      {
+      Alert.alert('Registration Successful', 'Continue to login...', [
+        
+        {text: 'OK', onPress: () => navigation.navigate('Login')},
+      ]);      
+      
+    }              
+
+    if (error !== null)      {
+      Alert.alert('Failed to save photo', 'Please try again...', [
+        
+        {text: 'OK', onPress: () => console.log('failed agent photo')},
+      ]);      
+      
+    }   
+     
+    Image.getSize(`data:image/png;base64,${photoData}`, (width, height) => {imageRatio = width/ width});
+
+      console.log(imageRatio)
+      
     
     const savePhoto = async () => {        
 
@@ -47,20 +75,26 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
         documentDetails : documentDetailsForSubmission,
         id: Math.floor(1000 + Math.random() * 9000) * -1
       }
-     
+      
       Alert.alert(  
         'Save document',  
         `Do you want to save ${docType.name} image ?`,  
         [  
             {  
                 text: 'Ok',  
-                onPress: () => {                 
-                  if(docType.type === 'PHOTO')
-                    dispatch(requestUpdateBeneficiaryPhotoCaseAction(savePayload))
-                  else
-                   dispatch(requestUpdatePanCaseAction(savePayload))
+                onPress: async () => {      
+                  if (claimId !== "AGENT_ONBOARDING")   {
+                    if(docType.type === 'PHOTO')
+                      dispatch(requestUpdateBeneficiaryPhotoCaseAction(savePayload))
+                    else
+                      dispatch(requestUpdatePanCaseAction(savePayload))
 
-                  navigation.goBack()                 
+                   navigation.goBack()    
+                  }  else {
+                   await triggerApi()     
+                    
+                  }      
+                               
                 },  
                 style: 'default',  
             }  ,
@@ -72,8 +106,7 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
               style: 'default',  
           }  
         ]  
-    );  
-      
+    );   
     }   
 
     const displayMapHandler = () => {
@@ -85,15 +118,16 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
                               <UserTracker photoData={photoData} displayMapHandler={displayMapHandler} shouldDisplayMap = {displayMap}/>
                              : ( <>
                                  <UserTracker photoData={false}/>
-                                 <Image source={{uri: `data:image/jpg;base64,${photoData}`}} style={{flex: 1, borderRadius: 10 }}  resizeMode='contain'  />
+                                 <Image source={{uri: `data:image/jpg;base64,${photoData}`}} style={styles.middlePhoto}  />
                                    </> )
                             
  
   return (
     <PaperProvider>
+      <LoadingModalWrapper shouldModalBeVisible = {loading === undefined ? false: loading}>
       <View style={styles.container}>
         
-        <View style={styles.middlePhoto} ref={savedPhoto}>
+        <View style={styles.middlePhotoContainer} ref={savedPhoto}>
               {displayMapModal}
         </View>
 
@@ -109,39 +143,45 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
             onPress={savePhoto}>
             <Text style={styles.prevBtnText}>Save Photo</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.prevBtn, { marginLeft: 25 }]}
-            onPress={displayMapHandler}>
-            <Text style={styles.prevBtnText}>Display Location</Text>
-          </TouchableOpacity>
         </View>
       </View>
+      </LoadingModalWrapper>
     </PaperProvider>
   );
 };
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  middlePhoto: {
-    flex: 1,
-    position: "relative",
+  middlePhotoContainer: {   
+ 
     marginTop: 80,
-    paddingHorizontal: 5
-
+    paddingHorizontal: 5,
     
+    width: (windowWidth - 20),
   },
+
+  middlePhoto: {
+
+    width: '100%'   ,
+    // Without height undefined it won't work
+    height: undefined,
+    // figure out your image aspect ratio
+    aspectRatio: imageRatio*0.75,
+    resizeMode: 'center',
+  } ,    
   bottomPrev: {
     height: 100,    
     justifyContent: "center",
     flexDirection: "row",
-    paddingHorizontal: 4
+    paddingHorizontal: 10
   },
   prevBtn: {
     height: 65,
-    width: 100,
+    width: 140,
     backgroundColor: theme.colors.primary,
     color: theme.colors.inversePrimary,
     justifyContent: "center",

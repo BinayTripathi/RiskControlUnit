@@ -1,3 +1,5 @@
+
+import { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet} from 'react-native';
 
@@ -9,8 +11,30 @@ import { RootSiblingParent } from 'react-native-root-siblings';
 
 import AppNavigator from './src/components/NavigationComponent/AppNavigator';
 import {en, registerTranslation } from 'react-native-paper-dates'
+import {secureGet} from '@helpers/SecureStore'
+import {SECURE_USER_KEY} from '@core/constants'
 
 export default function App() {
+
+
+  const [isRegistered, setIsRegistered] = useState(false)
+
+  useEffect( () => {
+       
+        (async ()=> {         
+          try{
+            const email = await secureGet(SECURE_USER_KEY)                     
+            if(email !== '' && email !== undefined && email !== null){
+              console.log(email)
+              setIsRegistered(true)
+            }
+           
+          } catch(error){
+        console.log(error)
+        }
+            
+        })()        
+    },[])
 
   registerTranslation('en', {
     save: 'Save',
@@ -36,7 +60,7 @@ export default function App() {
       <PersistGate persistor={persistor} loading={null}>
       <StatusBar style='dark'/>
         <RootSiblingParent>
-          <AppNavigator/> 
+          <AppNavigator isRegistered = {isRegistered}/> 
         </RootSiblingParent>                
       </PersistGate>      
     </Provider>

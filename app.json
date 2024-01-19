@@ -21,7 +21,13 @@
       "react-native-document-scanner-plugin",
       {
         "cameraPermission": "We need camera access, so you can scan documents"
-      } ]
+      } ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+        }
+      ]
     ],
     "assetBundlePatterns": [
       "**/*"
@@ -34,12 +40,21 @@
       }
     },
     "android": {
+      "compileSdkVersion": 31,
+      "targetSdkVersion": 31,
+      "buildToolsVersion": "31.0.0",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icheckifyIcon.png",
         "backgroundColor": "#ffffff"
       },
+      "usesCleartextTraffic": true,
+       "uses-permission android":"name",
       "permissions": [
-        "android.permission.CAMERA"
+        "CAMERA", 
+        "READ_PHONE_STATE",
+        "READ_PHONE_NUMBERS",
+        "RECEIVE_SMS",
+        "READ_SMS"
       ],
       "package": "com.binaytripathi.icheckifyDev"    
     },

@@ -154,6 +154,10 @@ const styles = StyleSheet.create({
     height: 70,
     marginHorizontal: 20        
   },
+  buttonContainer: {
+
+   
+}, 
   labelContainer : {
     flexDirection: 'row',
     borderRadius: 10,
@@ -181,9 +185,16 @@ const styles = StyleSheet.create({
     height: '90%',
     borderRadius: 30,
     resizeMode: 'contain',
+
   },
   touchable: {
       borderRadius: 8,
+      elevation: 10,
+      
+      alignItems: 'center',
+      width: 70,
+      height: 70,
+      marginHorizontal: 20
     },
   textBase: {
       color: 'black',
