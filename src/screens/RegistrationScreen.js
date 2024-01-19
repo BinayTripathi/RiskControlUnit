@@ -21,7 +21,7 @@ import { Platform } from 'expo-modules-core';
 import RegistrationImageScanner from '@components/AuthComponent/RegistrationImageScanner'
 
 import {requestRegisterUser} from '@store/ducks/userSlice'
-import {SECURE_USER_KEY, SECURE_USER_PIN} from '../core/constants'
+import {SECURE_USER_KEY, SECURE_USER_PIN, REGISTRATION_ERROR_MESSAGE} from '../core/constants'
 import {secureSave, secureGet} from '@helpers/SecureStore'
 //import DeviceNumber from 'react-native-device-number';
 //import {   getHash, requestHint,  startOtpListener,  useOtpVerify,} from 'react-native-otp-verify';
@@ -36,6 +36,7 @@ export default function RegistrationScreen({ route, navigation }) {
     let isLoading = useSelector((state) => state.user.loading);
     let userId = useSelector((state) => state.user.userId);
     let auth = useSelector((state) => state.user.auth)
+    let error = useSelector((state) => state.user.error)
 
     const dispatch = useDispatch()
 
@@ -48,25 +49,16 @@ export default function RegistrationScreen({ route, navigation }) {
       setPin,
     });
 
-    /*useEffect( () => {
-        getHash().then(setHashFromMethod).catch(console.log);
-        requestHint().then(setHint).catch(console.log);
-        startOtpListener(setOtpFromMethod);
-      (async ()=> {         
-        try{
-          const phoneNumber = ''//await DeviceNumber.get()                     
-          if(phoneNumber !== '' && phoneNumber !== undefined && phoneNumber !== null){
-            console.log(phoneNumber)
-            setRegisteredPhoneNumber(phoneNumber.mobileNumber)
-          }
-         
-        } catch(error){
-      console.log(error)
-      }
-          
-      })()       
-  },[]) */ 
-
+    useEffect(()=> {
+      if (isLoading !== true && error === REGISTRATION_ERROR_MESSAGE) {
+        Alert.alert('Problem registering phone number', 'Please contact support', [
+            
+          {text: 'OK', onPress: () => {setRegisteredPhoneNumber('')}},
+        ]);      
+        
+      }  
+    },[error])
+ 
   const getPhoneNumber = async => {
     (async () => {
       await getUserPhoneNumber()

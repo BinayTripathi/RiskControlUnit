@@ -101,6 +101,7 @@ export const logoutUser = createAction(TYPES.LOGOUT_USER);
           },
           requestValidateUserAuto:  (state) => {
             state.loading = true;  
+            state.error = null   
           },
           successValidateUser: (state, action) => {            
             state.loading = false;
@@ -146,10 +147,11 @@ export const logoutUser = createAction(TYPES.LOGOUT_USER);
           yield put(successRegisterUser({"deviceId":action.payload.deviceId, ...responseUserData}));
           return
           //return reset({routes: [{name: SCREENS.Login}]});
-        }      
+        }  
+        console.log('REGISTRATION FAILED')
       yield put(failureRegisterUser());
     } catch (err) {
-      console.log(err);
+      console.log(err)
       yield put(failureRegisterUser());
     }
   }

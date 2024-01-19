@@ -59,7 +59,7 @@ export const userRegisterPhoto = async (image, iosDeviceId) => {
     const data = {
       "image": image,
       "uid": deviceId,
-      "verifyId": false
+      "verifyId": true
     }
     
     let response = await  Request.post({url, config, data});

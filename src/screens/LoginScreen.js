@@ -6,18 +6,13 @@ import { useIsFocused } from '@react-navigation/native'
 import {requestValidateUser, requestValidateUserAuto, navigateFromHomePage} from './../store/ducks/userSlice'
 import Background from '@components/UI/Background'
 import Logo from '@components/UI/Logo'
-import Header from '@components/UI/Header'
 import Button from '@components/UI/Button'
-import Paragraph from '@components/UI/Paragraph'
-import TextInput from '@components/UI/TextInput'
 
-import { passwordValidator } from '../helpers/passwordValidator'
 import { Entypo } from '@expo/vector-icons';
 
 import { theme } from '../core/theme'
 import { SCREENS, SESSION_TTL_IN_SEC } from '../core/constants'
 import LoadingModalWrapper from '@components/UI/LoadingModal';
-import {reset} from '@services/NavigationService';
 import Constanst from 'expo-constants'
 import LocalAuthComponent from './../components/AuthComponent/LocalAuthComponent';
 import * as SecureStore from 'expo-secure-store';
@@ -45,9 +40,7 @@ export default function LoginScreen({navigation}) {
 
   const [biometicCancelled, setBiometicCancelled] = useState(false)
   const [email, setEmail] = useState()
-  const [password, setPassword] = useState({ value: '', error: '' })
   const [pin, setPin] = useState('')
-  const [pinValidated, setIsPinValidated] = useState(false)
   const ref = useBlurOnFulfill({pin, cellCount: CELL_COUNT});
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
     pin,
@@ -103,7 +96,7 @@ export default function LoginScreen({navigation}) {
     console.log(email)
     const dataToSendForAuth = {
       emailId: email,
-      password: password.value,
+      password: pin,
       returnUrl: 'http://localhost:19006/',
     }
    
@@ -112,7 +105,7 @@ export default function LoginScreen({navigation}) {
   }
 
    const loggingError = userLoggingError ? 
-   <Text style={styles.errorTextStyle}>Invalid user id or password</Text> 
+   <Text style={styles.errorTextStyle}>Invalid user id or PIN</Text> 
    :null
   return (
     <LoadingModalWrapper shouldModalBeVisible = {isLoading}>
@@ -121,7 +114,9 @@ export default function LoginScreen({navigation}) {
         <View style = {styles.wrapper}>
           {!biometicCancelled && <LocalAuthComponent navigation = {navigation} setBiometicCancelled = {setBiometicCancelled}/> }
           <Logo />         
-          <Text style={{fontWeight: '800'}}>DEMO VERSION</Text>         
+          <Text style={{fontWeight: '900'}}>PLEASE LOGIN {email}</Text> 
+          <Text style={{fontWeight: '900'}}></Text> 
+          <Text style={{fontWeight: '800'}}>DEMO VERSION</Text>                   
           <Text>URL: {BASE_URL}</Text>
 
           <CodeField
