@@ -1,8 +1,4 @@
 set MY_ENVIRONMENT=production
-set /P id=Enter GOOGLE API KEY: 
-set EXPO_PUBLIC_GOOGLE_MAP_API_KEY=%id%
-ECHO ..%EXPO_PUBLIC_GOOGLE_MAP_API_KEY%
-
 set CUR_YYYY=%date:~10,4%
 set CUR_MM=%date:~4,2%
 set CUR_DD=%date:~7,2%
@@ -14,9 +10,14 @@ set CUR_MS=%time:~9,2%
 set SUBFILENAME=%CUR_YYYY%%CUR_MM%%CUR_DD%-%CUR_HH%%CUR_NN%%CUR_SS%
 echo APK file : .\app\build\outputs\apk\release\app-release_%SUBFILENAME%.apk
 
+set /P id=Enter GOOGLE API KEY: 
+set EXPO_PUBLIC_GOOGLE_MAP_API_KEY=%id%
+ECHO ..%EXPO_PUBLIC_GOOGLE_MAP_API_KEY%
+
 rmdir /s /q android
 call expo install
 call npx expo prebuild --clean --no-install --platform android
+xcopy "build.gradle" ".\android\build.gradle" /Y
 cd ./android
 call ./gradlew -stop
 call ./gradlew assembleRelease
