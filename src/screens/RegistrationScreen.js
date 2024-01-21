@@ -21,7 +21,8 @@ import { Platform } from 'expo-modules-core';
 import RegistrationImageScanner from '@components/AuthComponent/RegistrationImageScanner'
 
 import {requestRegisterUser} from '@store/ducks/userSlice'
-import {SECURE_USER_KEY, SECURE_USER_PIN, REGISTRATION_ERROR_MESSAGE} from '../core/constants'
+import { theme } from '../core/theme'
+import { SECURE_USER_KEY, SECURE_USER_PIN, REGISTRATION_ERROR_MESSAGE} from '../core/constants'
 import {secureSave, secureGet} from '@helpers/SecureStore'
 //import DeviceNumber from 'react-native-device-number';
 //import {   getHash, requestHint,  startOtpListener,  useOtpVerify,} from 'react-native-otp-verify';
@@ -202,13 +203,13 @@ export default function RegistrationScreen({ route, navigation }) {
               
               <Button
                 mode="elevated"
-                //disabled = {pin.toString().length < CELL_COUNT  && emailValidator(email.value) === ''}
-                style={[Styles.button,]}
+                disabled = {registeredPhoneNumber === ''}
+                style={[Styles.button, registeredPhoneNumber === '' ? Styles.buttonDisabled : '']}
                 onPress={registerUser }
                 onLongPress={() => {
                   dispatch({ type: "DESTROY_SESSION" });
                  }}>
-                Please Enter Your Mobile Number  
+                Verify Mobile  
                 <AntDesign name="phone" size={24} color="white" />
               </Button> 
             </>}
@@ -234,8 +235,8 @@ export default function RegistrationScreen({ route, navigation }) {
 
           <Button
                 mode="elevated"
-                //disabled = {pin.toString().length < CELL_COUNT  && emailValidator(email.value) === ''}
-                style={[Styles.button,]}
+                disabled = {pin.toString().length < CELL_COUNT}
+                style={[Styles.button, pin.toString().length < CELL_COUNT ? Styles.buttonDisabled : '']}
                 onPress={vaildateOtp }
                 onLongPress={() => {
                   dispatch({ type: "DESTROY_SESSION" });
@@ -256,7 +257,10 @@ export default function RegistrationScreen({ route, navigation }) {
 
   const Styles = StyleSheet.create({
     button: {
-      marginTop: 70
+      marginTop: 70,
+    },
+    buttonDisabled : {
+      backgroundColor: theme.colors.disabledPrimary
     },
     button_disabled: {
       opacity: 0.5

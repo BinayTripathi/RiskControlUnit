@@ -10,9 +10,15 @@ import Slider from '@react-native-community/slider';
 import { useDebounce } from "use-debounce";
 import Button from '@components/UI/Button'
 import { Ionicons } from '@expo/vector-icons';
+import ElevatedSurface from '@components/UI/ElevatedSurface'
+
 
 import {requestSaveFormAction} from '@store/ducks/case-submission-slice'
-import { UPLOAD_TYPE } from '@core/constants';
+import {UPLOAD_TYPE, SCREENS } from '@core/constants';
+
+import FormAudioVideoPart from './FormAudioVideoPart';
+
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -29,10 +35,12 @@ const FormInitiator = ({selectedClaimId, userId, caseUpdates}) => {
   const [debouncedPersonMet] = useDebounce(personMet, 5000);
 
   const [dateTime, setDateTime] = useState('');
- 
+
 
   let financialStatusString = financialStatus === 0 ? 'LOW' 
   :  financialStatus === 0.5 ? 'MEDIUM' : 'HIGH'
+
+
 
 
   const BenifiaryFormPart = () => {      
@@ -85,6 +93,7 @@ const FormInitiator = ({selectedClaimId, userId, caseUpdates}) => {
     ],    
   );
 
+
   const onSavePressed = async (e) => {
 
     let payload = {
@@ -100,7 +109,6 @@ const FormInitiator = ({selectedClaimId, userId, caseUpdates}) => {
     }
     
     dispatch(requestSaveFormAction(payload))
-    showAlert()
   }
 
 
@@ -112,13 +120,17 @@ const FormInitiator = ({selectedClaimId, userId, caseUpdates}) => {
     return (
 
       <View>
+      
 
       <View style = {styles.descriptionContainer}>
             <Text style = {[styles.textBase, styles.description ]}>FORM TEMPLATE </Text>
       </View> 
       
       <ScrollView style={styles.scrollView}>
-          <View style={styles.questionaireContainer}>
+
+
+        <FormAudioVideoPart selectedClaimId ={selectedClaimId} userId= {userId}/>
+          <ElevatedSurface style={styles.questionaireContainer}>
 
               <View style={[styles.checkboxContainer, { marginBottom: 0, marginTop: 10,}]}>
                 <Checkbox style={styles.checkbox} value={metBeneficiary} onValueChange={setMetBeneficiary} />
@@ -136,7 +148,7 @@ const FormInitiator = ({selectedClaimId, userId, caseUpdates}) => {
 
               {neighbourForm}       
 
-          </View>
+          </ElevatedSurface>
       </ScrollView>
 
       <Button mode="contained" onPress={onSavePressed} 
@@ -185,62 +197,28 @@ const styles = StyleSheet.create({
 
     questionaireContainer : {
       marginTop: 30,
-      width: 280,
-      backgroundColor: 'white',
-      borderRadius: 20,
-      paddingHorizontal: 10,
-      shadowOffset: {width: 0, height: 1},
-      shadowRadius: 2,
-      elevation: 2,
-      shadowOpacity: 0.4,
+      flexDirection: 'column'
   } ,
 
   customInputBox:{
-
-    width: '90%'
+    maxWidth : 150
   },
 
-  inputContainer : {
-      marginTop: 30,
-      width: '90%',
-      //alignItems: "center",
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      backgroundColor: 'white',
-      height: 120,
-      borderRadius: 20,
-      padding: 0,
-      shadowOffset: {width: 0, height: 1},
-      shadowRadius: 2,
-      elevation: 2,
-      shadowOpacity: 0.4,
-
-  } ,
-
-  input:{
-      alignItems: 'center',
-      width: '80%',
-      backgroundColor: 'white',        
-      textAlignVertical:'top',
-      borderRadius: 20,
-      padding: 20
-    },
-    button: {
-      marginRight: 5,
-      marginBottom: 10
-    },
-    checkboxContainer: {
-      flexDirection: 'row',
-      marginBottom: 20,
-      marginTop: 20,
-    },
-    checkbox: {
-      margin: 8,
-    },
-    button: {
-      marginTop: 50
-    },
+  button: {
+    marginRight: 5,
+    marginBottom: 10
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    marginTop: 20,
+  },
+  checkbox: {
+    margin: 8,
+  },
+  button: {
+    marginTop: 50
+  },
 })
 
   export default FormInitiator;

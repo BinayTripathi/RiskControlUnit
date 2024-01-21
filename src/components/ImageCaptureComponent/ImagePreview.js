@@ -26,29 +26,28 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
     const dispatch = useDispatch()
     const tracker = useLocationTracker()
     const { triggerApi, data, error, loading } = useApi(userRegisterPhoto, photoData);
-    //const {widthPic, heightPic} = Image.resolveAssetSource(photoData);
-    //console.log(`${widthPic} , ${heightPic}`)
 
-    if (data !== null)      {
-      Alert.alert('Registration Successful', 'Continue to login...', [
-        
-        {text: 'OK', onPress: () => navigation.navigate('Login')},
-      ]);      
-      
-    }              
 
-    if (error !== null)      {
-      Alert.alert('Failed to save photo', 'Please try again...', [
-        
-        {text: 'OK', onPress: () => console.log('failed agent photo')},
-      ]);      
-      
-    }   
-     
     Image.getSize(`data:image/png;base64,${photoData}`, (width, height) => {imageRatio = width/ width});
 
-      console.log(imageRatio)
-      
+    if(claimId === "AGENT_ONBOARDING") {
+
+      if (data !== null)      {
+        Alert.alert('Registration Successful', 'Continue to login...', [
+          
+          {text: 'OK', onPress: () => navigation.navigate('Login')},
+        ]);      
+        
+      }              
+  
+      if (error !== null)      {
+        Alert.alert('Failed to save photo', 'Please try again...', [
+          
+          {text: 'OK', onPress: () => console.log('failed agent photo')},
+        ]);      
+        
+      }   
+    }      
     
     const savePhoto = async () => {        
 

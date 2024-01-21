@@ -21,6 +21,7 @@ export const theme = {
     text: '#4a4646',
     subText: '#6d6666',
     primary: '#0e0f51',
+    disabledPrimary: '#a3a1a0',
     secondary: '#3687a5',
     error: '#6b0214',
     gradientA: '#f64e16',

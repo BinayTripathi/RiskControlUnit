@@ -13,7 +13,9 @@ export const SECURE_USER_PIN = "pin"
 export const UPLOAD_TYPE = {
     PHOTO: 'PHOTO',
     DOCUMENT: 'DOCUMENT',
-    FORM: 'FORM'
+    FORM: 'FORM',
+    VIDEO: 'VIDEO',
+    AUDIO: 'AUDIO'
 
 }
 
@@ -23,6 +25,24 @@ export const DOC_TYPE = {
     OCR : 'OCR' ,
 
     FORM : [
+        {
+            name : 'FORM_TEMPLATE1',
+            enabled: true,
+        }
+    ],
+
+    Video : [
+        {
+            name : 'Video',
+            cameraType : Camera.Constants.Type.back,
+            icon: 'camera',
+            type: UPLOAD_TYPE.VIDEO,
+            enabled: true,
+            speach: 'Records Video'
+        }
+    ],
+
+    Audio : [
         {
             name : 'FORM_TEMPLATE1',
             enabled: true,

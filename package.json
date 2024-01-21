@@ -64,7 +64,8 @@
     "redux-saga": "^1.2.3",
     "rn-secure-storage": "^2.0.8",
     "save": "^2.9.0",
-    "use-debounce": "^9.0.4"
+    "use-debounce": "^9.0.4",
+    "expo-av": "~13.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

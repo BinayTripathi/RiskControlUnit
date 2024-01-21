@@ -5,6 +5,8 @@ import ImageCapture from '@components/ImageCaptureComponent/ImageCapture'
 import DocumentScanner from '@components/ImageCaptureComponent/DocumentCapture'
 import ImagePreview from "@components/ImageCaptureComponent/ImagePreview";
 import Background from "@components/UI/Background";
+import { VideoCapture } from "@components/ImageCaptureComponent/VideoCapture";
+import { VideoPreview } from "@components/ImageCaptureComponent/VideoPreview";
 
 
 const ImageCaptureScreen = ({ route }) => {
@@ -17,12 +19,14 @@ const ImageCaptureScreen = ({ route }) => {
   const docType = route.params?.docType
   const email = route.params?.email
 
+  console.log(`Photo data ${photoData}`)
 
   const imageCaptureSceen =  (
     <Background>
         <View style={styles.container}>
         { docType.type === "PHOTO" && <ImageCapture setPhotoData={setPhotoData} setBothEyeOpen={setBothEyeOpen} setSmiling={setSmiling} docType = {docType}/> }
         { docType.type === "DOCUMENT" && <DocumentScanner setPhotoData={setPhotoData} setBothEyeOpen={setBothEyeOpen} setSmiling={setSmiling} docType = {docType}/> }
+        { docType.type === "VIDEO" && <VideoCapture setPhotoData={setPhotoData} docType = {docType}/> }
         </View>  
         </Background>
      
@@ -31,7 +35,8 @@ const ImageCaptureScreen = ({ route }) => {
   const imagePreviewScreen =  (
     <Background>
       <View style={styles.container}>
-        <ImagePreview photoData= {photoData} setPhotoData={setPhotoData} isSmiling={smiling} isBothEyeOpen={bothEyeOpen} claimId = {claimId} docType = {docType} email = {email}/>
+      { (docType.type === "PHOTO" ||  docType.type === "DOCUMENT") &&<ImagePreview photoData= {photoData} setPhotoData={setPhotoData} isSmiling={smiling} isBothEyeOpen={bothEyeOpen} claimId = {claimId} docType = {docType} email = {email}/> }
+      { docType.type === "VIDEO" &&  <VideoPreview photoData= {photoData} setPhotoData={setPhotoData}/> }
       </View>  
     </Background>
   )
