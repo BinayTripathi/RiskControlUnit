@@ -24,7 +24,8 @@ const FormAudioVideoPart = ({selectedClaimId, userId}) => {
                 <Entypo name="video-camera" size={50} color="#083596" />
             </RoundButton>
 
-            <RoundButton style={styles.button}><FontAwesome name="microphone" size={50} color="#22c970" /></RoundButton>
+            <RoundButton style={styles.button} onPressHandler = {() => onClickDigitalId(DOC_TYPE.Audio[0])}>
+              <FontAwesome name="microphone" size={50} color="#22c970" /></RoundButton>
         </ElevatedSurface>
         )
   

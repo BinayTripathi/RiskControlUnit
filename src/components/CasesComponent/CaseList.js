@@ -11,13 +11,12 @@ import Button from "@components/UI/Button"
 import {requestCases, requestCasesOffline} from '@store/ducks/cases-slice'
 import { Padder } from "../UI/Wrapper";
 
-export default function CaseList() {
+export default function CaseList({userId}) {
   
   let cases = useSelector((state) => state.cases.cases);
   const isLoading = useSelector((state) => state.cases.loading)
   const error = useSelector((state) => state.cases.error)
   const isConnected = useSelector(state => state.network.isConnected);
-  const userId = useSelector(state => state.user.userId)
   
   const dispatch = useDispatch()
   const isFocused = useIsFocused()
@@ -36,7 +35,8 @@ export default function CaseList() {
     setRefreshing(false)
   }
 
-  useEffect(() => {
+  useEffect(() => {   
+
     if (isFocused) {
        if(isConnected)
           dispatchFetchRequest();

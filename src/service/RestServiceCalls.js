@@ -173,6 +173,36 @@ export const updateCaseDocument = async (body) => {
       }
     };
 
+
+    //https://medium.com/@aurelie.lebec/uploading-pictures-and-videos-from-your-phone-in-your-app-with-react-native-expo-cloudinary-and-d3ad4358e81a
+    export const addVideo = async (claimId, videoDetails) => {
+      console.log('addVideo')
+      const url = `${BASE_URL}/agent/video`;
+      const data = new FormData();
+      data.append("video", {       
+        name: videoDetails.id,
+        type: videoDetails.type,
+        uri:  videoDetails.uri
+      });
+      data.append("claimId",  claimId)
+      
+      const config = {      
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'multipart/form-data',
+          }
+      }
+      
+      try { 
+        console.log(JSON.stringify(data["_parts"]))
+         let response = await Request.post({url, config, data});
+         console.log(response)
+         return response
+      } catch (e) {
+        console.error(e);
+      }
+    } 
+
   export const submitCase = async (body) => {
     console.log(JSON.stringify(body))
     try {

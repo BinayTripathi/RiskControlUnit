@@ -15,6 +15,18 @@ export default function CaseListScreen() {
 
   useEffect(() => {
 
+   const getUserID = async() => {
+      try{
+        const user = await secureGet(SECURE_USER_KEY)
+        console.log(`Within login ${user}`)
+        setUserId(user)
+      } catch (error) {
+        console.log(error)
+      }
+      
+      }
+  
+
     const getLocationPermission = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -27,9 +39,16 @@ export default function CaseListScreen() {
 
     };
 
-    getLocationPermission();
+    (async()=> {
+      await getUserID()
+      await getLocationPermission()
+    })()
+
+   // getLocationPermission();
 
   }, []);
+
+  const [userId,setUserId] = useState('')
   const [userLocation, setUserLocation] = useState(null)  
   const layout = useWindowDimensions();
 
@@ -40,11 +59,11 @@ export default function CaseListScreen() {
   ]);
 
   const ListView = () => (
-    <CaseList reloadProp={index}/>
+    <CaseList reloadProp={index}  userId = {userId}/>
 );
 
 const MapView = () => (
-   <CaseGeolocation reloadProp={index} userLoc = {userLocation}/>
+   <CaseGeolocation reloadProp={index} userLoc = {userLocation} userId = {userId}/>
 );
 console.log(userLocation)
 const renderScene = SceneMap({

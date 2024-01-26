@@ -1,191 +1,186 @@
-import React, { useState, useEffect, useRef } from "react";
-import { StyleSheet, TouchableOpacity ,Text, View,} from 'react-native';
-import { Entypo, AntDesign, Ionicons } from '@expo/vector-icons';
-import { Camera } from "expo-camera";
-import {useWindowDimensions} from 'react-native';
+import React, { useState, useEffect } from 'react';
 
-const cameraMarginTop = 70
+import AudioRecorderPlayer, {
+  AVEncoderAudioQualityIOSType,
+  AVEncodingOption,
+  AudioEncoderAndroidType,
+  AudioSourceAndroidType,
+  OutputFormatAndroidType,
+} from 'react-native-audio-recorder-player';
 
-export const AudioCapture = ({setPhotoData}) => {
-    
-
-    const [hasAudioPermission, setHasAudioPermission] = useState(null);
-    const [hasCameraPermission, setHasCameraPermission] =useState(null);
-    const [camera, setCamera] = useState(null);
-    const [flashMode, setFlashMode] = useState('off');
-    const [type, setType] = useState(Camera.Constants.Type.back);
-    const video = React.useRef(null);
-    const [recording, setRecording] = useState(false)
-
-
-
-    const {height: screenHeight, width: screenWidth} = useWindowDimensions();  
+import {
+  Dimensions,
+  PermissionsAndroid,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Button
+} from 'react-native';
 
 
-    useEffect(() => {
-        (async () => {
-            const cameraStatus = await Camera.requestCameraPermissionsAsync();
-            setHasCameraPermission(cameraStatus.status === 'granted');
-            const audioStatus = await Camera.requestMicrophonePermissionsAsync();
-            setHasAudioPermission(audioStatus.status === 'granted');
-        })();
-      }, []);
+const screenWidth = Dimensions.get('screen').width;
+const audioRecorderPlayer = new AudioRecorderPlayer();
+
+const AudioCapture = ({setPhotoData, setAudioLength}) => {
+
+ 
+  audioRecorderPlayer.setSubscriptionDuration(0.1); // optional. Default is 0.5
 
 
-      const takeVideo = async () => {
-        if(camera){
-            setRecording(true)
-            const { uri, codec = "mp4" }  = await camera.recordAsync({
-                VideoQuality:['2160p'],
-                maxDuration:10,
-                mute:false,
-                videoBitrate:5000000
-              })            
-            console.log(uri);
-            setPhotoData(uri);
+  const [recordTime, setRecordTime] = useState('00:00:00')
+  const [recordSecs, setRecordSec] = useState(0)
+  const [currentPositionSec, setCurrentPositionSec] = useState(0)
+  const [currentDurationSec, setCurrentDurationSec] = useState(0)
+  const [audioUri, setAudioUri] = useState(null)
+  let uriPath=''
+
+  let playWidth =   (currentPositionSec / currentDurationSec) * (screenWidth - 56);
+  if (!playWidth) { playWidth = 0; }
+
+
+  useEffect(()=> {
+    //Check all permissions the first time
+    (async () =>{
+      if (Platform.OS === 'android') {
+        try {
+          const grants = await PermissionsAndroid.requestMultiple([
+            //PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            //PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+          ]);
+  
+          console.log('write external stroage', grants);
+  
+          if (
+            //grants['android.permission.WRITE_EXTERNAL_STORAGE'] === PermissionsAndroid.RESULTS.GRANTED &&
+            //grants['android.permission.READ_EXTERNAL_STORAGE'] ===  PermissionsAndroid.RESULTS.GRANTED &&
+            grants['android.permission.RECORD_AUDIO'] === PermissionsAndroid.RESULTS.GRANTED ) {
+            console.log('permissions granted');
+          } else {
+            console.log('All required permissions not granted');
+            return;
+          }
+        } catch (err) {
+          console.warn(err);
+          return;
         }
       }
+    })()
+  },[])
 
-      const stopVideo = async () => {
-        setRecording(false)
-        camera.stopRecording()
-      }
+  const onStartRecord = async () => {    
+    console.log('recording')
 
-      const flashModeHandler = () => {
-    
-        if (flashMode === 'on') {
-          setFlashMode(() => 'off');
-        } else if (flashMode === 'off') {
-          setFlashMode(() =>'on');
-        } 
-      };
+    const audioSet = {
+      AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
+      AudioSourceAndroid: AudioSourceAndroidType.MIC,
+      AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
+      AVNumberOfChannelsKeyIOS: 2,
+      AVFormatIDKeyIOS: AVEncodingOption.aac,
+      OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
+    };
 
-      if (hasCameraPermission === null || hasAudioPermission === null ) {
-        return <View />;
-      }
-      if (hasCameraPermission === false || hasAudioPermission === false) {
-        return <Text>No access to camera</Text>;
-      }
+    console.log('audioSet', audioSet);
+
+    uriPath = await audioRecorderPlayer.startRecorder(undefined, audioSet)
+
+    audioRecorderPlayer.addRecordBackListener((eventRecordBackType) => {
+      //console.log('record-back', eventRecordBackType);
+      setRecordSec(eventRecordBackType.currentPosition)
+      setRecordTime(audioRecorderPlayer.mmssss(Math.floor(eventRecordBackType.currentPosition)))      
+    });
+    console.log(`uriPath: ${uriPath}`);
+    setAudioUri(uriPath)
+    console.log(`uri: ${audioUri}`);
+  };
+
+  const onPauseRecord = async () => {
+    try {
+      const r = await audioRecorderPlayer.pauseRecorder();
+      console.log(r);
+    } catch (err) {
+      console.log('pauseRecord', err);
+    }
+  };
+
+  const onResumeRecord = async () => {
+    await audioRecorderPlayer.resumeRecorder();
+  };
+
+  const onStopRecord = React.useCallback(async () => {
+    const result = await audioRecorderPlayer.stopRecorder();
+    audioRecorderPlayer.removeRecordBackListener();
+    setRecordSec(0)
+    //console.log(result);
+    console.log(`uri: ${audioUri}`);
+    setAudioLength(playWidth)
+    setPhotoData(uriPath)
+  }, [audioRecorderPlayer]);
 
 
-      let videoButon = (
-        <TouchableOpacity  onPress={takeVideo} style={styles.button}>
-            <View style={{flex: 1, alignItems: "center", justifyContent: "center", borderRadius: 1000,  borderColor: "black",borderWidth: 1,}}>
-                <Entypo name="video-camera" size={35} color="black" />
-            </View>          
-        </TouchableOpacity>
-      );
-  
-      if (recording) {
-        videoButon = (
-          <TouchableOpacity
-            onPress={stopVideo}
-            style={[styles.button, { alignItems: "center", justifyContent: "center"}]}>
-            
-            <View style={styles.stopRecording}></View>
-            
-          </TouchableOpacity>
-        );
-      }
-  
 
+  return (
+    <View style = {styles.container}>
+        <Text style={styles.titleTxt}>Record Audio</Text>
+        <Text style={styles.txtRecordCounter}>{recordTime}</Text>
 
-      return (
-        <View style={[styles.container, {width: screenWidth, paddingHorizontal: 4}]}>
-
-            <View style={styles.top}> 
-                <View style={styles.cameraContainer}>
-                    <Camera 
-                    ref={ref => setCamera(ref)}
-                    style={styles.fixedRatio} 
-                    type={type}
-                    ratio={'4:3'} />
-                </View>
-            </View>
-            
-            <View style={styles.bottom}>
-            
-                <TouchableOpacity
-                    onPress={() => {
-                    setType(
-                        type === Camera.Constants.Type.back
-                        ? Camera.Constants.Type.front
-                        : Camera.Constants.Type.back
-                    );
-                    }}
-                    style={[{
-                        backgroundColor: type === Camera.Constants.Type.back ? "#0f0f0f" : "#f0f0f0",
-                        color: type === Camera.Constants.Type.back ? "white" : "#fff",
-
-                    }, styles.button]}><View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-                        {type === Camera.Constants.Type.back
-                        ? <AntDesign name="retweet" size={24} color="white" />
-                        : <AntDesign name="retweet" size={24} color="black" />
-                    }
-                    </View>                 
-                </TouchableOpacity>
-
-                {videoButon}
-
-                <TouchableOpacity
-                    onPress={flashModeHandler}
-                    style={styles.button}
-                    >
-                    <View style={{flex: 1, alignItems: "center", justifyContent: "center", borderRadius: 1000,  borderColor: "black",borderWidth: 1,}}>
-                        <Ionicons  name= { flashMode === "off" ? "flash":"flash-off"} style={{ color: "#fff", fontSize: 24}} />
-                    </View>                                                                     
-                </TouchableOpacity>
-            </View>
-              
+        <View style={styles.viewRecorder}>
+          <View style={styles.recordBtnWrapper}>
+            <Button style={styles.btn} onPress={onStartRecord} title="Record"> Record </Button>
+            <Button style={[styles.btn, { marginLeft: 12}]}  onPress={onPauseRecord} textStyle={styles.txt} title= "PAUSE"> Pause </Button>
+            <Button style={[styles.btn, { marginLeft: 12}]}  onPress={onResumeRecord} textStyle={styles.txt} title="Resume"> Resume </Button>
+            <Button style={[styles.btn, { marginLeft: 12}]}  onPress={onStopRecord}   textStyle={styles.txt} title = "Stop"> Stop    </Button>
+          </View>
         </View>
-      );
+
+    </View>
+  )
 
 }
 
+export default AudioCapture;
+
 
 const styles = StyleSheet.create({
-    container: {
-        flex:1,
-        maxWidth: 450,
-      },
-      top: {
-        flex: 6,
-      },
-    cameraContainer: {
-        flex: 1,
-        marginTop: cameraMarginTop,
-        borderRadius: 10
-    },
-    fixedRatio:{
-        flex: 1,
-        aspectRatio: 1
-    },
-    video: {
-      alignSelf: 'center',
-      width: 350,
-      height: 220,
-    },
-    
-    bottom: {
-        flex: 1,
-        flexDirection: "row",
-        height: 125,
-       
-        alignItems: "center",
-        justifyContent: "space-around",
-      },
-
-    stopRecording : {
-        borderRadius: 50,
-        height: 45,
-        width: 45,
-        backgroundColor: 'red'
-     },
-    button: {                
-        borderRadius: 70,
-        height: 65,
-        width: 65,
-        borderWidth: 1,
-    }
-
-  })
+  container: {
+    height: 300,
+      marginTop: 100,
+    backgroundColor: '#455A64',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  titleTxt: {
+    marginTop: 100,
+    color: 'white',
+    fontSize: 28,
+  },
+  viewRecorder: {
+    marginTop: 40,
+    width: '100%',
+    alignItems: 'center',
+  },
+  recordBtnWrapper: {
+    flexDirection: 'row',
+  },
+  btn: {
+    borderColor: 'white',
+    borderWidth: 1,
+  },
+  txt: {
+    color: 'white',
+    fontSize: 14,
+    marginHorizontal: 8,
+    marginVertical: 4,
+  },
+  txtRecordCounter: {
+    marginTop: 32,
+    color: 'white',
+    fontSize: 20,
+    textAlignVertical: 'center',
+    fontWeight: '200',
+    fontFamily: 'Helvetica Neue',
+    letterSpacing: 3,
+  },
+})

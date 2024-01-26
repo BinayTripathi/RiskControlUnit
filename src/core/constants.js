@@ -10,13 +10,14 @@ export const UPLOAD_SUCCESS_INDICATOR = 1
 export const SECURE_USER_KEY = "userId"
 export const SECURE_USER_PIN = "pin"
 
+export const VIDEO_FORMAT = "mp4"
+
 export const UPLOAD_TYPE = {
     PHOTO: 'PHOTO',
     DOCUMENT: 'DOCUMENT',
     FORM: 'FORM',
     VIDEO: 'VIDEO',
     AUDIO: 'AUDIO'
-
 }
 
 export const DOC_TYPE = {
@@ -44,8 +45,10 @@ export const DOC_TYPE = {
 
     Audio : [
         {
-            name : 'FORM_TEMPLATE1',
+            name : 'Audio',
+            type: UPLOAD_TYPE.AUDIO,
             enabled: true,
+            speach: 'Records Audio'
         }
     ],
 

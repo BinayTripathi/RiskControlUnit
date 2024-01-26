@@ -6,15 +6,15 @@ import { useDispatch} from 'react-redux'
 import { useNavigation } from "@react-navigation/native";
 import { Video } from 'expo-av';
 
-
-import {theme} from '@core/theme'
-import { UPLOAD_TYPE } from '@core/constants';
+import { VIDEO_FORMAT } from '@core/constants';
 import useLocationTracker from "@hooks/useLocationTracker";
 import LoadingModalWrapper from '@components/UI/LoadingModal';
 
+import {requestAddVideoAction} from '@store/ducks/case-submission-slice'
+
 const cameraMarginTop = 90
 
-export const VideoPreview = ({photoData, setPhotoData}) => { 
+export const VideoPreview = ({photoData, setPhotoData, claimId}) => { 
 
     const loading = undefined
 
@@ -29,7 +29,20 @@ export const VideoPreview = ({photoData, setPhotoData}) => {
 
 
     const uploadVideo = () => {
-        console.log('Uploading')
+         let videoDetails = {
+            id : String(Math.floor(1000 + Math.random() * 9000) * -1),
+            type : VIDEO_FORMAT,
+            uri: photoData
+        };
+
+        const addVideoPayload = {
+            claimId,
+            videoDetails
+          }
+
+          dispatch(requestAddVideoAction(addVideoPayload))
+          console.log('Video upload')
+          navigation.goBack()   
     }
 
     const playVideo = <TouchableOpacity  onPress={() =>  status.isPlaying ? video.current.pauseAsync() : video.current.playAsync()} 

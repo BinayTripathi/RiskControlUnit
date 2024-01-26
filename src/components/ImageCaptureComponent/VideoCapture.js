@@ -3,6 +3,7 @@ import { StyleSheet, TouchableOpacity ,Text, View, Button, ActivityIndicator} fr
 import { Entypo, AntDesign, Ionicons } from '@expo/vector-icons';
 import { Camera } from "expo-camera";
 import {useWindowDimensions} from 'react-native';
+import { VIDEO_FORMAT } from '@core/constants';
 
 const cameraMarginTop = 70
 
@@ -35,13 +36,12 @@ export const VideoCapture = ({setPhotoData}) => {
       const takeVideo = async () => {
         if(camera){
             setRecording(true)
-            const { uri, codec = "mp4" }  = await camera.recordAsync({
+            const { uri, codec = VIDEO_FORMAT }  = await camera.recordAsync({
                 VideoQuality:['2160p'],
                 maxDuration:10,
                 mute:false,
                 videoBitrate:5000000
               })            
-            console.log(uri);
             setPhotoData(uri);
         }
       }

@@ -21,14 +21,14 @@ const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 
-const CaseGeolocation = ({reloadProp, userLoc}) => {
+const CaseGeolocation = ({reloadProp, userLoc, userId}) => {
 
   let caseMarkers = useSelector((state) => state.cases.caseCoordinates);
   let cases = useSelector((state) => state.cases.cases);
   const isLoading = useSelector((state) => state.cases.loading)
   const error = useSelector((state) => state.cases.error)
   const isConnected = useSelector(state => state.network.isConnected);
-  const userId = useSelector(state => state.user.userId)
+  //const userId = useSelector(state => state.user.userId)
   const [searchQuery, setSearchQuery] = useState('');
 
 

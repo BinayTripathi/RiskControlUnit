@@ -13,15 +13,18 @@ export default {
 
     REQUEST_UPDATE_BENEFICIARY_PHOTO_CASE: 'casesUpdates/requestUpdateBeneficiaryPhotoCase',
     REQUEST_UPDATE_PAN_CASE: 'casesUpdates/requestUpdatePanCase',
+    REQUEST_SAVE_FORM: 'casesUpdates/requestSaveForm',
+    REQUEST_ADD_AUDIO: 'casesUpdates/requestAddAudio',
+    REQUEST_ADD_VIDEO: 'casesUpdates/requestAddVideo',
 
     SUCCESS_UPDATE_CASE: 'casesUpdates/successUpdateCase',
     FAILURE_UPDATE_CASE: 'casesUpdates/failureUpdateCase',
 
     REQUEST_SUBMIT_CASE: 'casesUpdates/requestSubmitCase',
     SUCCESS_SUBMIT_CASE: 'casesUpdates/successDeleteCaseUpdateDetailsAfterSubmission',
-    FAILURE_SUBMIT_CASE: 'casesUpdates/failureSubmitCase',
+    FAILURE_SUBMIT_CASE: 'casesUpdates/failureSubmitCase'
 
 
-    REQUEST_SAVE_FORM: 'casesUpdates/requestSaveForm',
+   
     
   };

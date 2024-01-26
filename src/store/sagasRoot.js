@@ -7,7 +7,7 @@ import {asyncRequestRegisterUser, asyncRequestValidateUser, asyncRequestValidate
 import { asyncRequestAllCases, requestAllCasesOffline, asyncRequestAllCaseCoordinates } from './ducks/cases-slice';
 import { asyncRequestCaseDetails} from './ducks/case-details-slice'
 import { asyncPostCaseDocuments, asyncSubmitCaseDocuments,
-  asyncOfflineUpdateOrSubmitCase } from './ducks/case-submission-slice'
+  asyncOfflineUpdateOrSubmitCase, asyncPostCaseAudio, asyncPostCaseVideo } from './ducks/case-submission-slice'
 
 
 export default function* root() {
@@ -21,6 +21,8 @@ export default function* root() {
     takeLatest("casesDetails/requestCaseDetails", asyncRequestCaseDetails),
     takeLatest(TYPES.REQUEST_UPDATE_BENEFICIARY_PHOTO_CASE, asyncPostCaseDocuments),
     takeLatest(TYPES.REQUEST_UPDATE_PAN_CASE, asyncPostCaseDocuments),
+    takeLatest(TYPES.REQUEST_ADD_AUDIO, asyncPostCaseAudio),
+    takeLatest(TYPES.REQUEST_ADD_VIDEO, asyncPostCaseVideo),
     takeLatest(TYPES.REQUEST_SUBMIT_CASE, asyncSubmitCaseDocuments),
     takeEvery(offlineActionTypes.FETCH_OFFLINE_MODE, asyncOfflineUpdateOrSubmitCase),
     fork(networkSaga, {pingServerUrl:'https://www.google.com/'}),
