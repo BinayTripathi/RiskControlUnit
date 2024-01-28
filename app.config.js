@@ -19,7 +19,7 @@ module.exports = () => {
             },
           },
           extra: {
-            baseURL : 'https://icheckify.azurewebsites.net/api'
+            baseURL : 'https://icheckify-prod.azurewebsites.net/api'
           }
       };
     } else {
@@ -46,7 +46,7 @@ module.exports = () => {
             },
           },
           extra: {
-            baseURL : 'https://checkify.azurewebsites.net/api'
+            baseURL : 'https://icheckify-demo.azurewebsites.net/api'
           },
       };
     }

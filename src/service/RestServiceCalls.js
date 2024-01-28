@@ -13,14 +13,10 @@ const BASE_URL = Constanst?.expoConfig?.extra?.baseURL
 
 
 const verifyLogin =  async (emailId) => {
- 
    
     const url = `https://my-json-server.typicode.com/BinayTripathi/demo/authenticate`   
     console.log(url) 
     let resp = await Request.get({url});
-  
-    
-
 }
 
 export const userRegister = async (phoneNo, deviceId) => {
@@ -73,9 +69,7 @@ export const userRegisterPhoto = async (image, iosDeviceId) => {
 }
 
 export const userLogin = async (emailId) => {
-  try {
-    
-   
+  try {   
       const url = `${BASE_URL}/agent/agent?email=${emailId}`
       console.log(url)
       let response = await Request.get({url});
@@ -137,7 +131,6 @@ export const getCaseDetails = async (email, claim) => {
 
 export const updateCaseDocument = async (body) => {
   console.log('Update case API being called')
-  //console.log(body)
   try {
       const url = `${BASE_URL}/agent/documentid`;
       //const url = `https://ccutest.free.beeceptor.com/update`
