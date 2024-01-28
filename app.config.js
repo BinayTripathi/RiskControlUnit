@@ -46,7 +46,7 @@ module.exports = () => {
             },
           },
           extra: {
-            baseURL : 'https://checkify.azurewebsites.net/api'
+            baseURL : 'https://icheckify-demo.azurewebsites.net/api'
           },
       };
     }

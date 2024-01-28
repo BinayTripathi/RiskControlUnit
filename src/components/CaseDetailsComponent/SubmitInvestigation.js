@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text , TextInput, StyleSheet, Dimensions , ScrollView} from "react-native"
 import Checkbox from 'expo-checkbox';
 import { FontAwesome } from '@expo/vector-icons';
@@ -11,14 +11,20 @@ import {requestSubmitCaseAction} from '@store/ducks/case-submission-slice'
 import { theme } from '@core/theme';
 import useNetworkInfo from "../../hooks/useNetworkInfo";
 import { DOC_TYPE } from '@core/constants';
+import LoadingModalWrapper from '@components/UI/LoadingModal';
+import { PaperProvider } from 'react-native-paper';
 
 import SpeechToText from '@components/UI/SpeechToText'
+import OkayCancelDialogBox from "@components/UI/OkayCancelDialogBox";
+import { ALERT_TYPE, Dialog } from 'react-native-alert-notification';
 
 
 const { width, height } = Dimensions.get('window');
 const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
     
   let allCaseUpdates = useSelector((state) => state.casesUpdates.casesUpdates);
+  let loading = useSelector((state) => state.casesUpdates.loading);
+  let error = useSelector((state) => state.casesUpdates.error);
   const caseUpdates = allCaseUpdates[selectedClaimId]
   
     const [remark, setRemark] = useState(null);
@@ -26,6 +32,9 @@ const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
     const navigation = useNavigation()
     const dispatch = useDispatch()
     const [isOnline] = useNetworkInfo();
+
+    const [showSubmitDialog, setShowSubmitDialog] = useState(false)
+    const [submitRequestDispatched, setSubmitRequestDispatched] = useState(false)
     
     let completeCheckList = true
 
@@ -33,6 +42,34 @@ const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
        console.log(remark)
       setRemark(remark => remark !== null ?  remark +". " + heardText : heardText)
     }
+
+    useEffect(()=>{
+      if (submitRequestDispatched) {
+        if(error) {
+          Dialog.show({
+            type: ALERT_TYPE.WARNING,
+            title: 'Submission Failed',
+            textBody: 'Please try again',
+            button: 'OK',          
+            onHide: () => { 
+              setSubmitRequestDispatched(false)              
+              navigation.navigate(SCREENS.CaseList)
+            }
+          })
+        } else if(!loading) {
+          Dialog.show({
+            type: ALERT_TYPE.SUCCESS,
+            title: 'Case submission',
+            textBody: 'Congratulations! Case submission successful.',
+            button: 'OK',          
+            onHide: () => { 
+              setSubmitRequestDispatched(false)
+              navigation.navigate(SCREENS.CaseList)
+            }
+          })          
+        }        
+      }
+    },[loading, error, submitRequestDispatched])
 
 
     let docTypeList = [...DOC_TYPE.PHOTO_ID_SCANNER, ... DOC_TYPE.DOCUMENT_SCANNER, ...DOC_TYPE.FORM]
@@ -50,9 +87,36 @@ const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
                             )
                           } )
 
-    return (
-    <View style={styles.container}>
+    const submitAlertBox = <OkayCancelDialogBox showDialog={showSubmitDialog} 
+                                setShowDialog={setShowSubmitDialog}
+                                title={'Submit Case'} 
+                                content={(`Are you submitting the case now?.`)} 
+                                okayHandler={ () => {
+                                  let dataAvailable = caseUpdates !== undefined && caseUpdates['FORM_TEMPLATE1'] !== undefined                                  
+                                  const payload = {
+                                      claimId: selectedClaimId,  
+                                      email: userId,
+                                      beneficiaryId: selectedClaim.beneficiary.beneficiaryId,
+                                      Question1:  dataAvailable == true? caseUpdates['FORM_TEMPLATE1'].question1 : '',
+                                      Question2: dataAvailable == true? caseUpdates['FORM_TEMPLATE1'].question2: '',
+                                      Question3: dataAvailable == true? caseUpdates['FORM_TEMPLATE1'].question3 : '',
+                                      Question4: dataAvailable == true? caseUpdates['FORM_TEMPLATE1'].question4 : '',
+                                      Remarks: remark
+                                  }
+                                  dispatch(requestSubmitCaseAction(payload))
+                                  setTimeout(() => {
+                                    setSubmitRequestDispatched(true)
+                                  }, 500);                         
+                                  
 
+                                }} 
+                                cancelHandler={ () => {} }/>
+
+    return (
+      <PaperProvider>
+      <LoadingModalWrapper shouldModalBeVisible = {loading}>
+      <View style={styles.container}>
+        {submitAlertBox}
         <View style = {{marginTop: 40, marginBottom: 20}}>
           <Text style = {[styles.textBase, styles.description ]}>SUBMIT INVESTIGATION</Text>
         </View>
@@ -90,7 +154,8 @@ const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
                                   if (!remark  || !isTermsAccepted || !isOnline || !completeCheckList) 
                                     return
                                   
-                                  let dataAvailable = caseUpdates !== undefined && caseUpdates['FORM_TEMPLATE1'] !== undefined                                  
+                                    setShowSubmitDialog(true)
+                                  /*let dataAvailable = caseUpdates !== undefined && caseUpdates['FORM_TEMPLATE1'] !== undefined                                  
                                   const payload = {
                                       claimId: selectedClaimId,  
                                       email: userId,
@@ -101,9 +166,8 @@ const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
                                       Question4: dataAvailable == true? caseUpdates['FORM_TEMPLATE1'].question4 : '',
                                       Remarks: remark
                                   }
-                                  console.log(payload)
                                   dispatch(requestSubmitCaseAction(payload))
-                                  navigation.navigate(SCREENS.CaseList)
+                                  navigation.navigate(SCREENS.CaseList)*/
                               }
                               }>
                               
@@ -123,6 +187,8 @@ const submitInvestigation = ({selectedClaimId, userId, selectedClaim}) => {
 
         
     </View>
+    </LoadingModalWrapper>
+    </PaperProvider>
     )
 }
 
