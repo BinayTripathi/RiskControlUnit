@@ -4,7 +4,7 @@ import { Button as PaperButton } from 'react-native-paper'
 
 import { theme } from '@core/theme';
 
-export default function Button({ mode, style, ...props }) {
+export default function Button({ mode, style, children, ...props }) {
   return (
     <PaperButton
       style={[
@@ -15,7 +15,9 @@ export default function Button({ mode, style, ...props }) {
       labelStyle={[styles.text]}
       mode={mode}
       {...props}
-    />
+    >
+      {children}
+      </PaperButton>
   )
 }
 
@@ -29,7 +31,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 15,
     lineHeight: 26,
-    color: theme.colors.button_label
-
+    color: theme.colors.button_label,
   },
 })

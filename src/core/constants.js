@@ -1,10 +1,14 @@
 import { Camera } from "expo-camera";
 
+export const REGISTRATION_ERROR_MESSAGE = "Registration Failed."
 export const LOGIN_ERROR_MESSAGE = "Invalid username or password"
 
 export const DEFAULT_NO_NETWORK_MESSAGE = "Please check your network connection"
 export const CASE_DETAILS_OFFLINE_ERROR_MESSAGE = DEFAULT_NO_NETWORK_MESSAGE
 export const UPLOAD_SUCCESS_INDICATOR = 1
+
+export const SECURE_USER_KEY = "userId"
+export const SECURE_USER_PIN = "pin"
 
 export const UPLOAD_TYPE = {
     PHOTO: 'PHOTO',
@@ -125,7 +129,7 @@ export const checkLoading = (capabilityBox, caseUpdates) => {
 }
 
 export const SCREENS = {
-    Home: "Home",
+    RegistrationScreen: "RegistrationScreen",
     Login : "Login",
     CaseList: "CaseList",
     CaseDetailsScreen: "CaseDetailsScreen",

@@ -17,6 +17,7 @@ ECHO ..%EXPO_PUBLIC_GOOGLE_MAP_API_KEY%
 rmdir /s /q android
 call expo install
 call npx expo prebuild --clean --no-install --platform android
+xcopy "build.gradle" ".\android\build.gradle" /Y
 cd ./android
 call ./gradlew -stop
 call ./gradlew assembleRelease

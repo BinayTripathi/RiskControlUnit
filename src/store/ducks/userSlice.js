@@ -2,10 +2,11 @@ import { createSlice } from "@reduxjs/toolkit"
 
 import {call, put} from 'redux-saga/effects';
 
-import {userLogin} from '@services/RestServiceCalls'
+import {userLogin, userRegister} from '@services/RestServiceCalls'
 import {reset} from '@services/NavigationService';
-import { LOGIN_ERROR_MESSAGE } from '@core/constants'
+import { SECURE_USER_KEY, SECURE_USER_PIN, LOGIN_ERROR_MESSAGE, REGISTRATION_ERROR_MESSAGE } from '@core/constants'
 import { SCREENS } from '@core/constants';
+import {secureSave, secureGet} from '@helpers/SecureStore'
 
 const initialState = {
     data: {},
@@ -68,20 +69,43 @@ export const logoutUser = createAction(TYPES.LOGOUT_USER);
         userId: null,
         auth: null,
         lastLogin: null,
-        isLoggedIn : false
+        isLoggedIn : false,
+        isRegistered : false, 
+        deviceId : null
      
     },
     reducers:{
+
+          requestRegisterUser: (state) => {
+            state.loading = true;     
+            state.error = null        
+          },
+          
+          successRegisterUser: (state, action) => { 
+            console.log(action.payload)        
+            state.loading = false;
+            state.isRegistered= true      
+            state.userId = action.payload.email,
+            state.auth = action.payload.pin
+            state.deviceId = action.payload.deviceId
+          },
+
+          failureRegisterUser: (state) => {
+            state.loading = false;                        
+            state.error = REGISTRATION_ERROR_MESSAGE
+          },
+
           requestValidateUser: (state) => {
               state.loading = true;     
               state.error = null        
           },
           requestValidateUserAuto:  (state) => {
             state.loading = true;  
+            state.error = null   
           },
           successValidateUser: (state, action) => {            
             state.loading = false;
-            state.userId = action.payload.emailId,
+            //state.userId = action.payload.emailId,
             state.auth = action.payload.password
             state.isLoggedIn = true
             state.lastLogin =  (new Date()).toISOString()
@@ -114,6 +138,24 @@ export const logoutUser = createAction(TYPES.LOGOUT_USER);
     }
   })
 
+  export function* asyncRequestRegisterUser(action) {
+    try {      
+        const response = yield call(userRegister, action.payload.phoneNo, action.payload.deviceId);
+        //const responseUserData = response.data?.token;     
+        const responseUserData = response.data
+        if (responseUserData) {          
+          yield put(successRegisterUser({"deviceId":action.payload.deviceId, ...responseUserData}));
+          return
+          //return reset({routes: [{name: SCREENS.Login}]});
+        }  
+        console.log('REGISTRATION FAILED')
+      yield put(failureRegisterUser());
+    } catch (err) {
+      console.log(err)
+      yield put(failureRegisterUser());
+    }
+  }
+
   export function* asyncRequestValidateUser(action) {
     try {      
         const response = yield call(userLogin, action.payload.emailId);
@@ -135,6 +177,7 @@ export const logoutUser = createAction(TYPES.LOGOUT_USER);
     return   
   }
 
-  export const { requestValidateUser, requestValidateUserAuto, successValidateUser, 
+  export const { requestRegisterUser, successRegisterUser, failureRegisterUser, 
+    requestValidateUser, requestValidateUserAuto, successValidateUser, 
     failureValidateUser, navigateFromHomePage, logoutUser } = userSlice.actions;
   export default userSlice.reducer

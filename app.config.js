@@ -19,7 +19,7 @@ module.exports = () => {
             },
           },
           extra: {
-            baseURL : 'https://icheckify.azurewebsites.net/api'
+            baseURL : 'https://icheckify-prod.azurewebsites.net/api'
           }
       };
     } else {
@@ -31,7 +31,12 @@ module.exports = () => {
               "backgroundColor": "#ffffff"
             },
             "permissions": [
-              "android.permission.CAMERA"
+              "android.permission.CAMERA",
+              "CAMERA", 
+              "READ_PHONE_STATE",
+              "READ_PHONE_NUMBERS",
+              "RECEIVE_SMS",
+              "READ_SMS"
             ],
             "package": "com.binaytripathi.icheckifyDev",
             "config": {
@@ -41,7 +46,7 @@ module.exports = () => {
             },
           },
           extra: {
-            baseURL : 'https://chek.azurewebsites.net/api'
+            baseURL : 'https://icheckify-demo.azurewebsites.net/api'
           },
       };
     }

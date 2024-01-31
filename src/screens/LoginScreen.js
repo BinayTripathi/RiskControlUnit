@@ -6,20 +6,27 @@ import { useIsFocused } from '@react-navigation/native'
 import {requestValidateUser, requestValidateUserAuto, navigateFromHomePage} from './../store/ducks/userSlice'
 import Background from '@components/UI/Background'
 import Logo from '@components/UI/Logo'
-import Header from '@components/UI/Header'
 import Button from '@components/UI/Button'
-import Paragraph from '@components/UI/Paragraph'
-import TextInput from '@components/UI/TextInput'
-import { emailValidator } from '../helpers/emailValidator'
-import { passwordValidator } from '../helpers/passwordValidator'
+
 import { Entypo } from '@expo/vector-icons';
 
 import { theme } from '../core/theme'
 import { SCREENS, SESSION_TTL_IN_SEC } from '../core/constants'
 import LoadingModalWrapper from '@components/UI/LoadingModal';
-import {reset} from '@services/NavigationService';
 import Constanst from 'expo-constants'
+import LocalAuthComponent from './../components/AuthComponent/LocalAuthComponent';
+import * as SecureStore from 'expo-secure-store';
+import {SECURE_USER_KEY, SECURE_USER_PIN} from '../core/constants'
+import {secureGet, secureRemove} from '@helpers/SecureStore'
 
+import {
+  CodeField,
+  Cursor,
+  useBlurOnFulfill,
+  useClearByFocusCell,
+} from 'react-native-confirmation-code-field';
+
+const CELL_COUNT = 4
 export default function LoginScreen({navigation}) {
 
   const BASE_URL = Constanst?.expoConfig?.extra?.baseURL
@@ -30,35 +37,39 @@ export default function LoginScreen({navigation}) {
   let dispatch = useDispatch();
   const isFocused = useIsFocused()
 
-  const [email, setEmail] = useState({ value: '', error: '' })
-  const [password, setPassword] = useState({ value: '', error: '' })
 
-
-  //If coming from home page state should be no error and not loading
-  /*useEffect(() => {
-    
-    const routes = navigation.getState()?.routes;
-    const prevRoute = routes[routes.length - 2];
-    if(prevRoute.name === SCREENS.Home ) {
-      dispatch(navigateFromHomePage())
-    }
-  }, [navigation])
-
-  useEffect(() => {
-    if (isFocused) {
-      dispatch(navigateFromHomePage())
-    }  
-
-  }, [dispatch, isFocused])*/
-
+  const [biometicCancelled, setBiometicCancelled] = useState(false)
+  const [email, setEmail] = useState()
+  const [pin, setPin] = useState('')
+  const ref = useBlurOnFulfill({pin, cellCount: CELL_COUNT});
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+    pin,
+    setPin,
+  })
 
   // if loging within 30 sec of loggout, dispatch autologin
+
+  useEffect(() => { 
+
+    (async() => {
+      try{
+        const user = await secureGet(SECURE_USER_KEY)
+        console.log(`Within login ${user}`)
+        setEmail(user)
+      } catch (error) {
+        console.log(error)
+      }
+      
+      }
+    )()    
+  },[])
+
   useEffect(() => { 
     dispatch(navigateFromHomePage())
     console.log(Math.floor(new Date() - new Date(userLoggingTimestamp)))
     if(Math.floor(new Date() - new Date(userLoggingTimestamp)) < SESSION_TTL_IN_SEC.USER_SESSION) {
       const dataforLogin = {
-        emailId: userId
+        emailId: email
       }
       dispatch(requestValidateUserAuto(dataforLogin))
       navigation.reset({routes: [{name: 'CaseList'}]});   
@@ -66,14 +77,10 @@ export default function LoginScreen({navigation}) {
     
   }, [dispatch, isFocused, navigation])
 
+
+
   const onLoginPressed = async (e) => {
-    const emailError = emailValidator(email.value)
-    const passwordError = passwordValidator(password.value)
-    if (emailError || passwordError) {
-      setEmail({ ...email, error: emailError })
-      setPassword({ ...password, error: passwordError })
-      return
-    }
+    
     const headerOptions = new Headers()
     headerOptions.append(
       'Content-Type',
@@ -85,77 +92,60 @@ export default function LoginScreen({navigation}) {
     )
     headerOptions.append('Access-Control-Allow-Credentials', 'true')
     headerOptions.append('GET', 'POST', 'OPTIONS')
+
+    console.log(email)
     const dataToSendForAuth = {
-      emailId: email.value,
-      password: password.value,
+      emailId: email,
+      password: pin,
       returnUrl: 'http://localhost:19006/',
     }
-    /*let formBody = []
-    for (const key in dataToSend) {
-      if (Object.hasOwn(dataToSend, key)) {
-        const encodedKey = encodeURIComponent(key)
-        const encodedValue = encodeURIComponent(dataToSend[key])
-        formBody.push(encodedKey + '=' + encodedValue)
-      }
-    }
-
-    formBody = formBody.join('&')
-    e.preventDefault()
-    const requestOptions = {
-      method: 'POST',
-      headers: headerOptions,
-      body: formBody,
-    }*/
-
-    //Moved to Saga
-    /*navigation.reset({
-      index: 0,
-      routes: [{ name: 'CaseList' }],
-    })*/
+   
 
     dispatch(requestValidateUser(dataToSendForAuth))
   }
 
    const loggingError = userLoggingError ? 
-   <Text style={styles.errorTextStyle}>Invalid user id or password</Text> 
+   <Text style={styles.errorTextStyle}>Invalid user id or PIN</Text> 
    :null
   return (
     <LoadingModalWrapper shouldModalBeVisible = {isLoading}>
       <Background>
         
         <View style = {styles.wrapper}>
-
+          {!biometicCancelled && <LocalAuthComponent navigation = {navigation} setBiometicCancelled = {setBiometicCancelled}/> }
           <Logo />         
-          <Text style={{fontWeight: '800'}}>DEMO VERSION</Text>         
+          <Text style={{fontWeight: '900'}}>PLEASE LOGIN {email}</Text> 
+          <Text style={{fontWeight: '900'}}></Text> 
+          <Text style={{fontWeight: '800'}}>DEMO VERSION</Text>                   
           <Text>URL: {BASE_URL}</Text>
-         
-          <TextInput
-            label="Email"
-            returnKeyType="next"
-            value={email.value}
-            onChangeText={(text) => setEmail({ value: text, error: '' })}
-            error={!!email.error}
-            errorText={email.error}
-            autoCapitalize="none"
-            autoCompleteType="email"
-            textContentType="emailAddress"
-            keyboardType="email-address"
-          />
-          <TextInput
-            label="Password"
-            returnKeyType="done"
-            value={password.value}
-            onChangeText={(text) => setPassword({ value: text, error: '' })}
-            error={!!password.error}
-            errorText={password.error}
-            secureTextEntry
-          />
+
+          <CodeField
+            ref={ref}        
+            value={pin}
+            onChangeText={setPin}
+            cellCount={CELL_COUNT}
+            rootStyle={styles.codeFieldRoot}
+            keyboardType="number-pad"
+            textContentType="oneTimeCode"
+            renderCell={({index, symbol, isFocused}) => (
+              <Text
+                key={index}
+                style={[styles.cell, isFocused && styles.focusCell]}
+                onLayout={getCellOnLayoutHandler(index)}>
+                {symbol || (isFocused ? <Cursor/> : null)}
+              </Text>
+            )}/>
+          
           <View>{loggingError}</View>
-          <Button mode="contained" onPress={onLoginPressed} 
+          <Button mode="contained" disabled= {pin.toString().length < CELL_COUNT}
+            onPress={onLoginPressed}
             onLongPress={() => {
               dispatch({ type: "DESTROY_SESSION" });
-              onLoginPressed() }}
-              style={styles.button}>
+              secureRemove(SECURE_USER_KEY)
+              secureRemove(SECURE_USER_PIN)
+              navigation.navigate(SCREENS.RegistrationScreen)              
+              /*onLoginPressed()*/ }}
+              style={[styles.button, pin.toString().length < CELL_COUNT ? styles.buttonDisabled : '']}>
           <Entypo name="key" size={18} color="white" /> LOGIN
           </Button>
 
@@ -179,6 +169,10 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 50
   },
+  buttonDisabled : {
+    backgroundColor: theme.colors.disabledPrimary,
+    opacity: 0.5
+  },
 
   errorTextStyle: {
     color: theme.colors.error,
@@ -186,5 +180,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold'
   },
+
+  codeFieldRoot: {marginTop: 20},
+    cell: {
+      width: 40,
+      height: 40,
+      lineHeight: 38,
+      marginRight: 2,
+      fontSize: 24,
+      borderWidth: 2,
+      borderRadius: 8,
+      borderColor: '#00000030',
+      textAlign: 'center',
+    },
+    focusCell: {
+      borderColor: '#000',
+    },
 
 })

@@ -1,9 +1,11 @@
-import React, {  useRef, useState  } from "react";
-import { StyleSheet,Text,TouchableOpacity, View, Image, Alert} from "react-native";
+import React, {  useEffect, useRef, useState  } from "react";
+import { StyleSheet,Text,TouchableOpacity, View, Image, Alert, Dimensions} from "react-native";
 import { useDispatch} from 'react-redux'
 import { useNavigation } from "@react-navigation/native";
 import { PaperProvider } from 'react-native-paper';
 
+import {userRegisterPhoto} from '@services/RestServiceCalls'
+import useApi from '@hooks/useApi'
 import UserTracker from "./UserTracker";
 
 import {theme} from '../../core/theme'
@@ -11,8 +13,14 @@ import { UPLOAD_TYPE } from '@core/constants';
 
 import {requestUpdateBeneficiaryPhotoCaseAction, requestUpdatePanCaseAction} from '@store/ducks/case-submission-slice'
 import useLocationTracker from "@hooks/useLocationTracker";
+import LoadingModalWrapper from '@components/UI/LoadingModal';
+
+import { ALERT_TYPE, Dialog } from 'react-native-alert-notification';
+
+import OkayCancelDialogBox from "@components/UI/OkayCancelDialogBox";
 
 
+let imageRatio = 1
 //https://www.farhansayshi.com/post/how-to-save-files-to-a-device-folder-using-expo-and-react-native/
 const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimId, docType, email}) => {
   
@@ -21,6 +29,44 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
     const [displayMap, setDisplayMap] = useState(false);
     const dispatch = useDispatch()
     const tracker = useLocationTracker()
+    const { triggerApi, data, error, loading } = useApi(userRegisterPhoto, photoData);
+    //const {widthPic, heightPic} = Image.resolveAssetSource(photoData);
+    //console.log(`${widthPic} , ${heightPic}`)
+
+    const [showSaveDialog, setShowSaveDialog] = useState(false)
+    const [savePayload, setSavePayload] = useState(null)
+
+    useEffect(() => {
+      if (data !== null) {
+        Dialog.show({
+          type: ALERT_TYPE.SUCCESS,
+          title: 'Welcome Onboard',
+          textBody: 'Continue to login...',
+          button: 'OK',          
+          onHide:() => navigation.navigate('Login')
+        })   
+        
+      }              
+  
+      if (error !== null)      {
+        Dialog.show({
+          type: ALERT_TYPE.WARNING,
+          title: 'Failed to save photo',
+          textBody: 'Please try again',
+          button: 'Close'
+        })   
+        
+      } 
+    }, [data, error])
+
+      
+     
+    Image.getSize(`data:image/png;base64,${photoData}`, (width, height) => {imageRatio = width/ width});
+
+      console.log(imageRatio)
+
+
+       
     
     const savePhoto = async () => {        
 
@@ -42,38 +88,13 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
         documentDetailsForSubmission.OcrImage = photoData
       } 
       
-      const savePayload = {
+      const payloadToSave = {
         claimId,
         documentDetails : documentDetailsForSubmission,
         id: Math.floor(1000 + Math.random() * 9000) * -1
       }
-     
-      Alert.alert(  
-        'Save document',  
-        `Do you want to save ${docType.name} image ?`,  
-        [  
-            {  
-                text: 'Ok',  
-                onPress: () => {                 
-                  if(docType.type === 'PHOTO')
-                    dispatch(requestUpdateBeneficiaryPhotoCaseAction(savePayload))
-                  else
-                   dispatch(requestUpdatePanCaseAction(savePayload))
-
-                  navigation.goBack()                 
-                },  
-                style: 'default',  
-            }  ,
-            {  
-              text: 'Cancel',  
-              onPress: () => {               
-                navigation.goBack()               
-              },  
-              style: 'default',  
-          }  
-        ]  
-    );  
-      
+      setSavePayload(payloadToSave)
+      setShowSaveDialog(true)
     }   
 
     const displayMapHandler = () => {
@@ -85,15 +106,34 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
                               <UserTracker photoData={photoData} displayMapHandler={displayMapHandler} shouldDisplayMap = {displayMap}/>
                              : ( <>
                                  <UserTracker photoData={false}/>
-                                 <Image source={{uri: `data:image/jpg;base64,${photoData}`}} style={{flex: 1, borderRadius: 10 }}  resizeMode='contain'  />
+                                 <Image source={{uri: `data:image/jpg;base64,${photoData}`}} style={styles.middlePhoto}  />
                                    </> )
+
+  const saveImageAlertBox = <OkayCancelDialogBox showDialog={showSaveDialog} 
+                                                setShowDialog={setShowSaveDialog}
+                                                title={'Save Item'} 
+                                                content={(`Do you want to save ${docType.name}`)} 
+                                                okayHandler={ async () => {      
+                                                    if (claimId !== "AGENT_ONBOARDING")   {
+                                                      if(docType.type === 'PHOTO')
+                                                        dispatch(requestUpdateBeneficiaryPhotoCaseAction(savePayload))
+                                                      else
+                                                        dispatch(requestUpdatePanCaseAction(savePayload))                                    
+                                                    navigation.goBack()   
+                                                    }  else {
+                                                    await triggerApi()                                                             
+                                                    }                                                                 
+                                                  }} 
+                                                cancelHandler={ () => navigation.goBack()  }/>
                             
  
   return (
     <PaperProvider>
+      <LoadingModalWrapper shouldModalBeVisible = {loading === undefined ? false: loading}>
+      
       <View style={styles.container}>
-        
-        <View style={styles.middlePhoto} ref={savedPhoto}>
+        {saveImageAlertBox}
+        <View style={styles.middlePhotoContainer} ref={savedPhoto}>
               {displayMapModal}
         </View>
 
@@ -109,39 +149,47 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
             onPress={savePhoto}>
             <Text style={styles.prevBtnText}>Save Photo</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.prevBtn, { marginLeft: 25 }]}
-            onPress={displayMapHandler}>
-            <Text style={styles.prevBtnText}>Display Location</Text>
-          </TouchableOpacity>
         </View>
       </View>
+      </LoadingModalWrapper>
     </PaperProvider>
   );
 };
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  middlePhoto: {
-    flex: 1,
-    position: "relative",
+  middlePhotoContainer: {   
+ 
     marginTop: 80,
-    paddingHorizontal: 5
-
+    paddingHorizontal: 5,
+    borderWidth: 5,
+    borderRadius: 10,
     
+    width: (windowWidth - 20),
   },
+
+  middlePhoto: {
+
+    width: '100%'   ,
+    // Without height undefined it won't work
+    height: undefined,
+    // figure out your image aspect ratio
+    aspectRatio: imageRatio*0.75,
+    resizeMode: 'center',
+  } ,    
   bottomPrev: {
     height: 100,    
     justifyContent: "center",
     flexDirection: "row",
-    paddingHorizontal: 4
+    paddingHorizontal: 10
   },
   prevBtn: {
     height: 65,
-    width: 100,
+    width: 140,
     backgroundColor: theme.colors.primary,
     color: theme.colors.inversePrimary,
     justifyContent: "center",

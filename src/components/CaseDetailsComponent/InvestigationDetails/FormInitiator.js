@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import {requestSaveFormAction} from '@store/ducks/case-submission-slice'
 import { UPLOAD_TYPE } from '@core/constants';
+import { ALERT_TYPE, Dialog } from 'react-native-alert-notification';
 
 const { width, height } = Dimensions.get('window');
 
@@ -75,15 +76,13 @@ const FormInitiator = ({selectedClaimId, userId, caseUpdates}) => {
             </View>
   }
   const showAlert = () =>
-  Alert.alert(
-    'Form Data',
-    'Form data is saved',
-    [
-      {
-        text: 'OK',        
-      },
-    ],    
-  );
+  Dialog.show({
+    type: ALERT_TYPE.SUCCESS,
+    title: 'Form Submission',
+    textBody: 'Form Submitted Successfully',
+    button: 'OK',          
+    onHide: () => { }
+  })
 
   const onSavePressed = async (e) => {
 
