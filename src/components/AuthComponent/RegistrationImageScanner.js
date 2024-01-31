@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {Text, View, StyleSheet} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { Camera } from "expo-camera";
 
 import {SCREENS, DOC_TYPE} from '@core/constants'
 
@@ -15,37 +16,30 @@ const RegistrationImageScanner = () => {
 
   const onClickPhoto = () => {
     
+    const docType= DOC_TYPE.PHOTO_ID_SCANNER.find((doc) => doc.name ==='Single FaceReader')
+    let modDocType = {... docType}
+    modDocType.name = 'Agent Face Reader',
+    modDocType.cameraType = Camera.Constants.Type.front,   
     navigation.navigate(SCREENS.ImageCaptureScreen, {
-        docType: DOC_TYPE.PHOTO_ID_SCANNER.find((doc) => doc.name ==='Single FaceReader'),
+        docType: modDocType,
         claimId: "AGENT_ONBOARDING",
         email: "AGENT_ONBOARDING"})
 } 
 
 
   const onClickDocument = () => {
-      
-      navigation.navigate(SCREENS.ImageCaptureScreen, {
+    navigation.navigate(SCREENS.ImageCaptureScreen, {
           docType: DOC_TYPE.DOCUMENT_SCANNER.find((doc) => doc.name ==='PAN'),
           claimId: "AGENT_ONBOARDING",
           email: "AGENT_ONBOARDING"})        
   } 
 
-
-  const capturePhoto = (<Button mode="contained" onPress={onClickPhoto}            
-        style={styles.button}>
-            Click Your Photo
-        </Button>)
-
-  const captureDocument = (<Button mode="contained" onPress={onClickDocument}            
-        style={styles.button}>
-            Click Your Photo
-        </Button>)
   return (
    <>
-      {!photoTaken && capturePhoto}
-      {photoTaken && captureDocument}
+      {!photoTaken && <Button mode="contained" onPress={onClickPhoto} style={styles.button}>  Click Your Photo </Button>}
+      {photoTaken && <Button mode="contained" onPress={onClickDocument} style={styles.button}> Click Document's Photo </Button>}
    </>
-  );
+  )
 };
 export default RegistrationImageScanner;
 

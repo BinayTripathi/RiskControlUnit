@@ -1,4 +1,4 @@
-import React, {  useRef, useState  } from "react";
+import React, {  useEffect, useRef, useState  } from "react";
 import { StyleSheet,Text,TouchableOpacity, View, Image, Alert, Dimensions} from "react-native";
 import { useDispatch} from 'react-redux'
 import { useNavigation } from "@react-navigation/native";
@@ -15,6 +15,10 @@ import {requestUpdateBeneficiaryPhotoCaseAction, requestUpdatePanCaseAction} fro
 import useLocationTracker from "@hooks/useLocationTracker";
 import LoadingModalWrapper from '@components/UI/LoadingModal';
 
+import { ALERT_TYPE, Dialog } from 'react-native-alert-notification';
+
+import OkayCancelDialogBox from "@components/UI/OkayCancelDialogBox";
+
 
 let imageRatio = 1
 //https://www.farhansayshi.com/post/how-to-save-files-to-a-device-folder-using-expo-and-react-native/
@@ -27,8 +31,8 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
     const tracker = useLocationTracker()
     const { triggerApi, data, error, loading } = useApi(userRegisterPhoto, photoData);
 
-
-    Image.getSize(`data:image/png;base64,${photoData}`, (width, height) => {imageRatio = width/ width});
+    const [showSaveDialog, setShowSaveDialog] = useState(false)
+    const [savePayload, setSavePayload] = useState(null)
 
     if(claimId === "AGENT_ONBOARDING") {
 
@@ -48,6 +52,39 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
         
       }   
     }      
+
+
+    useEffect(() => {
+      if (data !== null) {
+        Dialog.show({
+          type: ALERT_TYPE.SUCCESS,
+          title: 'Welcome Onboard',
+          textBody: 'Continue to login...',
+          button: 'OK',          
+          onHide:() => navigation.navigate('Login')
+        })   
+        
+      }              
+  
+      if (error !== null)      {
+        Dialog.show({
+          type: ALERT_TYPE.WARNING,
+          title: 'Failed to save photo',
+          textBody: 'Please try again',
+          button: 'Close'
+        })   
+        
+      } 
+    }, [data, error])
+
+      
+     
+    Image.getSize(`data:image/png;base64,${photoData}`, (width, height) => {imageRatio = width/ width});
+
+      console.log(imageRatio)
+
+
+       
     
     const savePhoto = async () => {        
 
@@ -69,43 +106,13 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
         documentDetailsForSubmission.OcrImage = photoData
       } 
       
-      const savePayload = {
+      const payloadToSave = {
         claimId,
         documentDetails : documentDetailsForSubmission,
         id: Math.floor(1000 + Math.random() * 9000) * -1
       }
-      
-      Alert.alert(  
-        'Save document',  
-        `Do you want to save ${docType.name} image ?`,  
-        [  
-            {  
-                text: 'Ok',  
-                onPress: async () => {      
-                  if (claimId !== "AGENT_ONBOARDING")   {
-                    if(docType.type === 'PHOTO')
-                      dispatch(requestUpdateBeneficiaryPhotoCaseAction(savePayload))
-                    else
-                      dispatch(requestUpdatePanCaseAction(savePayload))
-
-                   navigation.goBack()    
-                  }  else {
-                   await triggerApi()     
-                    
-                  }      
-                               
-                },  
-                style: 'default',  
-            }  ,
-            {  
-              text: 'Cancel',  
-              onPress: () => {               
-                navigation.goBack()               
-              },  
-              style: 'default',  
-          }  
-        ]  
-    );   
+      setSavePayload(payloadToSave)
+      setShowSaveDialog(true)
     }   
 
     const displayMapHandler = () => {
@@ -119,13 +126,31 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
                                  <UserTracker photoData={false}/>
                                  <Image source={{uri: `data:image/jpg;base64,${photoData}`}} style={styles.middlePhoto}  />
                                    </> )
+
+  const saveImageAlertBox = <OkayCancelDialogBox showDialog={showSaveDialog} 
+                                                setShowDialog={setShowSaveDialog}
+                                                title={'Save Item'} 
+                                                content={(`Do you want to save ${docType.name}`)} 
+                                                okayHandler={ async () => {      
+                                                    if (claimId !== "AGENT_ONBOARDING")   {
+                                                      if(docType.type === 'PHOTO')
+                                                        dispatch(requestUpdateBeneficiaryPhotoCaseAction(savePayload))
+                                                      else
+                                                        dispatch(requestUpdatePanCaseAction(savePayload))                                    
+                                                    navigation.goBack()   
+                                                    }  else {
+                                                    await triggerApi()                                                             
+                                                    }                                                                 
+                                                  }} 
+                                                cancelHandler={ () => navigation.goBack()  }/>
                             
  
   return (
     <PaperProvider>
       <LoadingModalWrapper shouldModalBeVisible = {loading === undefined ? false: loading}>
+      
       <View style={styles.container}>
-        
+        {saveImageAlertBox}
         <View style={styles.middlePhotoContainer} ref={savedPhoto}>
               {displayMapModal}
         </View>
@@ -159,6 +184,8 @@ const styles = StyleSheet.create({
  
     marginTop: 80,
     paddingHorizontal: 5,
+    borderWidth: 5,
+    borderRadius: 10,
     
     width: (windowWidth - 20),
   },

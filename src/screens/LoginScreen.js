@@ -137,12 +137,13 @@ export default function LoginScreen({navigation}) {
             )}/>
           
           <View>{loggingError}</View>
-          <Button mode="contained" onPress={onLoginPressed} 
-            disabled = {pin.toString().length < CELL_COUNT}
+          <Button mode="contained" disabled= {pin.toString().length < CELL_COUNT}
+            onPress={onLoginPressed}
             onLongPress={() => {
               dispatch({ type: "DESTROY_SESSION" });
               secureRemove(SECURE_USER_KEY)
-              navigation.navigate(SCREENS.RegistrationScreen)
+              secureRemove(SECURE_USER_PIN)
+              navigation.navigate(SCREENS.RegistrationScreen)              
               /*onLoginPressed()*/ }}
               style={[styles.button, pin.toString().length < CELL_COUNT ? styles.buttonDisabled : '']}>
           <Entypo name="key" size={18} color="white" /> LOGIN
@@ -169,8 +170,10 @@ const styles = StyleSheet.create({
     marginTop: 50
   },
   buttonDisabled : {
-    backgroundColor: theme.colors.disabledPrimary
+    backgroundColor: theme.colors.disabledPrimary,
+    opacity: 0.5
   },
+
   errorTextStyle: {
     color: theme.colors.error,
     textAlign: 'center',

@@ -26,6 +26,7 @@ const ImageCapture = ({setPhotoData, docType, setBothEyeOpen, setSmiling}) => {
   
   useEffect(() => {
     permission();
+    console.log(docType)
       setType(docType.cameraType)
   }, []);
 

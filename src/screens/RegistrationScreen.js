@@ -24,12 +24,14 @@ import {requestRegisterUser} from '@store/ducks/userSlice'
 import { theme } from '../core/theme'
 import { SECURE_USER_KEY, SECURE_USER_PIN, REGISTRATION_ERROR_MESSAGE} from '../core/constants'
 import {secureSave, secureGet} from '@helpers/SecureStore'
+import { ALERT_TYPE, Dialog } from 'react-native-alert-notification';
 //import DeviceNumber from 'react-native-device-number';
 //import {   getHash, requestHint,  startOtpListener,  useOtpVerify,} from 'react-native-otp-verify';
 import SmsRetriever from 'react-native-sms-retriever';
-
+import Stepper from '../components/UI/Stepper';
 
 const CELL_COUNT = 4;
+let step = -1
 export default function RegistrationScreen({ route, navigation }) {
 
 
@@ -38,6 +40,7 @@ export default function RegistrationScreen({ route, navigation }) {
     let userId = useSelector((state) => state.user.userId);
     let auth = useSelector((state) => state.user.auth)
     let error = useSelector((state) => state.user.error)
+    let [isLoadingSms, setIsLoadSms] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -50,15 +53,26 @@ export default function RegistrationScreen({ route, navigation }) {
       setPin,
     });
 
+    const [errorRegistration, setErrorRegistration] = useState(false)
+    useEffect(()=> {
+      setIsPinValidated(false)
+    },[])
+
     useEffect(()=> {
       if (isLoading !== true && error === REGISTRATION_ERROR_MESSAGE) {
-        Alert.alert('Problem registering phone number', 'Please contact support', [
-            
-          {text: 'OK', onPress: () => {setRegisteredPhoneNumber('')}},
-        ]);      
-        
+        setErrorRegistration(true)
+        Dialog.show({
+          type: ALERT_TYPE.WARNING,
+          title: 'Registration Failed',
+          textBody: 'Please contact admin',
+          button: 'OK',          
+          onHide: () => { 
+            setRegisteredPhoneNumber('')
+            setErrorRegistration(true)
+          }
+        })
       }  
-    },[error])
+    },[isLoading, error])
  
   const getPhoneNumber = async => {
     (async () => {
@@ -161,28 +175,46 @@ export default function RegistrationScreen({ route, navigation }) {
 
       if(auth === pin.toString()) {
         //navigation.navigate('Login')
-        setIsPinValidated(true)
+        
+        setIsLoadSms(true)
+        setTimeout(() => {
+          setIsLoadSms(false)
+          setIsPinValidated(true)
+        }, 2000);
 
       } else {
-        Alert.alert('Incorrect PIN', 'Please try again...', [
-            
-          {text: 'OK', onPress: () => setPin('')},
-        ]);      
-        
+
+        Dialog.show({
+          type: ALERT_TYPE.WARNING,
+          title: 'INCORRECT PIN',
+          textBody: 'PLEASE TRY AGAIN...',
+          button: 'Close',          
+          onHide: () => { 
+            setPin('')
+          }
+        })        
       }  
 
     }
 
    }
 
-  
+  if(!userId)
+    step =0
+  else if (!pinValidated)
+    step =1
+  else
+    step = 2
     
     return (
-      <LoadingModalWrapper shouldModalBeVisible = {isLoading}>
+      <LoadingModalWrapper shouldModalBeVisible = {isLoading || isLoadingSms}>
           <Background>
           <Padder>
+
             <Logo />
             <Header>REGISTRATION</Header>
+
+             <Stepper stepComplete={step}/>
             
             {!userId && 
             <> 
@@ -241,7 +273,7 @@ export default function RegistrationScreen({ route, navigation }) {
                 onLongPress={() => {
                   dispatch({ type: "DESTROY_SESSION" });
                   }} >                
-                Please Enter OTP
+                Verify OTP
               </Button>
         </>  }
                 
@@ -262,9 +294,11 @@ export default function RegistrationScreen({ route, navigation }) {
     buttonDisabled : {
       backgroundColor: theme.colors.disabledPrimary
     },
-    button_disabled: {
+    buttonDisabled : {
+      backgroundColor: theme.colors.disabledPrimary,
       opacity: 0.5
     },
+
     codeFieldRoot: {marginTop: 20},
     cell: {
       width: 40,

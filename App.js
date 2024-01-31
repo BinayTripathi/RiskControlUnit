@@ -13,6 +13,7 @@ import AppNavigator from './src/components/NavigationComponent/AppNavigator';
 import {en, registerTranslation } from 'react-native-paper-dates'
 import {secureGet} from '@helpers/SecureStore'
 import {SECURE_USER_KEY} from '@core/constants'
+import { AlertNotificationRoot} from 'react-native-alert-notification';
 
 export default function App() {
 
@@ -60,7 +61,10 @@ export default function App() {
       <PersistGate persistor={persistor} loading={null}>
       <StatusBar style='dark'/>
         <RootSiblingParent>
-          <AppNavigator isRegistered = {isRegistered}/> 
+          <AlertNotificationRoot>
+            <AppNavigator isRegistered = {isRegistered}/> 
+          </AlertNotificationRoot>
+          
         </RootSiblingParent>                
       </PersistGate>      
     </Provider>
