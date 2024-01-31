@@ -14,6 +14,7 @@ import {en, registerTranslation } from 'react-native-paper-dates'
 import {secureGet} from '@helpers/SecureStore'
 import {SECURE_USER_KEY} from '@core/constants'
 import { AlertNotificationRoot} from 'react-native-alert-notification';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 export default function App() {
 
@@ -62,7 +63,9 @@ export default function App() {
       <StatusBar style='dark'/>
         <RootSiblingParent>
           <AlertNotificationRoot>
-            <AppNavigator isRegistered = {isRegistered}/> 
+            <PaperProvider>
+              <AppNavigator isRegistered = {isRegistered}/> 
+            </PaperProvider>
           </AlertNotificationRoot>
           
         </RootSiblingParent>                

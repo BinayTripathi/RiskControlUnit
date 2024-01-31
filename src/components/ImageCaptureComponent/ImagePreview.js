@@ -34,45 +34,29 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
     const [showSaveDialog, setShowSaveDialog] = useState(false)
     const [savePayload, setSavePayload] = useState(null)
 
-    if(claimId === "AGENT_ONBOARDING") {
-
-      if (data !== null)      {
-        Alert.alert('Registration Successful', 'Continue to login...', [
-          
-          {text: 'OK', onPress: () => navigation.navigate('Login')},
-        ]);      
-        
-      }              
-  
-      if (error !== null)      {
-        Alert.alert('Failed to save photo', 'Please try again...', [
-          
-          {text: 'OK', onPress: () => console.log('failed agent photo')},
-        ]);      
-        
-      }   
-    }      
-
 
     useEffect(() => {
-      if (data !== null) {
-        Dialog.show({
-          type: ALERT_TYPE.SUCCESS,
-          title: 'Welcome Onboard',
-          textBody: 'Continue to login...',
-          button: 'OK',          
-          onHide:() => navigation.navigate('Login')
-        })   
-        
-      }              
-  
-      if (error !== null)      {
-        Dialog.show({
-          type: ALERT_TYPE.WARNING,
-          title: 'Failed to save photo',
-          textBody: 'Please try again',
-          button: 'Close'
-        })   
+
+      if(claimId === "AGENT_ONBOARDING") {
+        if (data !== null) {
+          Dialog.show({
+            type: ALERT_TYPE.SUCCESS,
+            title: 'Welcome Onboard',
+            textBody: 'Continue to login...',
+            button: 'OK',          
+            onHide:() => navigation.navigate('Login')
+          })   
+          
+        }              
+    
+        if (error !== null)      {
+          Dialog.show({
+            type: ALERT_TYPE.WARNING,
+            title: 'Failed to save photo',
+            textBody: 'Please try again',
+            button: 'Close'
+          })  
+      } 
         
       } 
     }, [data, error])

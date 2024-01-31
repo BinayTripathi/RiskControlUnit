@@ -2,6 +2,7 @@ import Constanst from 'expo-constants'
 import * as Request from '../helpers/serviceApi'
 import * as Application from 'expo-application';
 import { Platform } from 'expo-modules-core';
+import RNFetchBlob from "rn-fetch-blob";
 
 //const BASE_URL = 'https://rcu.azurewebsites.net/api';
 //const BASE_URL = 'https://ccutest.free.beeceptor.com'
@@ -169,16 +170,17 @@ export const updateCaseDocument = async (body) => {
 
     //https://medium.com/@aurelie.lebec/uploading-pictures-and-videos-from-your-phone-in-your-app-with-react-native-expo-cloudinary-and-d3ad4358e81a
     export const addVideo = async (claimId, videoDetails) => {
+      try { 
       console.log('addVideo')
-      const url = `${BASE_URL}/agent/video`;
-      const data = new FormData();
-      data.append("video", {       
-        name: videoDetails.id,
-        type: videoDetails.type,
-        uri:  videoDetails.uri
+      const url = `${BASE_URL}/Agent/video`; //showAlert
+      /*const data = new FormData();
+      data.append("videoDetails", {           
+        uri:  videoDetails.uri,
+        name:  videoDetails.id, 
+       type:  'video/mp4'
       });
-      data.append("claimId",  claimId)
-      
+      data.append("claimId", claimId)
+
       const config = {      
           headers: {
             Accept: 'application/json',
@@ -186,13 +188,34 @@ export const updateCaseDocument = async (body) => {
           }
       }
       
-      try { 
-        console.log(JSON.stringify(data["_parts"]))
-         let response = await Request.post({url, config, data});
-         console.log(response)
-         return response
+      let response = await fetch(url, {
+        method: 'post',
+        headers: {
+            'content-type': 'multipart/form-data',
+        },
+        body: data
+    });*/
+
+    let response = await RNFetchBlob.fetch(
+      "POST",
+      url,
+      {
+        "Content-Type": "multipart/form-data",
+      },
+      [
+        {
+          name: "avatar-foo",
+          filename: "avatar-foo.mp4",
+          type: "image/mp4",
+          uri: RNFetchBlob.wrap(videoDetails.uri),
+        },        
+        { name: "claimId", data: claimId },
+      ])
+    return response;
+        
+        
       } catch (e) {
-        console.error(e);
+        console.error(JSON.stringify(e));
       }
     } 
 

@@ -3,8 +3,10 @@ import { StyleSheet,  View, useWindowDimensions } from "react-native";
 import { TabView, SceneMap } from 'react-native-tab-view';
 import * as Location from "expo-location";
 
+import {secureGet} from '@helpers/SecureStore'
 import CaseList from "@components/CasesComponent/CaseList";
 import CaseGeolocation from "@components/CasesComponent/CaseGeolocation"
+import {SECURE_USER_KEY, SECURE_USER_PIN} from '../core/constants'
 
 
 

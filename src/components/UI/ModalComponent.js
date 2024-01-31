@@ -1,14 +1,23 @@
-import * as React from 'react';
+import {useEffect} from 'react';
 import { StyleSheet } from 'react-native';
 import { Modal, Portal } from 'react-native-paper';
 
-const ModalComponent = ({children, diplayModal, displayMapHandler }) => {
+const ModalComponent = ({children, diplayModal, displayMapHandler, modalTimeout }) => {
+
+  useEffect(()=>{
+    if(modalTimeout) {
+      console.log('modal timeout')
+      modalTimeout();
+    }
+  },[modalTimeout])
+
 
 
   console.log(diplayModal)
 
   const dismissHandler = ()=> {
-    displayMapHandler()
+    if(displayMapHandler)
+      displayMapHandler()
   }
 
   return (    

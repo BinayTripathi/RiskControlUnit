@@ -312,7 +312,8 @@ const initialState = {
     try{
       console.log('asyncPostCaseVideo')
       let response = yield call(addVideo,action.payload.claimId, action.payload.videoDetails);
-      const responseUserData = response.data        
+      const responseUserData = response.data      
+      console.log(`Upload response ${responseUserData}` )  
       if (responseUserData) 
         yield put(successAddVideo(action.payload))
       else

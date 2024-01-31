@@ -106,6 +106,7 @@ const FormInitiator = ({selectedClaimId, userId, caseUpdates}) => {
     }
     
     dispatch(requestSaveFormAction(payload))
+    showAlert()
   }
 
 
