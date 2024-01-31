@@ -6,7 +6,10 @@ import { useNavigation } from '@react-navigation/native';
 import { theme } from '@core/theme';
 //import { selectCase } from "@store/ducks/case-slice";
 
-
+const TEXT_LENGTH = 80
+const TEXT_HEIGHT = 20
+const OFFSET = TEXT_LENGTH / 2 - TEXT_HEIGHT / 2
+//Above is based on https://medium.com/@therealmaarten/how-to-layout-rotated-text-in-react-native-6d55b7d71ca5
 
 function CaseItem({ caseDetails }) {
 
@@ -15,13 +18,13 @@ function CaseItem({ caseDetails }) {
 
   const caseType =  caseDetails.claimType && caseDetails.claimType != "Death" ? 
   ( <View style={styles.caseTypeHealthContainer}>
-        <View style={{ width: 60 }}>
+        <View style={{ width: TEXT_HEIGHT, height: TEXT_LENGTH   }}>
             <Text style={styles.caseType}> HEALTH</Text>
         </View>
     </View>
   ) :
   ( <View style={styles.caseTypeDeathContainer}>
-      <View style={{ width: 60 }}>
+      <View style={{ width: TEXT_HEIGHT, height: TEXT_LENGTH }}>
           <Text style={styles.caseType}> DEATH</Text>
       </View>
     </View>
@@ -84,6 +87,9 @@ const styles = StyleSheet.create({
     backgroundColor:  theme.colors.title2Color,
     borderTopLeftRadius : 8,
     borderBottomLeftRadius : 8,
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
     
   },
   caseTypeDeathContainer: {
@@ -93,11 +99,15 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.title1Color,
     borderTopLeftRadius : 8,
     borderBottomLeftRadius : 8,
-    
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
   },
   caseType : {
-    transform: [{ rotate: '270deg' }, { translateX: -45 }, 
-    { translateY: -20 }],
+    transform: [{ rotate: '270deg' }, { translateX: -OFFSET }, 
+    { translateY: -OFFSET }],
+    width: TEXT_LENGTH,
+    height: TEXT_HEIGHT,
     fontSize: 15,
     fontWeight: 'bold',
     textAlign: 'center',
