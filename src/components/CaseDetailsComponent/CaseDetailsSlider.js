@@ -42,12 +42,12 @@ export default function CaseDetailsSlider({selectedClaimId, selectedClaim, userI
                 setSliderPage(event);
             }}
             >
-            <View style={{ width, height }}>
+            {selectedClaim.policy.claimType !== "Death"  && <View style={{ width, height }}>
                 <CustomerDetails selectedClaim = {selectedClaim}/>
-            </View>
-            <View style={{ width, height }}>
+            </View>}
+            {selectedClaim.policy.claimType === "Death" && <View style={{ width, height }}>
                 <BeneficiaryDetails selectedClaim = {selectedClaim}/>
-            </View>    
+            </View>}
 
             <View style={{ width, height }}>
                 <InvestigationDetails selectedClaimId = {selectedClaimId} userId = {userId} capability = {UPLOAD_TYPE.PHOTO}/>
@@ -67,7 +67,7 @@ export default function CaseDetailsSlider({selectedClaimId, selectedClaim, userI
             
             </ScrollView>
             <View style={styles.paginationWrapper}>
-            {Array.from(Array(6).keys()).map((key, index) => (
+            {Array.from(Array(5).keys()).map((key, index) => (
                 <View style={[styles.paginationDots, { opacity: pageIndex === index ? 1 : 0.2 }]} key={index} />
             ))}
             </View>
