@@ -3,6 +3,7 @@ import {useState} from "react";
 import { StyleSheet, View, ScrollView, Dimensions, PixelRatio}  from 'react-native';
 
 import CustomerDetails from "./CaseDetails/CustomerDetails";
+import PolicyDetailsComponent from "./CaseDetails/PolicyDetails";
 import BeneficiaryDetails from "./CaseDetails/BeneficiaryDetails";
 import InvestigationDetails from './InvestigationDetails'
 import SubmitInvestigation from "./SubmitInvestigation";
@@ -41,6 +42,11 @@ export default function CaseDetailsSlider({selectedClaimId, selectedClaim, userI
                 setSliderPage(event);
             }}
             >
+
+            <View style={{ width, height }}>
+                <PolicyDetailsComponent selectedClaim = {selectedClaim}/>
+            </View>
+            
             {selectedClaim?.policy.claimType !== "Death"  && <View style={{ width, height }}>
                 <CustomerDetails selectedClaim = {selectedClaim}/>
             </View>}
@@ -66,7 +72,7 @@ export default function CaseDetailsSlider({selectedClaimId, selectedClaim, userI
             
             </ScrollView>
             <View style={styles.paginationWrapper}>
-            {Array.from(Array(5).keys()).map((key, index) => (
+            {Array.from(Array(6).keys()).map((key, index) => (
                 <View style={[styles.paginationDots, { opacity: pageIndex === index ? 1 : 0.2 }]} key={index} />
             ))}
             </View>
