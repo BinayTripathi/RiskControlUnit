@@ -46,7 +46,7 @@ export default function CaseListScreen() {
 const MapView = () => (
    <CaseGeolocation reloadProp={index} userLoc = {userLocation}/>
 );
-console.log(userLocation)
+
 const renderScene = SceneMap({
   first: ListView,
   second: MapView,

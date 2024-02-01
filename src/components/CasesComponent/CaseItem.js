@@ -32,8 +32,6 @@ function CaseItem({ caseDetails }) {
   return (
     <Pressable onPress={()=> {
       
-      //dispatch(selectCase({...caseDetails}))
-      
       navigation.navigate('CaseDetailsScreen', {
         claimId : caseDetails.claimId
       }

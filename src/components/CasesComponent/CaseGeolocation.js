@@ -78,7 +78,7 @@ const CaseGeolocation = ({reloadProp, userLoc}) => {
 
   const focusMap = (focusMarkers, animated) => {
     if(userLoc !== null) focusMarkers.push("USER_LOC")
-    console.log(`Markers received to populate map: ${focusMarkers}`);
+    //console.log(`Markers received to populate map: ${focusMarkers}`);
     setTimeout(() => {mapRef?.current?.fitToSuppliedMarkers(focusMarkers, animated)},10)
     
   }
@@ -102,7 +102,7 @@ const CaseGeolocation = ({reloadProp, userLoc}) => {
                 </Marker >) 
 
         if(userLoc !== null) {
-          console.log(userLoc)
+          //console.log(userLoc)
           allMarkers.push(<Marker key ={"USER_LOC"} 
             identifier={"USER_LOC"} 
             coordinate={userLoc}
@@ -124,8 +124,6 @@ const CaseGeolocation = ({reloadProp, userLoc}) => {
                 fillColor = { 'rgba(230,238,255,0.5)' }
       />)
     }
-
-    console.log(userLoc)
 
   return (
     

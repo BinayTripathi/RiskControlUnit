@@ -15,8 +15,6 @@ export default function CaseDetails({claimId, userId}) {
     const error = useSelector(state => state.casesDetails.error)
     const isConnected = useSelector(state => state.network.isConnected);
 
-    
-
         return  <LoadingModalWrapper shouldModalBeVisible = {isLoading && caseDetails[claimId] == undefined}> 
                      <CaseDetailsSlider selectedClaim = {caseDetails[claimId]} selectedClaimId = {claimId} userId = {userId}/>
                 </LoadingModalWrapper>  

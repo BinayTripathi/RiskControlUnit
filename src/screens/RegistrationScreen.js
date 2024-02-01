@@ -24,7 +24,7 @@ import {requestRegisterUser} from '@store/ducks/userSlice'
 import { theme } from '../core/theme'
 import { SECURE_USER_KEY, SECURE_USER_PIN, REGISTRATION_ERROR_MESSAGE} from '../core/constants'
 import {secureSave, secureGet} from '@helpers/SecureStore'
-import { ALERT_TYPE, Dialog } from 'react-native-alert-notification';
+import { ALERT_TYPE, Dialog, Toast } from 'react-native-alert-notification';
 //import DeviceNumber from 'react-native-device-number';
 //import {   getHash, requestHint,  startOtpListener,  useOtpVerify,} from 'react-native-otp-verify';
 import SmsRetriever from 'react-native-sms-retriever';
@@ -180,6 +180,11 @@ export default function RegistrationScreen({ route, navigation }) {
         setTimeout(() => {
           setIsLoadSms(false)
           setIsPinValidated(true)
+          Toast.show({
+            type: ALERT_TYPE.SUCCESS,
+            title: 'Success',
+            textBody: 'OTP validated successfully',
+          })
         }, 2000);
 
       } else {

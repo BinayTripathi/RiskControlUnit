@@ -15,7 +15,6 @@ export default function CaseDetailsScreen({navigation, route}) {
   const claimId = route.params.claimId;
   const userId = useSelector(state => state.user.userId)
 
- console.log(claimId)
   useEffect(() => {     
       console.log('Fetching details')  
       

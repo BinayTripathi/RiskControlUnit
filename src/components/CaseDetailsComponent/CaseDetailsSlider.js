@@ -13,7 +13,6 @@ const { width, height } = Dimensions.get('window');
 export default function CaseDetailsSlider({selectedClaimId, selectedClaim, userId}) {
 
     const [sliderState, setSliderState] = useState({ currentPage: 0 });
-    
   
     const setSliderPage = (event) => {
       const { currentPage } = sliderState;
@@ -42,10 +41,10 @@ export default function CaseDetailsSlider({selectedClaimId, selectedClaim, userI
                 setSliderPage(event);
             }}
             >
-            {selectedClaim.policy.claimType !== "Death"  && <View style={{ width, height }}>
+            {selectedClaim?.policy.claimType !== "Death"  && <View style={{ width, height }}>
                 <CustomerDetails selectedClaim = {selectedClaim}/>
             </View>}
-            {selectedClaim.policy.claimType === "Death" && <View style={{ width, height }}>
+            {selectedClaim?.policy.claimType === "Death" && <View style={{ width, height }}>
                 <BeneficiaryDetails selectedClaim = {selectedClaim}/>
             </View>}
 
