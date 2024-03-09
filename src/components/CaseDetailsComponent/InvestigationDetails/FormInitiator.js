@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     questionaireContainer : {
       marginTop: 30,
       width: 280,
-      backgroundColor: 'white',
+      backgroundColor: '#cccccc',
       borderRadius: 20,
       paddingHorizontal: 10,
       shadowOffset: {width: 0, height: 1},

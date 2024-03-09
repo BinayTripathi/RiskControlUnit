@@ -1,6 +1,6 @@
 import { StyleSheet, View, Text, Image,  Dimensions} from 'react-native';
 
-import { useSelector } from 'react-redux';
+import { Surface } from 'react-native-paper';
 
 
 import Card from '@components/UI/Card';
@@ -19,6 +19,8 @@ export default PolicyDetailsComponent = ({selectedClaim}) => {
     let policy = selectedClaim.policy
     if(policy === undefined)
       return null;
+
+    console.log(policy)
   
       return (            
         
@@ -39,34 +41,39 @@ export default PolicyDetailsComponent = ({selectedClaim}) => {
                     <Text style = {[styles.textBase , styles.personDetail]}>{policy.policyNumber}</Text>                   
                   </View>
                 <View style= {[styles.detailsContainer,  styles.seperator]}>                          
-                    <Text style = {[styles.textBase , styles.label]}>Date of Birth</Text>                 
-                    <Text style = {[styles.textBase , styles.personDetail]}>{1234}</Text>                   
+                    <Text style = {[styles.textBase , styles.label]}>Claim Type</Text>                 
+                    <Text style = {[styles.textBase , styles.personDetail]}>{policy.claimType}</Text>                   
                   </View>
 
                   <View style= {styles.detailsContainer}>                          
-                    <Text style = {[styles.textBase , styles.label ]}>Phone</Text>                 
-                    <Text style = {[styles.textBase, styles.personDetail ]}>{1234}</Text>                   
+                    <Text style = {[styles.textBase , styles.label ]}>Issue Date</Text>                 
+                    <Text style = {[styles.textBase, styles.personDetail ]}>{policy.issueDate}</Text>                   
                   </View>
 
-                  <View style= {[styles.detailsContainerColumn,  styles.seperator]}>                          
-                    <Text style = {[styles.textBase , styles.label]}>Address</Text>                 
-                    <View style={{paddingLeft: 20,  flexShrink: 1}}><Text style = {[styles.textBase , styles.personDetail]}>{1234}</Text></View>                
+                  <View style= {[styles.detailsContainer,  styles.seperator]}>                          
+                  <Text style = {[styles.textBase , styles.label ]}>Incident Date</Text>                 
+                    <Text style = {[styles.textBase, styles.personDetail ]}>{policy.incidentDate}</Text>                
                   </View>
 
                   <View style= {[styles.detailsContainer]}>                          
-                    <Text style = {[styles.textBase , styles.label]}>Occupation</Text>                 
-                    <Text style = {[styles.textBase , styles.personDetail]}>{1234}</Text>                   
+                    <Text style = {[styles.textBase , styles.label]}>Reason</Text>                 
+                    <View style={{paddingLeft: 20,  flexShrink: 1}}><Text style = {[styles.textBase , styles.personDetail]}>{policy.reason}</Text></View>                       
                   </View>   
-
-                <View style= {[styles.detailsContainer]}>                          
-                    <Text style = {[styles.textBase , styles.label ]}>Annual Income</Text>                 
-                    <Text style = {[styles.textBase , styles.personDetail]}>{1234}</Text>                   
-                  </View>
 
                 </Card>                            
                 <Image source={require('@root/assets/PolicyDocument.png')} style={styles.image} /> 
                                      
                </View>  
+
+               <View style =  {styles.detailsCardContainer}>
+               <Card style = {[styles.card,{backgroundColor: '#c3bfbf'}]}>
+
+                <Surface style={{height: 100, width: 100, borderRadius: 20, backgroundColor: '#0b0b0b'}}>
+
+                </Surface>
+               </Card> 
+               
+              </View>
                         
           </View>
           </Padder>       
@@ -118,7 +125,7 @@ export default PolicyDetailsComponent = ({selectedClaim}) => {
           width: 80,
           height: 80,
           borderRadius: 80,  
-          transform: [{ translateY: -50 }],
+          transform: [{ translateY: -30 }],
         },
         shadowContainer : {
           marginTop: 20,
@@ -138,7 +145,7 @@ export default PolicyDetailsComponent = ({selectedClaim}) => {
        detailsCardContainer : {      
         marginTop: 20,          
         alignContent: 'center',
-        alignItems: 'center',     
+        alignItems: 'center',   
     }, 
 
     card : { 
