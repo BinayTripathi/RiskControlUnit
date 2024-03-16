@@ -72,7 +72,7 @@ const FormInitiator = ({selectedClaimId, userId, caseUpdates}) => {
               
               <Text style={styles.label1}> Time when met with Neighbour</Text>  
               <CustomDateTimePicker dateTimeInParent={dateTime} setDateTimeInParent = {setDateTime} label={'Select Date And Time'}>
-                <RNButton color="#69696b"  title="test"/>
+                <RNButton color="#69696b" />
               </CustomDateTimePicker>
              
             </View>
