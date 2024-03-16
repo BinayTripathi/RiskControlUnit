@@ -1,4 +1,4 @@
-import { StyleSheet,View, Text , Dimensions, ScrollView, Alert} from 'react-native';
+import { StyleSheet,View, Text , Dimensions, ScrollView, Button as RNButton} from 'react-native';
 import Checkbox from 'expo-checkbox';
 import { useState } from "react";
 import { useDispatch} from 'react-redux'
@@ -71,7 +71,9 @@ const FormInitiator = ({selectedClaimId, userId, caseUpdates}) => {
                 underlineColor='#6e6d6d' style= {styles.customInputBox}/>
               
               <Text style={styles.label1}> Time when met with Neighbour</Text>  
-              <CustomDateTimePicker   dateTimeInParent={dateTime} setDateTimeInParent = {setDateTime} />
+              <CustomDateTimePicker dateTimeInParent={dateTime} setDateTimeInParent = {setDateTime} label={'Select Date And Time'}>
+                <RNButton color="#69696b"  title="test"/>
+              </CustomDateTimePicker>
              
             </View>
   }

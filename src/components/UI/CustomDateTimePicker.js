@@ -1,11 +1,10 @@
-
 import React, { useState } from "react";
-import { StyleSheet, View, Button, Modal, Pressable, Text} from "react-native";
+import { StyleSheet, View} from "react-native"; 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { DatePickerModal, TimePickerModal } from 'react-native-paper-dates';
 
 
- const CustomDateTimePicker = ({ dateTimeInParent, setDateTimeInParent}) => {
+ const CustomDateTimePicker = ({ dateTimeInParent, setDateTimeInParent, label, children}) => {
 
     const [showDate, setShowDate] = useState(false);
     const [showTime, setShowTime] = useState(false);
@@ -66,10 +65,21 @@ import { DatePickerModal, TimePickerModal } from 'react-native-paper-dates';
     
     const TimePicker = () => showTime  ? <View><DateTimePicker value={dt} mode={"time"} is24Hour={true} onChange={onChange} display="spinner"/></View>
                        : null
+  
+
+    let renderChildren= ()=> {
+      return React.Children.map(children, child => {
+        return React.cloneElement(child, {
+          ...child.props,
+          title: dateTimeInParent === '' ? label : dt.toLocaleString(),
+          onPress: () => showMode("date")
+        })
+      })
+    }
 
     return  (   
     <View>
-          <Button title={dateTimeInParent === '' ? "Select Date and Time" : dt.toLocaleString()}  color="#69696b" onPress={() => showMode("date")} /> 
+          { renderChildren() }  
           <DatePickerModal locale="en" mode="single" visible={showDate} date={dt} onDismiss={onDismissSingle}  onConfirm={onConfirmSingle}/>
           <TimePickerModal visible={showTime}  onDismiss={onDismiss} onConfirm={onConfirm} hours={12} minutes={14}
         />

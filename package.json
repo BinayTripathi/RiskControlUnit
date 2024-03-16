@@ -53,10 +53,12 @@
     "react-native-paper": "^5.10.1",
     "react-native-paper-dates": "^0.19.8",
     "react-native-reanimated": "~3.3.0",
+    "react-native-responsive-screen": "^1.4.2",
     "react-native-root-toast": "^3.5.1",
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "~3.22.0",
     "react-native-sms-retriever": "^1.1.1",
+    "react-native-svg": "13.9.0",
     "react-native-tab-view": "^3.5.2",
     "react-native-vector-icons": "^10.0.0",
     "react-redux": "^8.1.1",
@@ -64,8 +66,7 @@
     "redux-saga": "^1.2.3",
     "rn-secure-storage": "^2.0.8",
     "save": "^2.9.0",
-    "use-debounce": "^9.0.4",
-    "react-native-svg": "13.9.0"
+    "use-debounce": "^9.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

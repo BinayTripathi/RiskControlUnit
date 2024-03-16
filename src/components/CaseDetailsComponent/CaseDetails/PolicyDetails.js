@@ -1,18 +1,22 @@
+import { useState } from 'react';
 import { StyleSheet, View, Text, Image,  Dimensions} from 'react-native';
 
-import { Surface } from 'react-native-paper';
+import { AntDesign, FontAwesome5 } from '@expo/vector-icons';
 
 
 import Card from '@components/UI/Card';
+import CircularButton from '@components/UI/CircularButton';
+import CustomDateTimePicker from '@components/UI/CustomDateTimePicker'
 
 import { theme } from '@core/theme';
 import { Padder } from '@components//UI/Wrapper';
 
 
-const { width, height } = Dimensions.get('window');
+const { width,  height } = Dimensions.get('window');
 export default PolicyDetailsComponent = ({selectedClaim}) => {  
 
-     
+  const [appointmentTime, setAppointmentTime] = useState('');
+  
     if(selectedClaim === undefined)
       return null;
 
@@ -60,20 +64,30 @@ export default PolicyDetailsComponent = ({selectedClaim}) => {
                     <View style={{paddingLeft: 20,  flexShrink: 1}}><Text style = {[styles.textBase , styles.personDetail]}>{policy.reason}</Text></View>                       
                   </View>   
 
+                  { appointmentTime && <View style= {styles.detailsContainer}>                          
+                    <Text style = {[styles.textBase , styles.label ]}>Appointment</Text>                 
+                    <Text style = {[styles.textBase, styles.personDetail ]}>{appointmentTime}</Text>                   
+                  </View> }
+
                 </Card>                            
                 <Image source={require('@root/assets/PolicyDocument.png')} style={styles.image} /> 
                                      
                </View>  
 
-               <View style =  {styles.detailsCardContainer}>
-               <Card style = {[styles.card,{backgroundColor: '#c3bfbf'}]}>
+                <View style =  {[styles.detailsCardContainer, { flexDirection: 'row',justifyContent: 'space-around'}]}>
 
-                <Surface style={{height: 100, width: 100, borderRadius: 20, backgroundColor: '#0b0b0b'}}>
+                  <View style={styles.actionButton}>
+                    <CustomDateTimePicker dateTimeInParent={appointmentTime} setDateTimeInParent = {setAppointmentTime} label={'Select Date And Time'}>
+                      <CircularButton label='Schedule Visit'><AntDesign name="calendar" size={40} color="#f53708" /></CircularButton>
+                    </CustomDateTimePicker>
+                  </View>
 
-                </Surface>
-               </Card> 
-               
-              </View>
+                  <View style={styles.actionButton}>
+                    <CircularButton label='Get Direction'><FontAwesome5 name="directions" size={40} color="#f53708" /></CircularButton>
+                  </View>
+                
+                
+                </View>
                         
           </View>
           </Padder>       
@@ -125,7 +139,7 @@ export default PolicyDetailsComponent = ({selectedClaim}) => {
           width: 80,
           height: 80,
           borderRadius: 80,  
-          transform: [{ translateY: -30 }],
+          transform: [{ translateY: -25 }],
         },
         shadowContainer : {
           marginTop: 20,
@@ -142,18 +156,18 @@ export default PolicyDetailsComponent = ({selectedClaim}) => {
           color: '#181818'
         },
 
-       detailsCardContainer : {      
+       detailsCardContainer : {     
         marginTop: 20,          
         alignContent: 'center',
-        alignItems: 'center',   
+        alignItems: 'center', 
     }, 
 
     card : { 
       alignItems: 'flex-start', 
       padding: 20, 
       width: '90%', 
-      //backgroundColor: theme.colors.details_card_color
-      backgroundColor:'#cccccc'
+      backgroundColor: theme.colors.details_card_color
+      //backgroundColor:'#cccccc'
     },
 
     detailsContainer : {      
@@ -177,19 +191,29 @@ export default PolicyDetailsComponent = ({selectedClaim}) => {
     borderBottomColor: theme.colors.borderSeperator,
   },
 
-    textBase: {
-        color: 'black',
-      },
-     
-      
-      label: {
-        fontWeight: '400',
-        fontSize: 16,
-      },
+  textBase: {
+      color: 'black',
+    },
+    
+    
+    label: {
+      fontWeight: '400',
+      fontSize: 16,
+      color: '#FFC334'
+    },
 
-      personDetail: {
-        fontSize: 16,
-        fontWeight: 'bold'
-      },
+    personDetail: {
+      fontSize: 17,
+      fontWeight: 'bold',
+      color: '#cccccc'
+    },
+
+    actionButton: {
+      width: '38%',
+      aspectRatio: 1,    
+        borderRadius: 50,
+        backgroundColor: 'red'
+    }
+    
 
 })

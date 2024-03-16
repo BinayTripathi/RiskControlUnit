@@ -188,6 +188,7 @@ const styles = StyleSheet.create({
      
       
       label: {
+        color: '#FFC334',
         fontWeight: '400',
         fontSize: 16,
       },

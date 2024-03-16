@@ -191,12 +191,13 @@ export default CustomerDetailsComponent = ({selectedClaim}) => {
      
       
       label: {
+        color: '#FFC334',
         fontWeight: '400',
         fontSize: 16,
       },
 
       personDetail: {
-        fontSize: 16,
+        fontSize: 17,
         fontWeight: 'bold'
       },
 
