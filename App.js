@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet} from 'react-native';
+import { StyleSheet, View} from 'react-native';
 
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/lib/integration/react';
@@ -12,30 +12,11 @@ import { RootSiblingParent } from 'react-native-root-siblings';
 import AppNavigator from './src/components/NavigationComponent/AppNavigator';
 import {en, registerTranslation } from 'react-native-paper-dates'
 import {secureGet} from '@helpers/SecureStore'
-import {SECURE_USER_KEY} from '@core/constants'
+import {SECURE_REGISTRATION_COMPLETE} from '@core/constants'
 import { AlertNotificationRoot} from 'react-native-alert-notification';
 
 export default function App() {
 
-
-  const [isRegistered, setIsRegistered] = useState(false)
-
-  useEffect( () => {
-       
-        (async ()=> {         
-          try{
-            const email = await secureGet(SECURE_USER_KEY)                     
-            if(email !== '' && email !== undefined && email !== null){
-              console.log(email)
-              setIsRegistered(true)
-            }
-           
-          } catch(error){
-        console.log(error)
-        }
-            
-        })()        
-    },[])
 
   registerTranslation('en', {
     save: 'Save',
@@ -62,9 +43,8 @@ export default function App() {
       <StatusBar style='dark'/>
         <RootSiblingParent>
           <AlertNotificationRoot>
-            <AppNavigator isRegistered = {isRegistered}/> 
-          </AlertNotificationRoot>
-          
+            <AppNavigator/>             
+          </AlertNotificationRoot>          
         </RootSiblingParent>                
       </PersistGate>      
     </Provider>

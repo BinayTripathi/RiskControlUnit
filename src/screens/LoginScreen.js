@@ -14,9 +14,8 @@ import { theme } from '../core/theme'
 import { SCREENS, SESSION_TTL_IN_SEC } from '../core/constants'
 import LoadingModalWrapper from '@components/UI/LoadingModal';
 import Constanst from 'expo-constants'
-import LocalAuthComponent from './../components/AuthComponent/LocalAuthComponent';
-import * as SecureStore from 'expo-secure-store';
-import {SECURE_USER_KEY, SECURE_USER_PIN} from '../core/constants'
+import LocalAuthComponent from './../components/AuthComponent/LocalAuthComponent'
+import {SECURE_USER_KEY, SECURE_USER_PIN, SECURE_REGISTRATION_COMPLETE} from '../core/constants'
 import {secureGet, secureRemove} from '@helpers/SecureStore'
 
 import {
@@ -46,20 +45,22 @@ export default function LoginScreen({navigation}) {
     pin,
     setPin,
   })
-
+  const [savedPin, setSavedPin] = useState('')
+  const [pinMatchFailed, setPinMatchFailed] = useState(false)
   // if loging within 30 sec of loggout, dispatch autologin
 
   useEffect(() => { 
 
     (async() => {
-      try{
-        const user = await secureGet(SECURE_USER_KEY)
-        console.log(`Within login ${user}`)
-        setEmail(user)
-      } catch (error) {
-        console.log(error)
-      }
-      
+        try{
+          const user = await secureGet(SECURE_USER_KEY)
+          const receivedPin = await secureGet(SECURE_USER_PIN)
+          console.log(`Within login ${user}`)
+          setEmail(user)
+          setSavedPin(receivedPin)
+        } catch (error) {
+          console.log(error)
+        }      
       }
     )()    
   },[])
@@ -100,11 +101,15 @@ export default function LoginScreen({navigation}) {
       returnUrl: 'http://localhost:19006/',
     }
    
-
-    dispatch(requestValidateUser(dataToSendForAuth))
+    if(savedPin !== pin) {
+      setPinMatchFailed(true)
+    } else {
+      dispatch(requestValidateUser(dataToSendForAuth))
+    }
+          
   }
 
-   const loggingError = userLoggingError ? 
+   const loggingError = userLoggingError || pinMatchFailed ? 
    <Text style={styles.errorTextStyle}>Invalid user id or PIN</Text> 
    :null
   return (
@@ -143,6 +148,7 @@ export default function LoginScreen({navigation}) {
               dispatch({ type: "DESTROY_SESSION" });
               secureRemove(SECURE_USER_KEY)
               secureRemove(SECURE_USER_PIN)
+              secureRemove(SECURE_REGISTRATION_COMPLETE)
               navigation.navigate(SCREENS.RegistrationScreen)              
               /*onLoginPressed()*/ }}
               style={[styles.button, pin.toString().length < CELL_COUNT ? styles.buttonDisabled : '']}>

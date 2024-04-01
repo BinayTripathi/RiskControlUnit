@@ -7,9 +7,11 @@ import { PaperProvider } from 'react-native-paper';
 import {userRegisterPhoto} from '@services/RestServiceCalls'
 import useApi from '@hooks/useApi'
 import UserTracker from "./UserTracker";
+import {requestRegisterUser} from '@store/ducks/userSlice'
 
 import {theme} from '../../core/theme'
-import { UPLOAD_TYPE } from '@core/constants';
+import { UPLOAD_TYPE, SECURE_REGISTRATION_COMPLETE } from '@core/constants';
+import {secureSave} from '@helpers/SecureStore'
 
 import {requestUpdateBeneficiaryPhotoCaseAction, requestUpdatePanCaseAction} from '@store/ducks/case-submission-slice'
 import useLocationTracker from "@hooks/useLocationTracker";
@@ -38,17 +40,26 @@ const ImagePreview = ({photoData, setPhotoData ,isSmiling, isBothEyeOpen, claimI
 
     useEffect(() => {
       if (data !== null) {
+        
         Dialog.show({
           type: ALERT_TYPE.SUCCESS,
           title: 'Welcome Onboard',
           textBody: 'Continue to login...',
           button: 'OK',          
-          onHide:() => navigation.navigate('Login')
+          onHide:() => {
+            //secureSave(SECURE_REGISTRATION_COMPLETE,"true")
+            const dataToSendForReg = {
+              step: 3
+            }
+            dispatch(requestRegisterUser(dataToSendForReg))
+            navigation.navigate('Login')
+          } 
         })   
         
       }              
   
       if (error !== null)      {
+        secureSave(SECURE_REGISTRATION_COMPLETE,"true")
         Dialog.show({
           type: ALERT_TYPE.WARNING,
           title: 'Failed to save photo',

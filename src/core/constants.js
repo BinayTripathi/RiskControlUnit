@@ -9,6 +9,7 @@ export const UPLOAD_SUCCESS_INDICATOR = 1
 
 export const SECURE_USER_KEY = "userId"
 export const SECURE_USER_PIN = "pin"
+export const SECURE_REGISTRATION_COMPLETE = "reg_complete"
 
 export const UPLOAD_TYPE = {
     PHOTO: 'PHOTO',
