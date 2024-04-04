@@ -31,7 +31,7 @@ import SmsRetriever from 'react-native-sms-retriever';
 import Stepper from '../components/UI/Stepper';
 
 const CELL_COUNT = 4;
-let step = -1
+let step = 0
 export default function RegistrationScreen({ route, navigation }) {
 
 
@@ -210,13 +210,8 @@ export default function RegistrationScreen({ route, navigation }) {
 
    }
 
-  /*if(!userId)
-    step =0
-  else if (!pinValidated)
-    step =1
-  else
-    step = 2*/
-  step = registrationStepComplete
+  if(registrationStepComplete !== null || registrationStepComplete !== undefined)
+    step = registrationStepComplete
     
     return (
       <LoadingModalWrapper shouldModalBeVisible = {isLoading || isLoadingSms}>

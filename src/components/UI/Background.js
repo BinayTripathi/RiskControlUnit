@@ -5,7 +5,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '@core/theme';
 import Toast from 'react-native-root-toast';
 import useNetworkInfo from '@hooks/useNetworkInfo';
-import useInactivityMonitor from '../../hooks/useInactivityMonitor';
 
 
 export default function Background({children }) {
@@ -13,15 +12,6 @@ export default function Background({children }) {
   const { width, height } = Dimensions.get('window');
   let [isNetworkConnected] = useNetworkInfo()
 
-  /*useFocusEffect(
-    React.useCallback(() => {
-      setIsFocused(true)
-      console.log('focus')
-      return () => {
-        setIsFocused(false)
-      };
-    }, [])
-  );*/
   
   return (
     <LinearGradient

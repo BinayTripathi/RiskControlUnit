@@ -4,7 +4,6 @@ import moment from 'moment';
 import { ALERT_TYPE, Dialog } from 'react-native-alert-notification';
 import { useSelector, useDispatch } from 'react-redux'
 import {logoutUser} from '@store/ducks/userSlice'
-import { SCREENS } from '@core/constants';
 
 const useInactivityMonitor = () => {
    
@@ -12,25 +11,29 @@ const useInactivityMonitor = () => {
     const lastInteraction = React.useRef(new Date()); // Ref to store the timestamp of the last interaction
     const inactivityTimer = React.useRef(null);  // Ref to store the ID of the inactivity timer
     const IDLE_LOGOUT_TIME_LIMIT = 1 * 30 * 1000;  // Set the time limit for inactivity logout (30 sec)
-
-    const [isInactive, setIsInactive] = useState(false)
-    const [resetTimer, setResetTimer] = useState(null)
-    const [isFocused, setIsFocused] = useState(false)
+    const userLoggedIn = React.useRef(false);
+    const isInactive = React.useRef(false);
 
 
-    let isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+    let isUserLoggedIn = useSelector((state) => state.user.isLoggedIn); 
 
     const resetInactivityTimeout = () => {
+        clearInterval(inactivityTimer.current); 
         inactivityTimer.current = null
         lastInteraction.current = new Date()
-        setIsInactive(false)
-        //setResetTimer(moment())
+        isInactive.current = false
+        //console.log('logged in on click : ' + userLoggedIn.current)
+        if(userLoggedIn.current)
+            startCheckActive()
     }
+
+    useEffect(() =>{
+        userLoggedIn.current = isUserLoggedIn
+    },[isUserLoggedIn])
 
     const panResponder = React.useRef(
             PanResponder.create({
                 onStartShouldSetPanResponderCapture: () => {
-                console.log('captured')
                 resetInactivityTimeout()
                 return false
                 },
@@ -40,38 +43,64 @@ const useInactivityMonitor = () => {
             })
         ).current;
 
-    const checkInactive = React.useCallback(() => {
+    const checkInactive = () => {
+       // console.log('logged in : ' + userLoggedIn.current)
         // Check if the inactivity timer is already running
-        if (inactivityTimer.current || !isLoggedIn ) {
+        if (inactivityTimer.current) {
             return;
         }
 
         // Start the inactivity timer
-        inactivityTimer.current = setInterval(() => {            
+        inactivityTimer.current = setInterval(() => {                
             const currentTime = moment();  // Get the current time
             const elapsedTime = moment(currentTime).diff(lastInteraction.current); // Calculate the elapsed time since the last interaction
             console.log('checking activity ' + elapsedTime )
+            console.log("Handler " + inactivityTimer.current)
             if (elapsedTime >= IDLE_LOGOUT_TIME_LIMIT) {  // Check if the elapsed time exceeds the defined time limit
-                setIsInactive(true);
-            }
+                isInactive.current = true
+            }          
         }, 1000); // Check every second
-        }, [setIsInactive]);
+        console.log("Handler " + inactivityTimer.current)
+        };
 
-        React.useEffect(() => {  
-            if(isLoggedIn && isFocused)      
+       /* React.useEffect(() => {  
+            if(isLoggedIn)      
              checkInactive();// Initialize inactivity tracking when the component mounts
             return () =>{
                 clearInterval(inactivityTimer.current);  // Cleanup function to clear the inactivity timer on component unmount
                 resetInactivityTimeout()
             } 
-        }, [resetTimer, isFocused]);
+        }, [isLoggedIn]);
 
         React.useEffect(() => {  
-            if(!isLoggedIn || !isFocused)      
+            if(!isLoggedIn)      
                 clearInterval(inactivityTimer.current);  // Cleanup function to clear the inactivity timer on component unmount
-        }, [isLoggedIn, isFocused]);
+        }, [isLoggedIn]); */
+
+    
+        /*useEffect(() => {
+            if (isLoggedIn === true) {
+                startCheckActive()
+            } else {
+                stopCheckActive()
+            }
+            return () => stopCheckActive()
+          }, [isLoggedIn]);*/
+
+        const startCheckActive = () => {    
+             checkInactive();// Initialize inactivity tracking when the component mounts 
+        }
+
+        const stopCheckActive =() => {     
+            console.log('clearing interval')
+            logged = false
+                 // Cleanup function to clear the inactivity timer on component unmount
+                resetInactivityTimeout()
+        }
+
         
-        React.useEffect(() => {
+        
+        /*React.useEffect(() => {
             // Function to handle changes in app state (background/foreground)
             const handleAppStateChange = (nextAppState) => {
             // If the app is back in the foreground, reset the timeout
@@ -82,14 +111,12 @@ const useInactivityMonitor = () => {
            // Subscribe to app state changes
             AppState.addEventListener('change', handleAppStateChange);
            // Cleanup function to remove the subscription when the component unmounts
-            /*return () => {
-            AppState.removeEventListener('change', handleAppStateChange);
-            };*/
-           }, [resetInactivityTimeout]);
+     
+           }, [resetInactivityTimeout]);*/
 
 
            useEffect(() => { 
-            if(isInactive === true) {
+            if(isInactive.current === true) {
                 Dialog.show({
                     type: ALERT_TYPE.WARNING,
                     title: 'Logging out',
@@ -102,10 +129,10 @@ const useInactivityMonitor = () => {
                   })
                 }
     
-        },[isInactive])
+        },[isInactive.current])
 
 
-    return { panResponder, setIsFocused , checkInactivity, clearInactivity};
+    return [panResponder, userLoggedIn.current, startCheckActive, stopCheckActive];
   };
 
   export default useInactivityMonitor

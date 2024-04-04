@@ -1,4 +1,4 @@
-
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { NavigationContainer,  } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -12,14 +12,29 @@ import LoginScreen from '@screens/LoginScreen';
 import CaseListScreen from '@screens/CaseListScreen';
 import CaseDetailsScreen from '@screens/CaseDetailsScreen';
 import ImageCaptureScreen from '@screens/ImageCaptureScreen';
+import useInactivityMonitor from '@hooks/useInactivityMonitor';
 
 
 export default function AppNavigator() {
 
   const Stack = createNativeStackNavigator();
-  let registrationStepComplete = useSelector((state) => state.user.isRegistered);  
+  let userId = useSelector((state) => state.user.userId)
+   
+  let registrationStepComplete = useSelector((state) => state.user.isRegistered);
+  const [navState, setNavState] = useState()
+
+  const [panResponder, userLoggedIn, startCheckActive, stopCheckActive] = useInactivityMonitor()
+
+
+  useEffect( ()=>{
+    if(userLoggedIn)
+      startCheckActive();
+    else
+      stopCheckActive()
+  } , [userLoggedIn, navState])
   
   return (
+    <View style={{ flex: 1 }} {...panResponder.panHandlers}>
       <NavigationContainer  ref={navigationRef}>
               <Stack.Navigator 
                 screenOptions={{
@@ -30,11 +45,18 @@ export default function AppNavigator() {
                   headerTitleStyle: {
                     fontWeight: 'bold',
                   },
-                }}>      
+                }}
+                screenListeners={{
+                  state: (e) => {
+                    setNavState(e.data)
+                    //console.log('state changed', e.data);
+                  },
+                }}
+                >      
               
 
                 {registrationStepComplete < 3 && <Stack.Screen name={SCREENS.RegistrationScreen} component={RegistrationScreen}  options={{headerShown: false}}/>}
-                <Stack.Screen name={SCREENS.Login} component={LoginScreen} /> 
+                 <Stack.Screen name={SCREENS.Login} component={LoginScreen} />
                 <Stack.Screen name={SCREENS.CaseList} component={CaseListScreen} options={
                   {title: 'Your Case List',
                   headerRight : () => (
@@ -69,6 +91,7 @@ export default function AppNavigator() {
                 }}/>                         
                 </Stack.Navigator>
             </NavigationContainer>
+          </View>
   )
 
 }
