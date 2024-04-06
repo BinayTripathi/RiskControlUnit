@@ -138,7 +138,7 @@ export const SCREENS = {
 }
 
 export const SESSION_TTL_IN_SEC = {
-    USER_SESSION : 1000*3000,  // 300 sec
+    USER_SESSION : 1000*300,  // 300 sec
     CASE_LIST : 1000 * 60 * 50,  // 5 mins
     CASE_DETAILS: 1000 * 60 * 5
 }
