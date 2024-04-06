@@ -1,3 +1,4 @@
+import React from 'react';
 import { ImageBackground, StyleSheet, View, Dimensions } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -6,10 +7,11 @@ import Toast from 'react-native-root-toast';
 import useNetworkInfo from '@hooks/useNetworkInfo';
 
 
-export default function Background({ children }) {
+export default function Background({children }) {
 
   const { width, height } = Dimensions.get('window');
   let [isNetworkConnected] = useNetworkInfo()
+
   
   return (
     <LinearGradient
@@ -32,9 +34,12 @@ export default function Background({ children }) {
         style={styles.rootContainer}
         imageStyle={styles.background}
       >
-        <View style={[styles.container, { width, height }]}>
-          {children}
-        </View>
+
+          <View style={[styles.container, { width, height }]} >          
+              {children}          
+          </View>
+
+        
          
         
       </ImageBackground>
