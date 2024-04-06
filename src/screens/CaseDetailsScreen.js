@@ -1,9 +1,11 @@
 import Background from "@components/UI/Background";
 import CaseDetails from "@components/CaseDetailsComponent/CaseDetails";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
 import { useDispatch, useSelector } from 'react-redux';
+import {secureGet} from '@helpers/SecureStore'
+import {SECURE_USER_KEY} from '@core/constants'
 
 
 import { requestCaseDetails } from '@store/ducks/case-details-slice'
@@ -13,22 +15,29 @@ export default function CaseDetailsScreen({navigation, route}) {
 
   const dispatch = useDispatch()
   const claimId = route.params.claimId;
-  const userId = useSelector(state => state.user.userId)
+  const [userId, setUserId] = useState(null)
+  //const userId = useSelector(state => state.user.userId)
+  
 
  console.log(claimId)
   useEffect(() => {     
       console.log('Fetching details')  
-      
-      const payload = {
-          "userId" : userId,
-           "claimId": claimId
+
+
+      const fetchDetails = async() => {
+        const email = await secureGet(SECURE_USER_KEY)    
+        setUserId(email)
+        const payload = {
+            "userId" : email,
+             "claimId": claimId
+        }
+        
+        dispatch(requestCaseDetails(payload))  
+
       }
       
-      dispatch(requestCaseDetails(payload))  
-      /*const focusHandler = navigation.addListener('focus', () => {
-          Alert.alert('Refreshed');
-      });
-      return focusHandler;*/
+      
+      fetchDetails()
       
   }, [dispatch])
 
