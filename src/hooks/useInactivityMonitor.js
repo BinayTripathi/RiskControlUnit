@@ -4,15 +4,17 @@ import moment from 'moment';
 import { ALERT_TYPE, Dialog } from 'react-native-alert-notification';
 import { useSelector, useDispatch } from 'react-redux'
 import {logoutUser} from '@store/ducks/userSlice'
+import {reset} from '@services/NavigationService';
+import { SCREENS, SESSION_TTL_IN_SEC } from '@core/constants';
 
-const useInactivityMonitor = () => {
+const useInactivityMonitor = (navState) => {
    
     const dispatch = useDispatch()
     const lastInteraction = React.useRef(new Date()); // Ref to store the timestamp of the last interaction
     const inactivityTimer = React.useRef(null);  // Ref to store the ID of the inactivity timer
     const IDLE_LOGOUT_TIME_LIMIT = 1 * 30 * 1000;  // Set the time limit for inactivity logout (30 sec)
     const userLoggedIn = React.useRef(false);
-    const isInactive = React.useRef(false);
+    const [isInactive, setInactive] = useState(false);
 
 
     let isUserLoggedIn = useSelector((state) => state.user.isLoggedIn); 
@@ -21,8 +23,7 @@ const useInactivityMonitor = () => {
         clearInterval(inactivityTimer.current); 
         inactivityTimer.current = null
         lastInteraction.current = new Date()
-        isInactive.current = false
-        //console.log('logged in on click : ' + userLoggedIn.current)
+        setInactive(false)
         if(userLoggedIn.current)
             startCheckActive()
     }
@@ -44,8 +45,7 @@ const useInactivityMonitor = () => {
         ).current;
 
     const checkInactive = () => {
-       // console.log('logged in : ' + userLoggedIn.current)
-        // Check if the inactivity timer is already running
+
         if (inactivityTimer.current) {
             return;
         }
@@ -54,13 +54,10 @@ const useInactivityMonitor = () => {
         inactivityTimer.current = setInterval(() => {                
             const currentTime = moment();  // Get the current time
             const elapsedTime = moment(currentTime).diff(lastInteraction.current); // Calculate the elapsed time since the last interaction
-            console.log('checking activity ' + elapsedTime )
-            console.log("Handler " + inactivityTimer.current)
-            if (elapsedTime >= IDLE_LOGOUT_TIME_LIMIT) {  // Check if the elapsed time exceeds the defined time limit
-                isInactive.current = true
+            if (elapsedTime >= SESSION_TTL_IN_SEC.USER_SESSION) {  // Check if the elapsed time exceeds the defined time limit
+                setInactive(true)
             }          
-        }, 1000); // Check every second
-        console.log("Handler " + inactivityTimer.current)
+        }, 5000); // Check every second
         };
 
        /* React.useEffect(() => {  
@@ -92,13 +89,17 @@ const useInactivityMonitor = () => {
         }
 
         const stopCheckActive =() => {     
-            console.log('clearing interval')
             logged = false
                  // Cleanup function to clear the inactivity timer on component unmount
                 resetInactivityTimeout()
         }
 
-        
+        useEffect( ()=>{
+            if(userLoggedIn.current)
+              startCheckActive();
+            else
+              stopCheckActive()
+          } , [userLoggedIn.current, navState])
         
         /*React.useEffect(() => {
             // Function to handle changes in app state (background/foreground)
@@ -116,7 +117,7 @@ const useInactivityMonitor = () => {
 
 
            useEffect(() => { 
-            if(isInactive.current === true) {
+            if(isInactive === true) {
                 Dialog.show({
                     type: ALERT_TYPE.WARNING,
                     title: 'Logging out',
@@ -125,11 +126,15 @@ const useInactivityMonitor = () => {
                     onHide: () => { 
                         resetInactivityTimeout()
                         dispatch(logoutUser())
+                        reset({
+                            index: 0,
+                            routes: [{ name: SCREENS.Login , params: { lastState: 'Logout' }}],
+                    })
                     }
                   })
                 }
     
-        },[isInactive.current])
+        },[isInactive])
 
 
     return [panResponder, userLoggedIn.current, startCheckActive, stopCheckActive];

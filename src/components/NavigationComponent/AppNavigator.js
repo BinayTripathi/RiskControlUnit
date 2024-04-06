@@ -23,15 +23,7 @@ export default function AppNavigator() {
   let registrationStepComplete = useSelector((state) => state.user.isRegistered);
   const [navState, setNavState] = useState()
 
-  const [panResponder, userLoggedIn, startCheckActive, stopCheckActive] = useInactivityMonitor()
-
-
-  useEffect( ()=>{
-    if(userLoggedIn)
-      startCheckActive();
-    else
-      stopCheckActive()
-  } , [userLoggedIn, navState])
+  const [panResponder] = useInactivityMonitor(navState)
   
   return (
     <View style={{ flex: 1 }} {...panResponder.panHandlers}>

@@ -20,7 +20,7 @@ export const theme = {
     ...DefaultTheme.colors,
     text: '#4a4646',
     subText: '#6d6666',
-    primary: '#802f07',
+    primary: '#0a48f2',
     disabledPrimary: '#2e1a04',
     secondary: '#3687a5',
     error: '#6b0214',
