@@ -70,9 +70,8 @@ export const logoutUser = createAction(TYPES.LOGOUT_USER);
         auth: null,
         lastLogin: null,
         isLoggedIn : false,
-        isRegistered : false, 
-        deviceId : null
-     
+        isRegistered : 0, 
+        deviceId : null     
     },
     reducers:{
 
@@ -84,7 +83,7 @@ export const logoutUser = createAction(TYPES.LOGOUT_USER);
           successRegisterUser: (state, action) => { 
             console.log(action.payload)        
             state.loading = false;
-            state.isRegistered= true      
+            state.isRegistered= action.payload.step      
             state.userId = action.payload.email,
             state.auth = action.payload.pin
             state.deviceId = action.payload.deviceId
@@ -132,7 +131,7 @@ export const logoutUser = createAction(TYPES.LOGOUT_USER);
             state.error = null,
             state.loading = false,            
             isLoggedIn = false,
-            state.isLoggedIn = true
+            state.isLoggedIn = false
             state.lastLogin =  null
         }
     }
@@ -140,16 +139,20 @@ export const logoutUser = createAction(TYPES.LOGOUT_USER);
 
   export function* asyncRequestRegisterUser(action) {
     try {      
+      if(action.payload.step === 1) {
         const response = yield call(userRegister, action.payload.phoneNo, action.payload.deviceId);
         //const responseUserData = response.data?.token;     
         const responseUserData = response.data
         if (responseUserData) {          
-          yield put(successRegisterUser({"deviceId":action.payload.deviceId, ...responseUserData}));
+          yield put(successRegisterUser({"deviceId":action.payload.deviceId, "step": action.payload.step, ...responseUserData}));
           return
           //return reset({routes: [{name: SCREENS.Login}]});
         }  
         console.log('REGISTRATION FAILED')
-      yield put(failureRegisterUser());
+        yield put(failureRegisterUser());
+      } else {
+        yield put(successRegisterUser({"step": action.payload.step}))
+      }
     } catch (err) {
       console.log(err)
       yield put(failureRegisterUser());

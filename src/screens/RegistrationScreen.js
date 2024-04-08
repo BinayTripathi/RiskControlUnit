@@ -7,7 +7,7 @@ import Header from '@components/UI/Header'
 import Button from '@components/UI/Button'
 import LoadingModalWrapper from '@components/UI/LoadingModal';
 import { useDispatch, useSelector } from 'react-redux'
-import { AntDesign , FontAwesome5 } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import TextInput from '@components/UI/TextInput'
 import {
   CodeField,
@@ -24,14 +24,14 @@ import {requestRegisterUser} from '@store/ducks/userSlice'
 import { theme } from '../core/theme'
 import { SECURE_USER_KEY, SECURE_USER_PIN, REGISTRATION_ERROR_MESSAGE} from '../core/constants'
 import {secureSave, secureGet} from '@helpers/SecureStore'
-import { ALERT_TYPE, Dialog, Toast } from 'react-native-alert-notification';
+import { ALERT_TYPE, Dialog, Toast, Toast } from 'react-native-alert-notification';
 //import DeviceNumber from 'react-native-device-number';
 //import {   getHash, requestHint,  startOtpListener,  useOtpVerify,} from 'react-native-otp-verify';
 import SmsRetriever from 'react-native-sms-retriever';
 import Stepper from '../components/UI/Stepper';
 
 const CELL_COUNT = 4;
-let step = -1
+let step = 0
 export default function RegistrationScreen({ route, navigation }) {
 
 
@@ -40,6 +40,7 @@ export default function RegistrationScreen({ route, navigation }) {
     let userId = useSelector((state) => state.user.userId);
     let auth = useSelector((state) => state.user.auth)
     let error = useSelector((state) => state.user.error)
+    let registrationStepComplete = useSelector((state) => state.user.isRegistered);
     let [isLoadingSms, setIsLoadSms] = useState(false)
 
     const dispatch = useDispatch()
@@ -100,7 +101,7 @@ export default function RegistrationScreen({ route, navigation }) {
        
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         try {
-          const phoneNumber = await SmsRetriever.requestPhoneNumber();
+          const phoneNumber = ''//await SmsRetriever.requestPhoneNumber();
           console.log(`Phone no is ${phoneNumber}`)
           setRegisteredPhoneNumber(phoneNumber)
         } catch (error) {
@@ -159,6 +160,7 @@ export default function RegistrationScreen({ route, navigation }) {
       const dataToSendForReg = {
         phoneNo: registeredPhoneNumber.substring(1),
         deviceId: Application.androidId,
+        step: 1
       }
       dispatch(requestRegisterUser(dataToSendForReg))
       _onSmsListenerPressed()
@@ -180,6 +182,10 @@ export default function RegistrationScreen({ route, navigation }) {
         setTimeout(() => {
           setIsLoadSms(false)
           setIsPinValidated(true)
+          const dataToSendForReg = {
+            step: 2
+          }
+          dispatch(requestRegisterUser(dataToSendForReg))
           Toast.show({
             type: ALERT_TYPE.SUCCESS,
             title: 'Success',
@@ -204,12 +210,8 @@ export default function RegistrationScreen({ route, navigation }) {
 
    }
 
-  if(!userId)
-    step =0
-  else if (!pinValidated)
-    step =1
-  else
-    step = 2
+  if(registrationStepComplete !== null || registrationStepComplete !== undefined)
+    step = registrationStepComplete
     
     return (
       <LoadingModalWrapper shouldModalBeVisible = {isLoading || isLoadingSms}>
@@ -221,7 +223,7 @@ export default function RegistrationScreen({ route, navigation }) {
 
              <Stepper stepComplete={step}/>
             
-            {!userId && 
+            {step === 0 && 
             <> 
               <TextInput
                 label="Phone Number"
@@ -252,7 +254,7 @@ export default function RegistrationScreen({ route, navigation }) {
               </Button> 
             </>}
 
-        {userId && !pinValidated &&
+        {step === 1 &&
         <>
           <CodeField
             ref={ref}        
@@ -283,7 +285,7 @@ export default function RegistrationScreen({ route, navigation }) {
               </Button>
         </>  }
                 
-              {userId && pinValidated && <RegistrationImageScanner/>}
+              {step ===  2 && <RegistrationImageScanner/>}
         
           </Padder>
           

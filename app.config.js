@@ -46,7 +46,7 @@ module.exports = () => {
             },
           },
           extra: {
-            baseURL : 'https://icheckify-demo.azurewebsites.net/api'
+            baseURL : 'https://icheckify-edelweiss.azurewebsites.net/api'
           },
       };
     }

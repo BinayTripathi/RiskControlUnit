@@ -11,13 +11,12 @@ import Button from "@components/UI/Button"
 import {requestCases, requestCasesOffline} from '@store/ducks/cases-slice'
 import { Padder } from "../UI/Wrapper";
 
-export default function CaseList() {
+export default function CaseList({userId}) {
   
   let cases = useSelector((state) => state.cases.cases);
   const isLoading = useSelector((state) => state.cases.loading)
   const error = useSelector((state) => state.cases.error)
   const isConnected = useSelector(state => state.network.isConnected);
-  const userId = useSelector(state => state.user.userId)
   
   const dispatch = useDispatch()
   const isFocused = useIsFocused()
@@ -29,15 +28,15 @@ export default function CaseList() {
 
   const onChangeSearch = query => setSearchQuery(query);
  
-  const dispatchFetchRequest = () => {
-    setRefreshing(true)
-    console.log('Fetching list')
-    dispatch(requestCases(userId))  
-    setRefreshing(false)
+  const dispatchFetchRequest = async () => {
+      setRefreshing(true)
+      console.log('Fetching list')    
+      dispatch(requestCases(userId))  
+      setRefreshing(false)   
   }
 
   useEffect(() => {
-    if (isFocused) {
+    if (isFocused && userId) {
        if(isConnected)
           dispatchFetchRequest();
         else  {
@@ -47,7 +46,6 @@ export default function CaseList() {
           dispatch(requestCasesOffline(offlineCases)) 
         }
     }  
-
   }, [dispatch, isFocused, forceRerender])
 
 

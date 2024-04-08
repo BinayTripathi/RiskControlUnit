@@ -6,12 +6,15 @@ import * as Location from "expo-location";
 import CaseList from "@components/CasesComponent/CaseList";
 import CaseGeolocation from "@components/CasesComponent/CaseGeolocation"
 
-
+import {SECURE_USER_KEY} from '@core/constants'
+import {secureGet} from '@helpers/SecureStore'
 
 
 
 
 export default function CaseListScreen() {
+
+  const [userId, setUserId] = useState(null)
 
   useEffect(() => {
 
@@ -25,8 +28,11 @@ export default function CaseListScreen() {
       let location = await Location.getCurrentPositionAsync({});
       setUserLocation(location.coords);
 
+      const user = await secureGet(SECURE_USER_KEY)
+      setUserId(user)
     };
 
+    
     getLocationPermission();
 
   }, []);
@@ -40,11 +46,11 @@ export default function CaseListScreen() {
   ]);
 
   const ListView = () => (
-    <CaseList reloadProp={index}/>
+    <CaseList reloadProp={index} userId={userId}/>
 );
 
 const MapView = () => (
-   <CaseGeolocation reloadProp={index} userLoc = {userLocation}/>
+   <CaseGeolocation reloadProp={index} userLoc = {userLocation} userId={userId}/>
 );
 
 const renderScene = SceneMap({
