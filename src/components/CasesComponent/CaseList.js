@@ -36,9 +36,12 @@ export default function CaseList({userId}) {
   }
 
   useEffect(() => {
+    console.log('List screen' + userId)
     if (isFocused && userId) {
-       if(isConnected)
-          dispatchFetchRequest();
+       if(isConnected) {
+        
+        dispatchFetchRequest();
+       }          
         else  {
           const offlineCases = {
             cases
@@ -82,6 +85,7 @@ export default function CaseList({userId}) {
   }
 
   const retriveAllCases = () => {
+
     return cases !== undefined ?cases.filter(searchCasesByName).reverse() : null;
   }
 

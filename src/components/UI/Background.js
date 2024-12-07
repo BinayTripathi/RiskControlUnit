@@ -35,7 +35,7 @@ export default function Background({children }) {
         imageStyle={styles.background}
       >
 
-          <View style={[styles.container, { width, height }]} >          
+          <View style={[styles.container, { width, height }]} accessible={true}>          
               {children}          
           </View>
 

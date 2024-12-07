@@ -47,11 +47,18 @@ const CaseGeolocation = ({reloadProp, userLoc, userId}) => {
   const timeout = 400;
  
 
-  const mergeByClaimId= (a1, a2) => 
-    a1.map(itm => ({
+  const mergeByClaimId= (a1, a2) => {
+    if(a1 === undefined && a2 !== undefined)
+      return a2
+    else if(a1 !== undefined && a2 === undefined)
+      return a1
+    else if(a1 === undefined && a2 === undefined)
+      return undefined
+    return a1.map(itm => ({
         ...a2.find((item) => (item.claimId === itm.claimId) && item),
         ...itm
     }));
+  }
 
 
   useEffect(() => {

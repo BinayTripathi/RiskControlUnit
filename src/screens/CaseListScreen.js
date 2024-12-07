@@ -17,8 +17,10 @@ export default function CaseListScreen() {
   const [userId, setUserId] = useState(null)
 
   useEffect(() => {
-
+    
     const getLocationPermission = async () => {
+      const user = await secureGet(SECURE_USER_KEY)
+
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         console.log("Permission to access location was denied");
@@ -28,11 +30,9 @@ export default function CaseListScreen() {
       let location = await Location.getCurrentPositionAsync({});
       setUserLocation(location.coords);
 
-      const user = await secureGet(SECURE_USER_KEY)
+      console.log('Case List screen : ' + user)
       setUserId(user)
     };
-
-    
     getLocationPermission();
 
   }, []);
@@ -57,6 +57,9 @@ const renderScene = SceneMap({
   first: ListView,
   second: MapView,
 });
+if (!userId) {
+  return (<></>)
+}
   return (
 
     <TabView

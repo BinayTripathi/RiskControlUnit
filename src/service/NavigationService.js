@@ -12,5 +12,7 @@ export const navigate = ({route, params}) => {
 
 export const reset = ({routes, index}) => {
   console.log('navigating')
+  if (index === undefined)
+    index = 0
   navigationRef.current?.reset({index, routes});
 };

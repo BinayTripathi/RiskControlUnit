@@ -33,7 +33,7 @@ const PhotoIdScanner = ({selectedClaimId, userId, caseUpdates}) => {
       let capabilities = DOC_TYPE.PHOTO_ID_SCANNER.map((documentType, index)=> {  
 
         let faceMatch = parseInt( caseUpdates !== undefined && Object.keys(caseUpdates).includes(documentType.name) === true ? 
-               (caseUpdates[documentType.name].facePercent === null? "0" : caseUpdates[documentType.name].facePercent ) : "0")
+               (!caseUpdates[documentType.name].facePercent ? "0" : caseUpdates[documentType.name].facePercent ) : "0")
         
         return(
         <Card style = {[styles.card, documentType?.enabled !== true? styles.cardDisabled: {}]}  key={index}>

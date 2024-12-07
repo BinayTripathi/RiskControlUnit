@@ -32,7 +32,6 @@ export default function LoginScreen({navigation}) {
   let isLoading = useSelector((state) => state.user.loading);
   let userLoggingError = useSelector((state) => state.user.error);
   let userLoggingTimestamp = useSelector((state) => state.user.lastLogin);
-  let userId = useSelector((state) => state.user.userId)
   let dispatch = useDispatch();
   const isFocused = useIsFocused()
 

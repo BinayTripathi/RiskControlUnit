@@ -24,7 +24,7 @@ module.exports = () => {
       };
     } else {
       return {
-        "name": "icheckifyDev",
+        "name": "icheckify",
         "android": {
             "adaptiveIcon": {
               "foregroundImage": "./assets/icheckifyIcon.png",
@@ -38,7 +38,7 @@ module.exports = () => {
               "RECEIVE_SMS",
               "READ_SMS"
             ],
-            "package": "com.binaytripathi.icheckifyDev",
+            "package": "com.binaytripathi.icheckify",
             "config": {
               "googleMaps": {
                 "apiKey": process.env.EXPO_PUBLIC_GOOGLE_MAP_API_KEY
@@ -46,7 +46,7 @@ module.exports = () => {
             },
           },
           extra: {
-            baseURL : 'https://icheckify-edelweiss.azurewebsites.net/api'
+            baseURL : 'https://icheckify-demo.azurewebsites.net/api'
           },
       };
     }

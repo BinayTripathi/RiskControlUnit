@@ -24,10 +24,10 @@ import {requestRegisterUser} from '@store/ducks/userSlice'
 import { theme } from '../core/theme'
 import { SECURE_USER_KEY, SECURE_USER_PIN, REGISTRATION_ERROR_MESSAGE} from '../core/constants'
 import {secureSave, secureGet} from '@helpers/SecureStore'
-import { ALERT_TYPE, Dialog, Toast, Toast } from 'react-native-alert-notification';
+import { ALERT_TYPE, Dialog, Toast} from 'react-native-alert-notification';
 //import DeviceNumber from 'react-native-device-number';
 //import {   getHash, requestHint,  startOtpListener,  useOtpVerify,} from 'react-native-otp-verify';
-import SmsRetriever from 'react-native-sms-retriever';
+//import SmsRetriever from 'react-native-sms-retriever';
 import Stepper from '../components/UI/Stepper';
 
 const CELL_COUNT = 4;
@@ -129,7 +129,7 @@ export default function RegistrationScreen({ route, navigation }) {
         },
       );
 
-      const grantedRead = await PermissionsAndroid.request(
+      /*const grantedRead = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.READ_SMS,
         {
           title: 'iCheckfy SMS Permission',
@@ -147,7 +147,7 @@ export default function RegistrationScreen({ route, navigation }) {
           console.log(event.message);
           SmsRetriever.removeSmsListener();
         }); 
-      }
+      }*/
     } catch (error) {
       console.log(JSON.stringify(error));
     }

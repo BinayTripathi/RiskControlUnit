@@ -1,5 +1,3 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
     ext {
         buildToolsVersion = findProperty('android.buildToolsVersion') ?: '33.0.0'
@@ -8,6 +6,10 @@ buildscript {
         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '33')
         kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
         frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
+        MYAPP_UPLOAD_STORE_FILE="icheckify-upload-key.keystore"
+        MYAPP_UPLOAD_KEY_ALIAS="icheckify-key-alias"
+        MYAPP_UPLOAD_STORE_PASSWORD="*Durva21+"
+        MYAPP_UPLOAD_KEY_PASSWORD="*Durva21+"
 
         // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
         ndkVersion = "23.1.7779620"
@@ -18,6 +20,43 @@ buildscript {
                 android {
                     compileSdkVersion rootProject.ext.compileSdkVersion
                     buildToolsVersion rootProject.ext.buildToolsVersion
+                    
+                    defaultConfig {
+
+                        versionCode 2
+                        versionName "2.0"
+                        
+
+                    }
+
+                    signingConfigs {
+                        /*debug {
+                            storeFile file('debug.keystore')
+                            storePassword 'android'
+                            keyAlias 'androiddebugkey'
+                            keyPassword 'android'
+                        }*/
+                    // Add release block in signiningConfigs 
+                        release {
+                                if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
+                                    storeFile file(MYAPP_UPLOAD_STORE_FILE)
+                                    storePassword MYAPP_UPLOAD_STORE_PASSWORD
+                                    keyAlias MYAPP_UPLOAD_KEY_ALIAS
+                                    keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+                                }
+                            }
+                        }
+                
+                    buildTypes {
+                        debug {
+                            signingConfig signingConfigs.debug
+                        }
+                        release {
+                            // Caution! In production, you need to generate your own keystore file.
+                            // see https://reactnative.dev/docs/signed-apk-android.
+                            signingConfig signingConfigs.release
+                        }
+                    }
                 }
             }
         }
@@ -52,3 +91,4 @@ allprojects {
 def expoCameraMavenPath = new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven")
 allprojects { repositories { maven { url(expoCameraMavenPath) } } }
 // @generated end expo-camera-import
+

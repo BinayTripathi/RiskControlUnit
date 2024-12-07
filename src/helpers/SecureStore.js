@@ -1,13 +1,17 @@
-import RNSecureStorage, { ACCESSIBLE } from 'rn-secure-storage'
+//import RNSecureStorage, { ACCESSIBLE } from 'rn-secure-storage'
+//import EncryptedStorage from 'react-native-encrypted-storage';
+import * as SecureStore from 'expo-secure-store';
 
-export const secureSave = (key, value) => {
-    //console.log(`secure save called ${key} ${value}`)
-    RNSecureStorage.set(key, value, {accessible: ACCESSIBLE.WHEN_UNLOCKED})
+export const secureSave = async (key, value) => {
+    
+    /*RNSecureStorage.set(key, value, {accessible: ACCESSIBLE.WHEN_UNLOCKED})
     .then((res) => {
     console.log(res);
     }, (err) => {
     console.log(err);
-    });
+    });*/
+    console.log(key + "____" + value)
+    await SecureStore.setItemAsync(key,value);
 }
 
 /*export const secureGet = async (key) => {
@@ -21,7 +25,8 @@ export const secureSave = (key, value) => {
 }*/
 
 export const secureGet = async (key) => {
-    return RNSecureStorage.get(key).then((res) => {
+    //return RNSecureStorage.get(key).then((res) => {
+    return await SecureStore.getItemAsync(key).then((res) => {
         return res
     }).catch((err) => {
         console.log(err);
@@ -29,7 +34,7 @@ export const secureGet = async (key) => {
 }
 
 export const secureRemove = (key) => {
-    RNSecureStorage.remove(key).then((val) => {
+    SecureStore.deleteItemAsync(key).then((val) => {
         console.log(val)
         }).catch((err) => {
         console.log(err)
