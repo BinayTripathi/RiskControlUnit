@@ -22,7 +22,7 @@ cd ./android
 call ./gradlew -stop
 call ./gradlew assembleRelease
 call ren .\app\build\outputs\apk\release\app-release.apk app-release_%SUBFILENAME%_prd.apk
-call aws s3 cp .\app\build\outputs\apk\release\app-release_%SUBFILENAME%_prd.apk s3://apkichck/icheckify/ --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers full=emailaddress=ajeetkumar@email.com
+call aws s3 cp .\app\build\outputs\apk\release\app-release_%SUBFILENAME%_prd.apk s3://ickeckify-apk/prod/ --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers full=emailaddress=ajeetkumar@email.com
 echo https://apkichck.s3.ap-southeast-2.amazonaws.com/icheckify/app-release_%SUBFILENAME%_prd.apk
 echo "Click any button to close"
 pause

@@ -15,6 +15,7 @@ export default function CaseDetailsScreen({navigation, route}) {
 
   const dispatch = useDispatch()
   const claimId = route.params.claimId;
+  const investigatable = route.params.investigatable;
   const [userId, setUserId] = useState(null)
   //const userId = useSelector(state => state.user.userId)
   
@@ -43,7 +44,7 @@ export default function CaseDetailsScreen({navigation, route}) {
 
 return (
     <Background style={{ flex: 1 }}>
-        <CaseDetails claimId = {claimId} userId={userId}/>       
+        <CaseDetails claimId = {claimId} userId={userId} investigatable={investigatable}/>       
    </Background>  
   );
 }

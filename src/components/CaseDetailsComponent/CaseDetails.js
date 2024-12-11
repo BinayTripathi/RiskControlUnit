@@ -7,7 +7,7 @@ import CaseDetailsSlider from "./CaseDetailsSlider";
 import useNetworkInfo from './../../hooks/useNetworkInfo'
 
 
-export default function CaseDetails({claimId, userId}) {
+export default function CaseDetails({claimId, userId, investigatable}) {
 
      
     const caseDetails = useSelector(state => state.casesDetails.selectedCaseDetails)
@@ -16,7 +16,7 @@ export default function CaseDetails({claimId, userId}) {
     const isConnected = useSelector(state => state.network.isConnected);
 
         return  <LoadingModalWrapper shouldModalBeVisible = {isLoading && caseDetails[claimId] == undefined}> 
-                     <CaseDetailsSlider selectedClaim = {caseDetails[claimId]} selectedClaimId = {claimId} userId = {userId}/>
+                     <CaseDetailsSlider selectedClaim = {caseDetails[claimId]} selectedClaimId = {claimId} userId = {userId} investigatable = {investigatable}/>
                 </LoadingModalWrapper>  
    
 }

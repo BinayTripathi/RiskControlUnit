@@ -5,11 +5,13 @@ import { useNavigation } from '@react-navigation/native';
 
 import { theme } from '@core/theme';
 //import { selectCase } from "@store/ducks/case-slice";
+import {isPointWithinRadius} from 'geolib'
+import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 
 const TEXT_LENGTH = 60
 const TEXT_HEIGHT = 14
 
-function CaseItem({ caseDetails }) {
+function CaseItem({ caseDetails, userLoc }) {
 
   let dispatch = useDispatch();
   const navigation = useNavigation()
@@ -32,10 +34,29 @@ function CaseItem({ caseDetails }) {
   return (
     <Pressable onPress={()=> {
       
-      navigation.navigate('CaseDetailsScreen', {
-        claimId : caseDetails.claimId
+      if(caseDetails && isPointWithinRadius({latitude: userLoc.latitude, longitude: userLoc.longitude},
+         {latitude: caseDetails.coordinate.lat, longitude: caseDetails.coordinate.lng}, 1000)) {
+        navigation.navigate('CaseDetailsScreen', {
+          claimId : caseDetails.claimId,
+          investigatable: true
+        })
+      } else {
+        console.log('Ander ja pehle')
+        Dialog.show({
+          type: ALERT_TYPE.WARNING,
+          title: 'Geofencing alert',
+          textBody: 'You cannot investigate the case from here',
+          button: 'OK',          
+          onHide: () => { 
+            navigation.navigate('CaseDetailsScreen', {
+              claimId : caseDetails.claimId,
+              investigatable: false
+            })
+          }
+        })
       }
-      )}}> 
+      
+     }}> 
       <View style={styles.caseItemContainer}> 
 
           {caseType}

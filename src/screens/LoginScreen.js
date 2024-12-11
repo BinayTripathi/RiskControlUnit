@@ -99,8 +99,10 @@ export default function LoginScreen({navigation}) {
       password: pin,
       returnUrl: 'http://localhost:19006/',
     }
+
+    const receivedPin = await secureGet(SECURE_USER_PIN)
    
-    if(savedPin !== pin) {
+    if(receivedPin !== pin) {
       setPinMatchFailed(true)
     } else {
       dispatch(requestValidateUser(dataToSendForAuth))

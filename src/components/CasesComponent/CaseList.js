@@ -11,9 +11,10 @@ import Button from "@components/UI/Button"
 import {requestCases, requestCasesOffline} from '@store/ducks/cases-slice'
 import { Padder } from "../UI/Wrapper";
 
-export default function CaseList({userId}) {
+export default function CaseList({userLoc,userId}) {
   
   let cases = useSelector((state) => state.cases.cases);
+  let caseMarkers = useSelector((state) => state.cases.caseCoordinates);
   const isLoading = useSelector((state) => state.cases.loading)
   const error = useSelector((state) => state.cases.error)
   const isConnected = useSelector(state => state.network.isConnected);
@@ -68,11 +69,23 @@ export default function CaseList({userId}) {
     return <Text>error...</Text>
   }*/
 
+    const mergeByClaimId= (a1, a2) => {
+      if(a1 === undefined && a2 !== undefined)
+        return a2
+      else if(a1 !== undefined && a2 === undefined)
+        return a1
+      else if(a1 === undefined && a2 === undefined)
+        return undefined
+      return a1.map(itm => ({
+          ...a2.find((item) => (item.claimId === itm.claimId) && item),
+          ...itm
+      }));
+    }
   
 
   function renderClaimItem(itemData) {
     return(     
-          <CaseItem caseDetails = {itemData.item} />    
+          <CaseItem caseDetails = {itemData.item} userLoc = {userLoc}/>    
     )
   }
 
@@ -86,7 +99,9 @@ export default function CaseList({userId}) {
 
   const retriveAllCases = () => {
 
-    return cases !== undefined ?cases.filter(searchCasesByName).reverse() : null;
+    caseMarkers = mergeByClaimId(caseMarkers,cases) 
+    //return cases !== undefined ?cases.filter(searchCasesByName).reverse() : null;
+    return caseMarkers !== undefined ?caseMarkers.filter(searchCasesByName).reverse() : null;
   }
 
   let casesToShow = <View style = {{paddingTop: 20}}>

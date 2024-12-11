@@ -27,10 +27,11 @@ export const userRegister = async (phoneNo, deviceId) => {
     const data = {
       "mobile" : phoneNo,
       "uid" : deviceId,
-      "checkUid" : false,
+      "checkUid" : true,
       "sendSMS": true
     };
-    let response = await  Request.post({url, config, data});
+    console.log("-----------"+JSON.stringify(data))
+    let response = await  Request.post({url, config, data});    
     console.log(response.data)
     return response
    

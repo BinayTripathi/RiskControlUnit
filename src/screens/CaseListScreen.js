@@ -46,7 +46,7 @@ export default function CaseListScreen() {
   ]);
 
   const ListView = () => (
-    <CaseList reloadProp={index} userId={userId}/>
+    <CaseList reloadProp={index} userLoc = {userLocation} userId={userId}/>
 );
 
 const MapView = () => (
