@@ -4,11 +4,11 @@ import { TextInput as Input } from 'react-native-paper'
 
 import { theme } from '@core/theme';
 
-export default function TextInput({ errorText, description, style, ...props }) {
+export default function TextInput({ errorText, description, style,inputStyle, ...props }) {
   return (
     <View style={[styles.container, style]}>
       <Input
-        style={styles.input}
+        style={[styles.input, inputStyle]}
         selectionColor={theme.colors.primary}
         underlineColor="transparent"
 

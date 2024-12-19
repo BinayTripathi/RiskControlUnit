@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { StyleSheet, View, Text, PermissionsAndroid, Alert } from 'react-native';
+import { StyleSheet, View, Text, PermissionsAndroid, TouchableOpacity } from 'react-native';
 import Background from '@components/UI/Background';
 import { Padder } from '@components/UI/Wrapper';
 import Logo from '@components/UI/Logo'
@@ -15,6 +15,7 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
+import { Dropdown } from 'react-native-element-dropdown';
 
 import * as Application from 'expo-application';
 import { Platform } from 'expo-modules-core';
@@ -29,6 +30,7 @@ import { ALERT_TYPE, Dialog, Toast} from 'react-native-alert-notification';
 //import {   getHash, requestHint,  startOtpListener,  useOtpVerify,} from 'react-native-otp-verify';
 //import SmsRetriever from 'react-native-sms-retriever';
 import Stepper from '../components/UI/Stepper';
+import {CountryPicker} from "react-native-country-codes-picker";
 
 const CELL_COUNT = 4;
 let step = 0
@@ -55,6 +57,15 @@ export default function RegistrationScreen({ route, navigation }) {
     });
 
     const [errorRegistration, setErrorRegistration] = useState(false)
+
+    const [showCountryPicker, setShowCountryPicker] = useState(false);
+    const [countryCode, setCountryCode] = useState('');
+
+    const countryCodeDropdown = [
+      { label: '+91', value: '+91' },
+      { label: '+61', value: '+61' },
+      { label: '+1', value: '+1' }]
+
     useEffect(()=> {
       setIsPinValidated(false)
     },[])
@@ -84,6 +95,7 @@ export default function RegistrationScreen({ route, navigation }) {
 
   const getUserPhoneNumber = async () => {
     
+    
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.READ_PHONE_NUMBERS,
@@ -97,7 +109,7 @@ export default function RegistrationScreen({ route, navigation }) {
         },
       );
       console.log(`checking permissions ${granted}`)   
-        
+      
        
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         try {
@@ -158,7 +170,7 @@ export default function RegistrationScreen({ route, navigation }) {
     if (Platform.OS === 'android') {
       console.log(Application.androidId)
       const dataToSendForReg = {
-        phoneNo: registeredPhoneNumber.substring(1),
+        phoneNo: countryCode+registeredPhoneNumber.replace(/\s/g, ''),
         deviceId: Application.androidId,
         step: 1
       }
@@ -224,9 +236,31 @@ export default function RegistrationScreen({ route, navigation }) {
              <Stepper stepComplete={step}/>
             
             {step === 0 && 
-            <> 
-              <TextInput
-                label="Phone Number"
+            <>
+            <View style= {Styles.phoneNoContainer}>
+            <Dropdown
+               style={Styles.dropdown}
+               placeholderStyle={Styles.placeholderStyle}
+                selectedTextStyle={Styles.selectedTextStyle}
+                inputSearchStyle={Styles.inputSearchStyle}
+                iconStyle={Styles.iconStyle}
+                data={countryCodeDropdown}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder="Select item"
+                searchPlaceholder="Search..."
+                value={countryCode}
+                onChange={item => {
+                  setCountryCode(item.value);
+                }}
+                renderLeftIcon={() => (
+                  <AntDesign style={Styles.icon} color="black" name="phone" size={20} />
+                )}/>
+            <TextInput
+                style = {Styles.phoneNoTextboxContainer}
+                label= "Phone Number"
                 returnKeyType="next"
                 value={registeredPhoneNumber}
                 //editable={false} 
@@ -238,7 +272,11 @@ export default function RegistrationScreen({ route, navigation }) {
                 autoCompleteType="tel"
                 textContentType="telephoneNumber"
                 keyboardType="phone-pad"
+                maxLength={10}
+                inputStyle = {Styles.phoneNoTextbox}
               />   
+            </View>
+              
               
               <Button
                 mode="elevated"
@@ -319,5 +357,51 @@ export default function RegistrationScreen({ route, navigation }) {
     focusCell: {
       borderColor: '#000',
     },
+
+    phoneNoContainer: {
+      width: '80%',
+      alignSelf: 'center',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row'
+    } ,
+    dropdown: {
+      margin: 16,
+      marginRight: 5,
+      height: 60,
+      width: 90,
+      backgroundColor: 'rgba(255,255,255,0.16)',
+      borderBottomColor: 'gray',
+      borderBottomWidth: 0.5,
+    },
+    icon: {
+      marginRight: 5,
+    },
+    placeholderStyle: {
+      fontSize: 16,
+    },
+    selectedTextStyle: {
+      fontSize: 16,
+      fontWeight: '900'
+    },
+    iconStyle: {
+      width: 20,
+      height: 20,
+    },
+    inputSearchStyle: {
+      height: 40,
+      fontSize: 16,
+    },
+    phoneNoTextboxContainer: {
+      width: '80%',
+      marginVertical: 12,
+      fontSize: 20,
+      marginHorizontal: 1
+      
+    },
+    phoneNoTextbox : {
+      fontWeight: '900',
+      fontSize: 20
+    }
     
   });

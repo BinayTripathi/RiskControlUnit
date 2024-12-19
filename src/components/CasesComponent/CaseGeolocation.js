@@ -15,6 +15,7 @@ import MapCallout from '../UI/MapCallout'
 
 
 import Background from "@components/UI/Background";
+import { GEOFENCING_RADIUS_IN_METRES } from "@core/constants";
 
 
 const windowWidth = Dimensions.get("window").width;
@@ -125,7 +126,7 @@ const CaseGeolocation = ({reloadProp, userLoc, userId}) => {
     return  retriveAllCases().map(eachCase => <Circle
       key ={eachCase.claimId} 
         center={{ latitude:eachCase.coordinate.lat, longitude: eachCase.coordinate.lng }}
-        radius={5000}
+        radius={GEOFENCING_RADIUS_IN_METRES}
         strokeWidth = { 1 }
                 strokeColor = { '#1a66ff' }
                 fillColor = { 'rgba(230,238,255,0.5)' }

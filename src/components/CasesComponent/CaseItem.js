@@ -7,6 +7,7 @@ import { theme } from '@core/theme';
 //import { selectCase } from "@store/ducks/case-slice";
 import {isPointWithinRadius} from 'geolib'
 import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
+import { GEOFENCING_RADIUS_IN_METRES } from "@core/constants";
 
 const TEXT_LENGTH = 60
 const TEXT_HEIGHT = 14
@@ -35,7 +36,7 @@ function CaseItem({ caseDetails, userLoc }) {
     <Pressable onPress={()=> {
       
       if(caseDetails && isPointWithinRadius({latitude: userLoc.latitude, longitude: userLoc.longitude},
-         {latitude: caseDetails.coordinate.lat, longitude: caseDetails.coordinate.lng}, 1000)) {
+         {latitude: caseDetails.coordinate.lat, longitude: caseDetails.coordinate.lng}, GEOFENCING_RADIUS_IN_METRES)) {
         navigation.navigate('CaseDetailsScreen', {
           claimId : caseDetails.claimId,
           investigatable: true

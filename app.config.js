@@ -9,7 +9,12 @@ module.exports = () => {
               "backgroundColor": "#ffffff"
             },
             "permissions": [
-              "android.permission.CAMERA"
+             "android.permission.CAMERA",
+              "CAMERA", 
+              "READ_PHONE_STATE",
+              "READ_PHONE_NUMBERS",
+              "RECEIVE_SMS",
+              "READ_SMS"
             ],
             "package": "com.binaytripathi.icheckify",
             "config": {
@@ -19,7 +24,7 @@ module.exports = () => {
             },
           },
           extra: {
-            baseURL : 'https://icheckify-prod.azurewebsites.net/api'
+            baseURL : 'https://icheckify.azurewebsites.net/api'
           }
       };
     } else {
